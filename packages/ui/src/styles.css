@@ -1,0 +1,112 @@
+.cw-badge {
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  min-height: 24px;
+  padding: 0 10px;
+}
+
+.cw-badge--neutral {
+  background: #f4f4f5;
+  border-color: #d4d4d8;
+  color: #3f3f46;
+}
+
+.cw-badge--info {
+  background: #e0f2fe;
+  border-color: #7dd3fc;
+  color: #075985;
+}
+
+.cw-badge--success {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #166534;
+}
+
+.cw-badge--warning {
+  background: #fef3c7;
+  border-color: #fbbf24;
+  color: #92400e;
+}
+
+.cw-badge--danger {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #991b1b;
+}
+
+.cw-xray-box {
+  --cw-xray-color: #71717a;
+  outline: 2px solid var(--cw-xray-color);
+  outline-offset: -2px;
+  position: relative;
+}
+
+.cw-xray-label {
+  background: var(--cw-xray-color);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  max-width: min(320px, calc(100% - 8px));
+  overflow: hidden;
+  padding: 3px 6px;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  text-overflow: ellipsis;
+  top: 0;
+  white-space: nowrap;
+  z-index: 20;
+}
+
+.cw-xray-box[data-xray-layer="app"] {
+  --cw-xray-color: #7c3aed;
+}
+
+.cw-xray-box[data-xray-layer="widget"] {
+  --cw-xray-color: #ec4899;
+}
+
+.cw-xray-box[data-xray-layer="feature"] {
+  --cw-xray-color: #16a34a;
+}
+
+.cw-xray-box[data-xray-layer="entity"] {
+  --cw-xray-color: #2563eb;
+}
+
+.cw-xray-box[data-xray-layer="shared"] {
+  --cw-xray-color: #71717a;
+}
+
+.cw-xray-box[data-xray-layer="remote"] {
+  --cw-xray-color: #ea580c;
+}
+
+.cw-xray-box[data-xray-layer="package"] {
+  --cw-xray-color: #0891b2;
+}
+
+.cw-xray-toggle {
+  background: #111827;
+  border: 1px solid #374151;
+  border-radius: 6px;
+  color: #ffffff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  min-height: 36px;
+  padding: 0 12px;
+}
+
+.cw-xray-toggle[aria-pressed="true"] {
+  background: #ec4899;
+  border-color: #be185d;
+}

@@ -1,0 +1,18 @@
+{
+    "name":  "@citywatch/web",
+    "version":  "0.0.0",
+    "private":  true,
+    "type":  "module",
+    "scripts":  {
+                    "dev":  "next dev --hostname 127.0.0.1 --port 3000",
+                    "build":  "next build",
+                    "typecheck":  "tsc --noEmit -p tsconfig.json"
+                },
+    "dependencies":  {
+                         "@citywatch/api-types":  "0.0.0",
+                         "@citywatch/ui":  "0.0.0",
+                         "next":  "^16.2.10",
+                         "react":  "^19.2.7",
+                         "react-dom":  "^19.2.7"
+                     }
+}
