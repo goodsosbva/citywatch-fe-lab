@@ -5,23 +5,14 @@ export type Coordinates = {
   longitude: number;
 };
 
-export type IncidentSeverity = "low" | "medium" | "high" | "critical";
+export const incidentSeverities = ["low", "medium", "high", "critical"] as const;
+export type IncidentSeverity = (typeof incidentSeverities)[number];
 
-export type IncidentStatus =
-  | "reported"
-  | "dispatching"
-  | "in_progress"
-  | "resolved"
-  | "false_alarm";
+export const incidentStatuses = ["reported", "dispatching", "in_progress", "resolved", "false_alarm"] as const;
+export type IncidentStatus = (typeof incidentStatuses)[number];
 
-export type IncidentCategory =
-  | "fire"
-  | "traffic"
-  | "flood"
-  | "crime"
-  | "facility"
-  | "medical"
-  | "weather";
+export const incidentCategories = ["fire", "traffic", "flood", "crime", "facility", "medical", "weather"] as const;
+export type IncidentCategory = (typeof incidentCategories)[number];
 
 export type Region = {
   id: string;
@@ -51,10 +42,7 @@ export type IncidentListQuery = {
   regionId?: string;
 };
 
-export type CreateIncidentInput = Omit<
-  Incident,
-  "id" | "status" | "reportedAt" | "updatedAt"
->;
+export type CreateIncidentInput = Omit<Incident, "id" | "status" | "reportedAt" | "updatedAt">;
 
 export type UpdateIncidentStatusInput = {
   incidentId: string;
@@ -95,3 +83,15 @@ export type RealtimeMessage =
       type: "heartbeat";
       sentAt: ISODateTime;
     };
+
+export function isIncidentSeverity(value: string): value is IncidentSeverity {
+  return (incidentSeverities as readonly string[]).includes(value);
+}
+
+export function isIncidentStatus(value: string): value is IncidentStatus {
+  return (incidentStatuses as readonly string[]).includes(value);
+}
+
+export function isIncidentCategory(value: string): value is IncidentCategory {
+  return (incidentCategories as readonly string[]).includes(value);
+}
