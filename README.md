@@ -14,7 +14,7 @@ A city safety monitoring frontend lab. The app is built as a learning proof: eac
 ## First implementation flow
 
 1. Shared contracts in `packages/api-types`
-2. Shared `ProofBox`/UI in `packages/ui`
+2. Shared `XRayBox`/UI in `packages/ui`
 3. Next host shell in `apps/web`
 4. Federation smoke test in `apps/analytics-remote`
 5. Monitoring features one by one
