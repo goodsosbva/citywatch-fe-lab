@@ -1,4 +1,4 @@
-import type { IncidentCategory, IncidentStatus } from "@citywatch/api-types";
+import type { IncidentCategory, IncidentSeverity, IncidentStatus } from "@citywatch/api-types";
 
 export const incidentCategoryLabels: Record<IncidentCategory, string> = {
   fire: "화재",
@@ -8,6 +8,13 @@ export const incidentCategoryLabels: Record<IncidentCategory, string> = {
   facility: "시설",
   medical: "의료",
   weather: "기상",
+};
+
+export const incidentSeverityLabels: Record<IncidentSeverity, string> = {
+  low: "낮음",
+  medium: "보통",
+  high: "높음",
+  critical: "긴급",
 };
 
 export const incidentStatusLabels: Record<IncidentStatus, string> = {

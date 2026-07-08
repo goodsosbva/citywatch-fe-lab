@@ -44,7 +44,7 @@ export function XRayBox({
       title={title ?? getXRayTitle(label, packageName, stacks)}
       {...props}
     >
-      <span className="cw-xray-label">{label}</span>
+      <span className="cw-xray-label">{getXRayDisplayLabel(label)}</span>
       {children}
     </div>
   );
@@ -75,6 +75,13 @@ export function XRayToggle({ enabled, label = "X-Ray", onChange, style }: XRayTo
 function getXRayLayer(label: string): XRayLayer {
   const maybeLayer = label.split("/")[0] as XRayLayer;
   return xrayLayers.includes(maybeLayer) ? maybeLayer : "shared";
+}
+
+function getXRayDisplayLabel(label: string) {
+  const parts = label.split("/");
+  const layer = parts[0];
+  const leaf = parts[parts.length - 1];
+  return layer && leaf && layer !== leaf ? `${layer}/${leaf}` : label;
 }
 
 function getXRayTitle(label: string, packageName?: string, stacks: string[] = []) {

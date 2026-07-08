@@ -32,12 +32,27 @@ IncidentDetailResponse
 ApiError
 ```
 
+### Zod
+
+사고 등록 입력은 `packages/api-types`의 `createIncidentInputSchema`로 검증한다.
+
+```txt
+createIncidentInputSchema
+validateCreateIncidentInput
+schema.safeParse
+fieldErrors
+ApiError
+```
+
+같은 schema를 등록 화면과 `POST /api/incidents`가 함께 사용한다.
+
 ### REST API
 
-사고 목록 조회, 상세 조회, 상태 변경을 Next Route Handler로 구현한다.
+사고 목록 조회, 상세 조회, 등록, 상태 변경을 Next Route Handler로 구현한다.
 
 ```txt
 GET   /api/incidents
+POST  /api/incidents
 GET   /api/incidents/[id]
 PATCH /api/incidents/[id]/status
 ```
