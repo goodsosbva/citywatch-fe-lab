@@ -50,19 +50,18 @@
 .cw-xray-label {
   background: var(--cw-xray-color);
   color: #ffffff;
+  display: block;
   font-size: 12px;
   font-weight: 800;
   line-height: 1;
-  max-width: min(320px, calc(100% - 8px));
+  margin: 0 0 4px auto;
+  max-width: min(220px, calc(100% - 8px));
   overflow: hidden;
   padding: 3px 6px;
   pointer-events: none;
-  position: absolute;
-  right: 0;
   text-overflow: ellipsis;
-  top: 0;
   white-space: nowrap;
-  z-index: 20;
+  width: max-content;
 }
 
 .cw-xray-box[data-xray-layer="app"] {

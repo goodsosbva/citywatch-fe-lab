@@ -1,4 +1,4 @@
-import type { Incident, IncidentListQuery, IncidentStatus } from "@citywatch/api-types";
+import type { CreateIncidentInput, Incident, IncidentListQuery, IncidentStatus } from "@citywatch/api-types";
 
 const initialIncidents: Incident[] = [
   {
@@ -45,6 +45,10 @@ const initialIncidents: Incident[] = [
 ];
 
 const incidents = new Map(initialIncidents.map((incident) => [incident.id, incident]));
+let nextIncidentNumber = initialIncidents.reduce((max, incident) => {
+  const match = /^INC-(\d+)$/.exec(incident.id);
+  return match ? Math.max(max, Number(match[1])) : max;
+}, 0) + 1;
 
 export function listIncidents(query: IncidentListQuery = {}) {
   const search = query.search?.trim().toLowerCase();
@@ -57,6 +61,23 @@ export function listIncidents(query: IncidentListQuery = {}) {
 
     return [incident.id, incident.title, incident.description, incident.assignedTeam ?? ""].some((value) => value.toLowerCase().includes(search));
   });
+}
+
+export function createIncident(input: CreateIncidentInput) {
+  const now = new Date().toISOString();
+  const id = `INC-${String(nextIncidentNumber).padStart(3, "0")}`;
+  nextIncidentNumber += 1;
+
+  const incident: Incident = {
+    ...input,
+    id,
+    status: "reported",
+    reportedAt: now,
+    updatedAt: now,
+  };
+
+  incidents.set(id, incident);
+  return incident;
 }
 
 export function getIncidentById(id: string) {

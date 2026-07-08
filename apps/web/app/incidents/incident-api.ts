@@ -1,4 +1,4 @@
-import type { ApiError, Incident, IncidentDetailResponse, IncidentListQuery, IncidentListResponse, UpdateIncidentStatusInput } from "@citywatch/api-types";
+import type { ApiError, CreateIncidentInput, IncidentDetailResponse, IncidentListQuery, IncidentListResponse, UpdateIncidentStatusInput } from "@citywatch/api-types";
 
 export class IncidentApiError extends Error {
   constructor(
@@ -25,6 +25,15 @@ export async function fetchIncidents(query: IncidentListQuery = {}) {
 
 export async function fetchIncident(id: string) {
   const data = await requestJson<IncidentDetailResponse>(`/api/incidents/${encodeURIComponent(id)}`);
+  return data.incident;
+}
+
+export async function createIncident(input: CreateIncidentInput) {
+  const data = await requestJson<IncidentDetailResponse>("/api/incidents", {
+    body: JSON.stringify(input),
+    headers: { "Content-Type": "application/json" },
+    method: "POST",
+  });
   return data.incident;
 }
 

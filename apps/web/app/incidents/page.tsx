@@ -59,6 +59,9 @@ export default function IncidentsPage() {
           <h1>사고 목록 관제</h1>
         </div>
         <div className="topbar-actions">
+          <Link className="nav-link nav-link--strong" href="/incidents/new">
+            사고 등록
+          </Link>
           <Link className="nav-link" href="/">
             관제 홈
           </Link>
