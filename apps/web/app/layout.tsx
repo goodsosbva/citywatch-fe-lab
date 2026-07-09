@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "@citywatch/ui/styles.css";
 import "./globals.css";
+import { StoreProvider } from "./store-provider";
 
 export const metadata: Metadata = {
   title: "CityWatch FE Lab",
@@ -10,7 +11,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body>
+        <StoreProvider>{children}</StoreProvider>
+      </body>
     </html>
   );
 }

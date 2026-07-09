@@ -1,4 +1,4 @@
-import type { IncidentCategory, IncidentSeverity, IncidentStatus } from "@citywatch/api-types";
+import type { IncidentCategory, IncidentRiskLevel, IncidentSeverity, IncidentStatus } from "@citywatch/api-types";
 
 export const incidentCategoryLabels: Record<IncidentCategory, string> = {
   fire: "화재",
@@ -23,6 +23,13 @@ export const incidentStatusLabels: Record<IncidentStatus, string> = {
   in_progress: "대응 중",
   resolved: "종결",
   false_alarm: "오인 신고",
+};
+
+export const incidentRiskLevelLabels: Record<IncidentRiskLevel, string> = {
+  low: "낮음",
+  guarded: "주의",
+  elevated: "높음",
+  severe: "심각",
 };
 
 const regionLabels: Record<string, string> = {
@@ -50,4 +57,11 @@ export function getStatusTone(status: IncidentStatus) {
   if (status === "dispatching" || status === "in_progress") return "warning";
   if (status === "false_alarm") return "neutral";
   return "info";
+}
+
+export function getRiskTone(level: IncidentRiskLevel) {
+  if (level === "severe") return "danger";
+  if (level === "elevated") return "warning";
+  if (level === "guarded") return "info";
+  return "success";
 }

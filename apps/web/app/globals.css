@@ -145,6 +145,7 @@ h2 {
   border: 1px solid #cbd5e1;
   border-radius: 6px;
   color: #172033;
+  cursor: pointer;
   display: inline-flex;
   font-size: 13px;
   font-weight: 800;
@@ -167,6 +168,47 @@ h2 {
   color: #1d4ed8;
 }
 
+.secondary-button {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  color: #172033;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 800;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 14px;
+}
+
+.secondary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.filter-grid {
+  align-items: end;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(220px, 2fr) repeat(3, minmax(140px, 1fr)) auto;
+}
+
+.redux-proof {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  color: #334155;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 13px;
+  font-weight: 800;
+  gap: 8px 14px;
+  margin-top: 12px;
+  padding: 10px;
+}
+
 .incidents ul,
 .incident-list {
   display: grid;
@@ -186,6 +228,19 @@ h2 {
   grid-template-columns: minmax(0, 1fr) auto;
   min-height: 78px;
   padding: 14px;
+}
+
+.incident-card--selected {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.16);
+}
+
+.incident-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
 }
 
 .incident-row > div,
@@ -347,6 +402,7 @@ h2 {
 .textarea-input:focus-visible,
 .select-input:focus-visible,
 .primary-button:focus-visible,
+.secondary-button:focus-visible,
 .nav-link:focus-visible,
 .incident-title-link:focus-visible {
   outline: 3px solid #93c5fd;
@@ -394,6 +450,7 @@ h2 {
   }
 
   .metric-grid,
+  .filter-grid,
   .form-grid,
   .status-form,
   .incident-row,

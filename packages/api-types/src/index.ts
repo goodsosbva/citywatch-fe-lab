@@ -164,6 +164,89 @@ export type RealtimeMessage =
       sentAt: ISODateTime;
     };
 
+export type IncidentRiskLevel = "low" | "guarded" | "elevated" | "severe";
+
+export type IncidentRisk = {
+  score: number;
+  level: IncidentRiskLevel;
+  reasons: string[];
+};
+
+export type IncidentRiskInput = Pick<
+  Incident,
+  "affectedPeople" | "category" | "severity" | "status"
+>;
+
+const severityRiskBase: Record<IncidentSeverity, number> = {
+  low: 12,
+  medium: 32,
+  high: 60,
+  critical: 80,
+};
+
+const statusRiskModifier: Record<IncidentStatus, number> = {
+  reported: 5,
+  dispatching: 12,
+  in_progress: 10,
+  resolved: -25,
+  false_alarm: -45,
+};
+
+const categoryRiskModifier: Record<IncidentCategory, number> = {
+  fire: 8,
+  traffic: 3,
+  flood: 8,
+  crime: 8,
+  facility: 4,
+  medical: 7,
+  weather: 6,
+};
+
+export function calculateIncidentRisk(incident: IncidentRiskInput): IncidentRisk {
+  const affectedPeople = Math.max(0, incident.affectedPeople);
+  const score = clampRiskScore(
+    severityRiskBase[incident.severity] +
+      statusRiskModifier[incident.status] +
+      categoryRiskModifier[incident.category] +
+      getAffectedPeopleRisk(affectedPeople),
+  );
+
+  return {
+    score,
+    level: getIncidentRiskLevel(score),
+    reasons: getIncidentRiskReasons(incident, affectedPeople),
+  };
+}
+
+function getAffectedPeopleRisk(affectedPeople: number) {
+  if (affectedPeople >= 1000) return 25;
+  if (affectedPeople >= 100) return 18;
+  if (affectedPeople >= 30) return 10;
+  if (affectedPeople >= 1) return 5;
+  return 0;
+}
+
+function getIncidentRiskLevel(score: number): IncidentRiskLevel {
+  if (score >= 80) return "severe";
+  if (score >= 60) return "elevated";
+  if (score >= 35) return "guarded";
+  return "low";
+}
+
+function getIncidentRiskReasons(incident: IncidentRiskInput, affectedPeople: number) {
+  const reasons = [
+    `${incident.severity} severity`,
+    `${incident.status} status`,
+    `${incident.category} category`,
+  ];
+  if (affectedPeople > 0) reasons.push(`${affectedPeople} affected people`);
+  return reasons;
+}
+
+function clampRiskScore(score: number) {
+  return Math.min(100, Math.max(0, Math.round(score)));
+}
+
 export function validateCreateIncidentInput(value: unknown): CreateIncidentValidationResult {
   if (!isRecord(value)) {
     return { success: false, errors: { title: "요청 본문은 JSON 객체여야 합니다." } };

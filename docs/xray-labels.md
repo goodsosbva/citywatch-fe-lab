@@ -88,6 +88,12 @@ UI block that proves detail data is loaded through REST API fetch.
 feature/incident/ChangeIncidentStatus
 UI block that proves PATCH status update flow.
 
+feature/incident/ShareIncidentFilters
+UI block that proves incident list filters are shared through Redux state and converted into REST query params.
+
+feature/incident/ShareSelectedIncident
+UI block that proves selected incident state is shared through Redux between list and detail views.
+
 entity/incident/IncidentListItem
 Domain-level incident item.
 
