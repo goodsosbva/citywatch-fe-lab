@@ -73,14 +73,26 @@ Incident list route.
 app/incidents/IncidentDetailPage
 Incident detail route.
 
+app/map/MapPage
+Map monitoring route.
+
 widget/SafetyOverview
 Home dashboard metric section.
 
 widget/IncidentList
 Incident list section.
 
+widget/IncidentMapBoard
+OpenLayers incident map section.
+
 feature/incident/FetchIncidentList
 UI block that proves the list is loaded through REST API fetch.
+
+feature/incident/FetchIncidentMapIncidents
+UI block that proves map incidents are loaded through REST API fetch and Redux query state.
+
+feature/map/RenderIncidentMarkers
+UI block that proves incident coordinates are rendered through OpenLayers and OpenStreetMap tiles.
 
 feature/incident/FetchIncidentDetail
 UI block that proves detail data is loaded through REST API fetch.
@@ -99,6 +111,9 @@ Domain-level incident item.
 
 entity/incident/IncidentDetail
 Domain-level incident detail.
+
+entity/incident/IncidentMapSelection
+Domain-level selected incident summary on the map page.
 
 shared/ui/SeverityBadge
 Reusable shared UI package component.

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "@citywatch/ui/styles.css";
+import "ol/ol.css";
 import "./globals.css";
 import { StoreProvider } from "./store-provider";
 

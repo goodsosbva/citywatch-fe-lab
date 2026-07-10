@@ -13,6 +13,7 @@
         "@citywatch/ui": "0.0.0",
         "@reduxjs/toolkit": "^2.12.0",
         "next": "^16.2.10",
+        "ol": "^10.9.0",
         "react": "^19.2.7",
         "react-dom": "^19.2.7",
         "react-redux": "^9.3.0"

@@ -3,7 +3,11 @@ import type {
   IncidentSeverity,
   IncidentStatus,
 } from "@citywatch/api-types";
-import { createSelector, createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import {
+  createSelector,
+  createSlice,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
 
 type AllFilter = "all";
 
@@ -37,7 +41,10 @@ const incidentControlSlice = createSlice({
     setSearchFilter(state, action: PayloadAction<string>) {
       state.filters.search = action.payload;
     },
-    setSeverityFilter(state, action: PayloadAction<IncidentFilters["severity"]>) {
+    setSeverityFilter(
+      state,
+      action: PayloadAction<IncidentFilters["severity"]>,
+    ) {
       state.filters.severity = action.payload;
     },
     setStatusFilter(state, action: PayloadAction<IncidentFilters["status"]>) {

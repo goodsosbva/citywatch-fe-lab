@@ -381,6 +381,8 @@ npm run test 통과
 npm --workspace @citywatch/web run build 통과
 http://127.0.0.1:3000 브라우저 확인
 X-Ray 라벨 DOM 확인 완료
+http://127.0.0.1:3000/map 브라우저 확인
+OpenLayers 지도와 사고 마커 확인
 ```
 
 X-Ray 라벨은 화면에서 짧은 FSD 경로만 보인다.
@@ -410,7 +412,7 @@ shared/ui/SeverityBadge
 6. create form + validation/accessibility - 완료
 7. Unit Test / TDD 위험도 계산 - 완료
 8. Redux 상태 공유 - 완료
-9. OpenLayers 지도 관제 - 아직
+9. OpenLayers 지도 관제 - 완료
 10. WebSocket/Polling 실시간 처리 - 아직
 11. R3F 3D 위험 구역 - 아직
 12. performance page 대량 데이터 관제 - 아직
