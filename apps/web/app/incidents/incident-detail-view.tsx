@@ -1,14 +1,29 @@
 "use client";
 
 import type { Incident, IncidentStatus } from "@citywatch/api-types";
-import { incidentStatuses } from "@citywatch/api-types";
+import { calculateIncidentRisk, incidentStatuses } from "@citywatch/api-types";
 import { Badge, SeverityBadge, XRayBox, XRayToggle } from "@citywatch/ui";
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "../store-hooks";
+import {
+  selectSelectedIncidentId,
+  setSelectedIncidentId,
+} from "./incident-control-slice";
 import { changeIncidentStatus, fetchIncident } from "./incident-api";
-import { formatIncidentDate, getRegionName, getStatusTone, incidentCategoryLabels, incidentStatusLabels } from "./incident-format";
+import {
+  formatIncidentDate,
+  getRegionName,
+  getRiskTone,
+  getStatusTone,
+  incidentCategoryLabels,
+  incidentRiskLevelLabels,
+  incidentStatusLabels,
+} from "./incident-format";
 
 export function IncidentDetailView({ incidentId }: { incidentId: string }) {
+  const dispatch = useAppDispatch();
+  const selectedIncidentId = useAppSelector(selectSelectedIncidentId);
   const [xray, setXray] = useState(true);
   const [incident, setIncident] = useState<Incident>();
   const [selectedStatus, setSelectedStatus] = useState<IncidentStatus>("reported");
@@ -17,6 +32,10 @@ export function IncidentDetailView({ incidentId }: { incidentId: string }) {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string>();
   const [saveMessage, setSaveMessage] = useState<string>();
+
+  useEffect(() => {
+    dispatch(setSelectedIncidentId(incidentId));
+  }, [dispatch, incidentId]);
 
   useEffect(() => {
     let active = true;
@@ -42,6 +61,8 @@ export function IncidentDetailView({ incidentId }: { incidentId: string }) {
       active = false;
     };
   }, [incidentId]);
+
+  const risk = incident ? calculateIncidentRisk(incident) : undefined;
 
   async function handleStatusSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -100,6 +121,14 @@ export function IncidentDetailView({ incidentId }: { incidentId: string }) {
                       <SeverityBadge severity={incident.severity} />
                     </XRayBox>
                     <Badge tone={getStatusTone(incident.status)}>{incidentStatusLabels[incident.status]}</Badge>
+                    <XRayBox enabled={xray} label="feature/incident/ShareSelectedIncident" packageName="apps/web" stacks={["Redux Toolkit", "React Redux"]}>
+                      <Badge tone={selectedIncidentId === incident.id ? "info" : "warning"}>Redux 선택 {selectedIncidentId ?? "없음"}</Badge>
+                    </XRayBox>
+                    {risk ? (
+                      <XRayBox enabled={xray} label="feature/incident/CalculateRiskScore" packageName="packages/api-types" stacks={["Unit Test", "Pure Function"]}>
+                        <Badge tone={getRiskTone(risk.level)}>위험도 {risk.score}</Badge>
+                      </XRayBox>
+                    ) : null}
                   </div>
                 </section>
               </XRayBox>
@@ -144,6 +173,7 @@ export function IncidentDetailView({ incidentId }: { incidentId: string }) {
                   </div>
                   <dl className="detail-grid">
                     <DetailItem label="상태" value={incidentStatusLabels[incident.status]} />
+                    {risk ? <DetailItem label="위험도" value={`${incidentRiskLevelLabels[risk.level]} ${risk.score}`} /> : null}
                     <DetailItem label="분류" value={incidentCategoryLabels[incident.category]} />
                     <DetailItem label="지역" value={getRegionName(incident.regionId)} />
                     <DetailItem label="영향 인원" value={`${incident.affectedPeople}명`} />

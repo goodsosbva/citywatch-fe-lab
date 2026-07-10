@@ -211,6 +211,8 @@ low → 낮음
 
 현재 화면 데이터는 `apps/web/app/api/incidents/*`의 REST API를 통해 읽는다. 홈, 목록, 상세 화면은 `fetch` 기반 client API를 사용하고, 사고 상태 변경은 `PATCH /api/incidents/[id]/status`로 처리한다.
 
+사고 목록의 검색/심각도/상태/지역 필터와 선택 사고 ID는 Redux Toolkit으로 공유한다. Redux에는 관제 UI 상태만 올리고, 사고 목록 데이터 자체는 기존 REST API 응답을 화면 local state에 둔다.
+
 즉 현재 단계에서 중요한 것은 "실제 서버 데이터"가 아니라, 화면 구조와 타입 계약을 먼저 잡은 것이다.
 
 ## 6. Next.js App Router 원리 정리
@@ -375,9 +377,12 @@ npm --workspace @citywatch/web run build
 
 ```txt
 npm run typecheck 통과
+npm run test 통과
 npm --workspace @citywatch/web run build 통과
 http://127.0.0.1:3000 브라우저 확인
 X-Ray 라벨 DOM 확인 완료
+http://127.0.0.1:3000/map 브라우저 확인
+OpenLayers 지도와 사고 마커 확인
 ```
 
 X-Ray 라벨은 화면에서 짧은 FSD 경로만 보인다.
@@ -404,10 +409,10 @@ shared/ui/SeverityBadge
 3. / 대시보드 - 완료
 4. /incidents 목록/상세 - 완료
 5. REST API - 완료
-6. create form + validation/accessibility - 아직
-7. Unit Test / TDD 위험도 계산 - 아직
-8. Redux 상태 공유 - 아직
-9. OpenLayers 지도 관제 - 아직
+6. create form + validation/accessibility - 완료
+7. Unit Test / TDD 위험도 계산 - 완료
+8. Redux 상태 공유 - 완료
+9. OpenLayers 지도 관제 - 완료
 10. WebSocket/Polling 실시간 처리 - 아직
 11. R3F 3D 위험 구역 - 아직
 12. performance page 대량 데이터 관제 - 아직
