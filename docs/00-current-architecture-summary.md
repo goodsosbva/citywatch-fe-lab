@@ -65,7 +65,7 @@ apps/analytics-remote
 Module Federation remote 앱으로 확장하기 위한 자리다. 현재는 package.json만 있는 준비 상태다.
 
 apps/realtime-server
-WebSocket/Polling 실시간 서버를 분리하기 위한 자리다. 현재는 package.json만 있는 준비 상태다.
+WebSocket/Polling 실시간 서버다. 현재는 Node 표준 `http`/`crypto`만 사용해서 `/ws`, `/events`, `/health`를 제공한다.
 
 packages/api-types
 사고, 위치, 상태, 실시간 메시지 같은 공통 타입 계약을 둔다.
@@ -77,7 +77,7 @@ packages/config
 공유 설정이 필요해질 때 쓰기 위한 자리다. 현재는 package.json만 있는 준비 상태다.
 ```
 
-중요한 점은 "폴더가 있다"와 "기능이 구현됐다"를 구분하는 것이다. 현재 `analytics-remote`, `realtime-server`, `config`는 구조상 자리만 잡힌 상태다. 아직 실제 기능은 없다.
+중요한 점은 "폴더가 있다"와 "기능이 구현됐다"를 구분하는 것이다. 현재 `realtime-server`는 10단계에서 실제 기능이 들어갔고, `analytics-remote`, `config`는 구조상 자리만 잡힌 상태다.
 
 ## 3. 루트 package.json 세팅
 
@@ -111,7 +111,7 @@ npm run test
 → 모든 workspace의 test 실행, 있는 경우만 실행
 ```
 
-현재 `dev:remote`, `dev:realtime`도 루트 scripts에는 있지만, 해당 workspace 내부 scripts가 비어 있기 때문에 아직 실제로 켜지는 기능은 아니다. 이건 나중에 해당 앱을 구현할 때 연결할 자리다.
+현재 `dev:realtime`은 `@citywatch/realtime-server`의 Node 서버를 실행한다. `dev:remote`는 아직 해당 workspace 내부 script가 비어 있어 나중에 Module Federation 단계에서 연결할 자리다.
 
 ## 4. 현재 구현된 패키지
 
@@ -413,11 +413,11 @@ shared/ui/SeverityBadge
 7. Unit Test / TDD 위험도 계산 - 완료
 8. Redux 상태 공유 - 완료
 9. OpenLayers 지도 관제 - 완료
-10. WebSocket/Polling 실시간 처리 - 아직
+10. WebSocket/Polling 실시간 처리 - 완료
 11. R3F 3D 위험 구역 - 아직
 12. performance page 대량 데이터 관제 - 아직
 13. Storybook UI 증명 - 아직
-14. realtime-server 분리 - 자리만 있음
+14. realtime-server 분리 - 10단계에서 기본 서버 구현됨
 15. analytics-remote + Module Federation - 자리만 있음
 ```
 

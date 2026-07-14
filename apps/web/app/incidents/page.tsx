@@ -100,6 +100,9 @@ export default function IncidentsPage() {
           <Link className="nav-link nav-link--strong" href="/map">
             지도 관제
           </Link>
+          <Link className="nav-link nav-link--strong" href="/realtime">
+            실시간 피드
+          </Link>
           <Link className="nav-link" href="/">
             관제 홈
           </Link>

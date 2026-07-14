@@ -164,6 +164,44 @@ export type RealtimeMessage =
       sentAt: ISODateTime;
     };
 
+export type RealtimeEvent = {
+  id: number;
+  message: RealtimeMessage;
+};
+
+export type RealtimeEventListResponse = {
+  events: RealtimeEvent[];
+  serverTime: ISODateTime;
+};
+
+export function isRealtimeEvent(value: unknown): value is RealtimeEvent {
+  return isRecord(value) && typeof value.id === "number" && value.id > 0 && isRealtimeMessage(value.message);
+}
+
+export function isRealtimeEventListResponse(value: unknown): value is RealtimeEventListResponse {
+  return (
+    isRecord(value) &&
+    Array.isArray(value.events) &&
+    value.events.every(isRealtimeEvent) &&
+    typeof value.serverTime === "string"
+  );
+}
+
+export function isRealtimeMessage(value: unknown): value is RealtimeMessage {
+  if (!isRecord(value) || typeof value.type !== "string" || typeof value.sentAt !== "string") return false;
+  if (value.type === "heartbeat") return true;
+
+  if (value.type === "incident.statusChanged") {
+    return typeof value.incidentId === "string" && typeof value.status === "string" && isIncidentStatus(value.status);
+  }
+
+  if (value.type === "incident.created" || value.type === "incident.updated") {
+    return isIncident(value.incident);
+  }
+
+  return false;
+}
+
 export type IncidentRiskLevel = "low" | "guarded" | "elevated" | "severe";
 
 export type IncidentRisk = {
@@ -281,6 +319,38 @@ function getCreateIncidentInputField(path: PropertyKey[]): CreateIncidentInputFi
   if (typeof first !== "string") return undefined;
   if (["title", "description", "category", "severity", "regionId", "affectedPeople", "assignedTeam"].includes(first)) return first as CreateIncidentInputField;
   return undefined;
+}
+
+function isIncident(value: unknown): value is Incident {
+  return (
+    isRecord(value) &&
+    typeof value.id === "string" &&
+    typeof value.title === "string" &&
+    typeof value.description === "string" &&
+    typeof value.category === "string" &&
+    isIncidentCategory(value.category) &&
+    typeof value.severity === "string" &&
+    isIncidentSeverity(value.severity) &&
+    typeof value.status === "string" &&
+    isIncidentStatus(value.status) &&
+    typeof value.regionId === "string" &&
+    isCoordinates(value.location) &&
+    typeof value.reportedAt === "string" &&
+    typeof value.updatedAt === "string" &&
+    typeof value.affectedPeople === "number" &&
+    Number.isFinite(value.affectedPeople) &&
+    (value.assignedTeam === undefined || typeof value.assignedTeam === "string")
+  );
+}
+
+function isCoordinates(value: unknown): value is Coordinates {
+  return (
+    isRecord(value) &&
+    typeof value.latitude === "number" &&
+    Number.isFinite(value.latitude) &&
+    typeof value.longitude === "number" &&
+    Number.isFinite(value.longitude)
+  );
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

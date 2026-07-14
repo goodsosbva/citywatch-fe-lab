@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calculateIncidentRisk, type IncidentRiskInput } from "../src/index";
+import { calculateIncidentRisk, isRealtimeEventListResponse, type IncidentRiskInput } from "../src/index";
 
 const baseIncident = {
   affectedPeople: 0,
@@ -52,5 +52,43 @@ describe("calculateIncidentRisk", () => {
       level: "severe",
       score: 100,
     });
+  });
+});
+
+describe("isRealtimeEventListResponse", () => {
+  it("accepts valid polling event responses", () => {
+    expect(
+      isRealtimeEventListResponse({
+        events: [
+          {
+            id: 1,
+            message: {
+              sentAt: "2026-07-11T00:00:00.000Z",
+              type: "heartbeat",
+            },
+          },
+        ],
+        serverTime: "2026-07-11T00:00:00.000Z",
+      }),
+    ).toBe(true);
+  });
+
+  it("rejects malformed realtime messages", () => {
+    expect(
+      isRealtimeEventListResponse({
+        events: [
+          {
+            id: 1,
+            message: {
+              incidentId: "INC-001",
+              sentAt: "2026-07-11T00:00:00.000Z",
+              status: "unknown",
+              type: "incident.statusChanged",
+            },
+          },
+        ],
+        serverTime: "2026-07-11T00:00:00.000Z",
+      }),
+    ).toBe(false);
   });
 });

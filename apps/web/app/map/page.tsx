@@ -80,6 +80,9 @@ export default function MapPage() {
           <Link className="nav-link nav-link--strong" href="/incidents">
             사고 목록
           </Link>
+          <Link className="nav-link nav-link--strong" href="/realtime">
+            실시간 피드
+          </Link>
           <Link className="nav-link" href="/">
             관제 홈
           </Link>
