@@ -2,5 +2,10 @@
   "name": "@citywatch/realtime-server",
   "version": "0.0.0",
   "private": true,
-  "scripts": {}
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/server.mjs",
+    "start": "node src/server.mjs",
+    "test": "node --test src/websocket-frame.test.mjs"
+  }
 }

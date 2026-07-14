@@ -105,6 +105,22 @@ widget/IncidentMapBoard
 Redux 필터는 `selectIncidentListQuery`를 통해 지도 조회에도 적용되고, 마커 선택은 `setSelectedIncidentId`로 목록/상세와 같은 선택 상태를 공유한다.
 자세한 구현 흐름은 `docs/09-openlayers-map-monitoring.md`에 정리한다.
 
+### WebSocket / Polling
+
+`/realtime` 실시간 피드 화면에서 WebSocket을 먼저 연결하고, 연결이 닫히면 HTTP polling으로 자동 전환한다.
+
+```txt
+apps/realtime-server/src/server.mjs
+apps/web/app/realtime/page.tsx
+packages/api-types/src/index.ts
+feature/realtime/ValidateRealtimeEvents
+feature/realtime/ReconnectStream
+```
+
+실시간 서버는 `/ws` WebSocket endpoint와 `/events?after=id` polling endpoint를 함께 제공한다.
+브라우저에서 수신한 payload는 `isRealtimeEvent`와 `isRealtimeEventListResponse`로 검증한 뒤 화면에 표시한다.
+자세한 구현 흐름은 `docs/10-websocket-polling-realtime.md`에 정리한다.
+
 ### X-Ray Mode
 
 화면 위에 짧은 FSD-style 라벨을 표시한다.
@@ -167,7 +183,6 @@ button disabled 처리
 이후 단계에서는 같은 관제 시스템 안에 다음 기술을 추가한다.
 
 ```txt
-WebSocket / Polling
 React Three Fiber
 성능 최적화
 Storybook
