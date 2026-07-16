@@ -2050,65 +2050,133 @@ return () => {
 
 현재 polling에서 WebSocket으로 자동 복귀하는 코드는 없다. 사용자가 `재연결` 버튼을 눌러야 새 WebSocket을 만든다.
 
-## 면접 답변: 소켓 통신이 무엇인가
+## 면접 기본 답변: 소켓 통신이 무엇인가
 
-### 먼저 용어를 정확히 구분하기
+구현 경험은 답변의 근거로만 사용한다. 첫 답변에서 특정 서비스명, 화면명, 함수명을 나열하지 않는다. 소켓 통신의 일반 개념을 먼저 설명하고, 면접관이 코드를 근거로 추가 질문할 때 구현 세부사항을 답한다.
 
-소켓은 네트워크에서 데이터를 주고받는 통신 끝점이라는 더 넓은 개념이다. TCP 소켓과 UDP 소켓 등이 있다. WebSocket은 소켓 자체와 같은 말이 아니라 TCP 연결 위에서 동작하는 애플리케이션 프로토콜이다.
+### 용어 구분
 
-브라우저 JavaScript는 일반적인 raw TCP 소켓을 직접 열지 않고 `WebSocket` API를 사용한다. WebSocket은 처음에 HTTP Upgrade handshake를 수행한 뒤 같은 TCP 연결을 유지하며 메시지를 양방향으로 주고받는다. 따라서 이 프로젝트에서 구현한 것을 정확히 말하면 "브라우저 WebSocket 통신과 HTTP polling fallback"이다.
+소켓은 운영체제가 제공하는 네트워크 통신 끝점이다. 보통 프로토콜, 로컬 IP와 포트, 원격 IP와 포트 정보로 통신 상대를 구분한다. TCP 소켓과 UDP 소켓 등이 있으며, WebSocket은 소켓 자체와 같은 말이 아니라 TCP 연결 위에서 동작하는 애플리케이션 프로토콜이다.
+
+브라우저 JavaScript는 일반적인 raw TCP 소켓을 직접 열지 않고 `WebSocket` API를 사용한다. WebSocket은 HTTP Upgrade handshake로 시작한 뒤 같은 TCP 연결을 유지하면서 메시지를 양방향으로 주고받는다.
 
 ### 30초 답변
 
-> 소켓은 네트워크에서 데이터를 주고받는 통신 끝점이고, 제가 구현한 것은 브라우저에서 사용하는 WebSocket 통신입니다. WebSocket은 최초 HTTP Upgrade handshake 후 TCP 연결을 유지하므로 일반 HTTP 요청과 달리 서버가 새 이벤트를 클라이언트에 즉시 보낼 수 있습니다. CityWatch에서는 사고 상태 변경을 WebSocket으로 받고, 연결이 끊기면 마지막 이벤트 ID 이후 데이터를 polling으로 복구했습니다.
+> 소켓 통신은 서로 다른 프로세스가 네트워크를 통해 데이터를 주고받을 수 있도록 통신 끝점을 만들고 연결하는 방식입니다. 서버는 특정 IP와 포트에 바인딩해 연결을 기다리고, 클라이언트가 연결하면 합의한 프로토콜에 따라 데이터를 송수신합니다. TCP는 연결 지향적이고 순서와 전달을 보장하는 바이트 스트림이며, UDP는 연결 설정 없이 데이터그램 단위로 전송합니다. 브라우저 실시간 통신에서는 보통 TCP 위의 WebSocket을 사용해 연결을 유지하고 양방향으로 메시지를 주고받습니다.
 
-### 이 구현을 이용한 1분 답변
+### 1분 답변
 
-> CityWatch 실시간 관제 화면은 `page.tsx`가 브라우저의 `WebSocket` API로 `ws://localhost:3001/ws`에 연결하는 구조입니다. 서버가 사고 상태 변경이나 heartbeat를 보내면 `socket.onmessage`가 JSON 문자열을 받고, `parseRealtimeEvent`와 `isRealtimeEvent`로 런타임 검증합니다. 검증된 이벤트는 `recordEvents`에서 ID 중복을 제거한 뒤 `events` state에 저장되고 React 화면에 표시됩니다. WebSocket이 종료되면 `socket.onclose`에서 polling으로 전환하고, `lastEventIdRef`를 이용해 `/events?after={마지막ID}`를 요청하여 연결 중 놓친 이벤트를 복구합니다. 페이지를 떠나거나 재연결할 때는 `useEffect` cleanup에서 소켓과 polling timer를 정리했습니다.
+> 소켓은 운영체제가 제공하는 네트워크 통신의 끝점입니다. TCP 서버를 기준으로 보면 서버가 소켓을 만들고 IP와 포트에 bind한 뒤 listen하고, 클라이언트의 connect 요청을 accept하면 양쪽에 연결된 소켓이 생깁니다. 이후에는 그 연결을 통해 byte를 읽고 씁니다. TCP는 데이터 순서와 신뢰성은 보장하지만 메시지 경계까지 정해주지는 않기 때문에 애플리케이션 프로토콜이 길이, 형식, 메시지 종류 같은 framing 규칙을 정해야 합니다. WebSocket은 이 TCP 연결 위에서 text와 binary frame 규칙을 제공하는 프로토콜이고, 최초 HTTP Upgrade handshake 후 연결을 유지하므로 클라이언트 요청이 없더라도 서버가 이벤트를 보낼 수 있습니다. 대신 장시간 연결을 관리해야 하므로 연결 종료, heartbeat, 재연결, 중복 처리, backpressure, 인증과 암호화까지 함께 설계해야 합니다.
 
-### 왜 polling도 사용했는가
-
-> WebSocket은 즉시성이 좋지만 네트워크나 프록시 문제로 연결이 끊길 수 있습니다. WebSocket만 다시 연결하면 끊긴 동안 발생한 이벤트를 놓칠 수 있으므로 서버가 최근 이벤트를 ID와 함께 보관하고, 클라이언트가 마지막 수신 ID 이후 데이터를 HTTP polling으로 요청하게 했습니다.
-
-### 왜 TypeScript 타입 외에 런타임 검증이 필요한가
-
-> TypeScript 타입은 컴파일할 때만 존재하고 네트워크에서 들어오는 JSON을 실제로 검사하지 않습니다. 서버가 잘못된 `status`나 `id`를 보내도 `as RealtimeEvent`는 막지 못합니다. 그래서 `isRealtimeEvent`와 `isRealtimeEventListResponse`로 외부 데이터를 검사한 뒤 state에 저장했습니다.
-
-### 왜 `useRef`를 사용했는가
-
-> `lastEventIdRef`와 `seenEventIdsRef`는 비동기 WebSocket callback과 polling callback에서 즉시 읽고 변경해야 하지만, 값이 바뀔 때마다 화면을 다시 그릴 필요는 없습니다. 그래서 렌더링용 `events`는 state로 두고 연결 제어용 ID 값은 ref로 두었습니다.
-
-### 왜 cleanup이 필요한가
-
-> React 컴포넌트가 제거되거나 재연결될 때 기존 소켓과 timer를 정리하지 않으면 WebSocket이 여러 개 생기거나 polling 요청이 중복됩니다. cleanup에서 `disposed`를 먼저 설정하고 소켓과 timer를 종료해 이전 연결의 callback이 새 연결 상태를 건드리지 않게 했습니다.
-
-### WebSocket과 HTTP의 차이
+### 소켓 통신의 일반 실행 순서
 
 ```txt
-HTTP
-→ 클라이언트 요청이 있어야 서버가 응답
-→ TCP 연결은 keep-alive로 재사용될 수 있지만 애플리케이션 동작은 요청·응답 단위
-→ 일반 fetch 응답이 끝난 뒤 서버가 임의 이벤트를 밀어 넣지는 못함
+서버
+socket 생성
+→ bind(IP, port)
+→ listen
+→ accept
+→ read/write
+→ close
+
+클라이언트
+socket 생성
+→ connect(server IP, port)
+→ read/write
+→ close
+```
+
+Node와 브라우저 API는 이 저수준 과정을 추상화한다.
+
+```txt
+Node HTTP 서버
+server.listen()
+→ 요청 callback 또는 upgrade callback
+
+브라우저 WebSocket
+new WebSocket(url)
+→ onopen
+→ onmessage 반복
+→ onerror 또는 onclose
+```
+
+### HTTP와 WebSocket의 차이
+
+```txt
+일반 HTTP
+→ 요청·응답 단위
+→ TCP 연결은 keep-alive로 재사용될 수 있음
+→ 일반 fetch 응답이 끝난 뒤 서버가 임의 이벤트를 계속 보내지는 못함
 
 WebSocket
 → 최초 HTTP Upgrade handshake
-→ 연결 유지
-→ 서버와 클라이언트가 필요할 때 메시지 전송
+→ TCP 연결 유지
+→ 양방향 full-duplex 메시지 통신
+→ 서버가 필요할 때 이벤트 전송 가능
 ```
 
-### 현재 구현의 한계까지 묻는다면
+`full-duplex`는 양쪽이 서로의 전송을 기다리지 않고 각각 데이터를 보낼 수 있다는 뜻이다.
 
-> 현재 구현은 실시간 통신 학습용 최소 구현입니다. 이벤트는 실제 DB가 아니라 mock으로 생성하고, 서버 재시작 시 메모리 이벤트가 사라집니다. 인증, WSS, Origin 검증, ping/pong, 다중 서버 메시지 공유가 없고 polling에서 WebSocket으로 자동 복귀하지도 않습니다. 운영 환경이라면 검증된 WebSocket 라이브러리, 영속 이벤트 저장소나 메시지 브로커, 인증과 재연결 backoff를 추가해야 합니다.
-
-### 답변을 한 줄의 인과관계로 기억하기
+### TCP와 UDP의 차이
 
 ```txt
-REST만으로는 서버가 변경을 먼저 알리기 어려움
-→ WebSocket 연결 유지
-→ 서버 이벤트 즉시 수신
-→ 런타임 검증
-→ 중복 제거
-→ React state 반영
-→ 연결 종료 시 마지막 ID 이후 polling 복구
-→ cleanup으로 소켓과 timer 정리
+TCP
+→ 연결 지향
+→ 순서 보장
+→ 손실 시 재전송
+→ 바이트 스트림
+
+UDP
+→ 비연결형
+→ 순서와 전달을 보장하지 않음
+→ 데이터그램 단위
+→ 지연과 오버헤드가 작음
+```
+
+## 코드를 본 면접관의 추가 질문
+
+### 왜 WebSocket 연결만 사용하지 않고 polling도 사용했는가
+
+> WebSocket은 즉시성이 좋지만 네트워크, 프록시, 서버 재시작 등으로 연결이 끊길 수 있습니다. 다시 연결하는 것만으로는 단절 중 발생한 이벤트를 복구할 수 없으므로 이벤트에 순차 ID를 부여하고, 마지막 수신 ID 이후 데이터를 polling으로 조회하는 복구 경로를 뒀습니다.
+
+### 왜 메시지에 ID를 붙였는가
+
+> 연결이 끊긴 시점을 추적하고 중복과 누락을 처리하기 위해서입니다. 마지막으로 처리한 ID를 저장하면 그 이후 이벤트만 요청할 수 있고, 이미 처리한 ID를 확인해 WebSocket과 polling에서 겹쳐 들어온 이벤트를 제거할 수 있습니다.
+
+### 왜 TypeScript 타입 외에 런타임 검증이 필요한가
+
+> TypeScript 타입은 컴파일 결과에서 사라지므로 네트워크에서 들어오는 JSON을 검사하지 못합니다. 외부 데이터는 신뢰 경계에 있으므로 JSON 파싱 후 타입 가드로 필수 필드와 허용값을 검사한 뒤 애플리케이션 상태에 저장해야 합니다.
+
+### 왜 마지막 ID와 중복 ID 목록을 `useRef`로 관리했는가
+
+> 비동기 WebSocket callback과 polling callback에서 최신 값을 즉시 읽고 변경해야 하지만, 값 자체가 바뀔 때마다 화면을 다시 그릴 필요는 없기 때문입니다. 렌더링에 사용하는 목록은 state로 두고 통신 제어용 가변값은 ref로 분리했습니다.
+
+### 왜 cleanup이 필요한가
+
+> 컴포넌트가 제거되거나 연결을 다시 만들 때 기존 소켓과 timer를 정리하지 않으면 중복 연결, 중복 요청, 메모리 누수, 제거된 화면에 대한 상태 변경이 발생할 수 있습니다. cleanup에서 종료 여부를 먼저 기록한 뒤 소켓을 닫고 예약된 timer를 제거해야 합니다.
+
+### WebSocket frame은 왜 필요한가
+
+> TCP는 메시지 경계가 없는 바이트 스트림이므로 수신자가 데이터의 종류와 길이를 알 수 있는 프로토콜 규칙이 필요합니다. WebSocket frame은 text 또는 binary 여부, payload 길이, 메시지 종료 여부 같은 정보를 header에 담습니다. JSON 문자열만 raw socket에 쓰면 WebSocket 클라이언트는 정상 메시지로 해석할 수 없습니다.
+
+### heartbeat는 왜 필요한가
+
+> 연결 객체가 존재한다고 상대 서버까지 실제로 통신 가능한 것은 아닙니다. 일정 시간 heartbeat나 pong을 받지 못하면 연결이 끊겼다고 판단하고 종료·재연결할 수 있습니다. 단순히 heartbeat를 화면에 표시하는 것과 timeout을 이용해 연결 생존을 판단하는 것은 구분해야 합니다.
+
+### backpressure는 무엇인가
+
+> 서버가 데이터를 만드는 속도가 네트워크가 보내는 속도보다 빠르면 전송 버퍼가 쌓이는 현상입니다. 전송 API의 반환값이나 buffered amount를 확인해 전송을 늦추거나, 메시지를 버리거나, 연결을 종료하는 정책이 필요합니다.
+
+### 운영 환경에서 추가할 것은 무엇인가
+
+> TLS를 사용하는 WSS, 인증과 권한, Origin 검증, heartbeat timeout, 지수 backoff 재연결, 이벤트 영속 저장, 다중 서버 간 메시지 브로커, backpressure, rate limit, 관측 지표가 필요합니다. 사용하는 라이브러리가 protocol framing과 ping/pong을 담당하더라도 애플리케이션 수준의 복구와 중복 처리는 별도로 설계해야 합니다.
+
+### 답변을 한 줄로 기억하기
+
+```txt
+socket 생성
+→ 서버 bind/listen과 클라이언트 connect
+→ 연결 성립
+→ 프로토콜 framing에 따라 read/write
+→ 장시간 연결의 종료·복구·중복·보안 관리
 ```

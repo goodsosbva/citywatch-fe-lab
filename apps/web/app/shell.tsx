@@ -48,6 +48,9 @@ export function CityWatchShell() {
           <Link className="nav-link nav-link--strong" href="/map">
             지도 관제
           </Link>
+          <Link className="nav-link nav-link--strong" href="/risk-3d">
+            3D 위험 구역
+          </Link>
           <Link className="nav-link nav-link--strong" href="/realtime">
             실시간 피드
           </Link>

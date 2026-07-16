@@ -9,7 +9,7 @@
 - 도시 사고 현황을 본다.
 - 사고 심각도와 대응 상태를 본다.
 - 사고 목록과 상세를 본다.
-- 이후 지도, 실시간 데이터, 3D 위험 구역, 성능 페이지까지 확장한다.
+- 지도, 실시간 데이터, 3D 위험 구역을 거쳐 성능 페이지까지 확장한다.
 
 하지만 이 프로젝트의 실제 목적은 학습 증명이다.
 
@@ -126,6 +126,8 @@ apps/web/app/layout.tsx
 apps/web/app/page.tsx
 apps/web/app/shell.tsx
 apps/web/app/globals.css
+apps/web/app/risk-3d/page.tsx
+apps/web/app/risk-3d/risk-zone-scene.tsx
 apps/web/next.config.ts
 apps/web/package.json
 ```
@@ -212,6 +214,8 @@ low → 낮음
 현재 화면 데이터는 `apps/web/app/api/incidents/*`의 REST API를 통해 읽는다. 홈, 목록, 상세 화면은 `fetch` 기반 client API를 사용하고, 사고 상태 변경은 `PATCH /api/incidents/[id]/status`로 처리한다.
 
 사고 목록의 검색/심각도/상태/지역 필터와 선택 사고 ID는 Redux Toolkit으로 공유한다. Redux에는 관제 UI 상태만 올리고, 사고 목록 데이터 자체는 기존 REST API 응답을 화면 local state에 둔다.
+
+`/risk-3d`는 REST 사고 좌표와 OpenStreetMap 타일을 같은 Web Mercator 좌표로 변환한다. 실제 도로 지도 위에서 위험 점수는 기둥 높이, 위험 단계는 색상으로 표시하며 3D 기둥과 키보드 버튼은 Redux의 `selectedIncidentId`를 공유한다.
 
 즉 현재 단계에서 중요한 것은 "실제 서버 데이터"가 아니라, 화면 구조와 타입 계약을 먼저 잡은 것이다.
 
@@ -383,6 +387,8 @@ http://127.0.0.1:3000 브라우저 확인
 X-Ray 라벨 DOM 확인 완료
 http://127.0.0.1:3000/map 브라우저 확인
 OpenLayers 지도와 사고 마커 확인
+http://127.0.0.1:3000/risk-3d 브라우저 확인
+R3F 캔버스와 실제 위치 지도, 애니메이션, 공유 선택, 모바일 배치 확인
 ```
 
 X-Ray 라벨은 화면에서 짧은 FSD 경로만 보인다.
@@ -414,7 +420,7 @@ shared/ui/SeverityBadge
 8. Redux 상태 공유 - 완료
 9. OpenLayers 지도 관제 - 완료
 10. WebSocket/Polling 실시간 처리 - 완료
-11. R3F 3D 위험 구역 - 아직
+11. R3F 3D 위험 구역 - 완료
 12. performance page 대량 데이터 관제 - 아직
 13. Storybook UI 증명 - 아직
 14. realtime-server 분리 - 10단계에서 기본 서버 구현됨

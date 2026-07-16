@@ -3,7 +3,7 @@
 import {
   calculateIncidentRisk,
   type Incident,
-  type IncidentSeverity,
+  type IncidentRiskLevel,
 } from "@citywatch/api-types";
 import Feature, { type FeatureLike } from "ol/Feature";
 import Map from "ol/Map";
@@ -17,6 +17,7 @@ import OSM from "ol/source/OSM";
 import VectorSource from "ol/source/Vector";
 import { Circle as CircleStyle, Fill, Stroke, Style } from "ol/style";
 import { useEffect, useRef } from "react";
+import { incidentRiskLevelColors } from "../incidents/incident-format";
 
 type OpenLayersIncidentMapProps = {
   incidents: Incident[];
@@ -25,13 +26,6 @@ type OpenLayersIncidentMapProps = {
 };
 
 const seoulCenter = fromLonLat([126.978, 37.5665]);
-
-const severityMarkerColors: Record<IncidentSeverity, string> = {
-  low: "#16a34a",
-  medium: "#2563eb",
-  high: "#f59e0b",
-  critical: "#dc2626",
-};
 
 export function OpenLayersIncidentMap({
   incidents,
@@ -121,8 +115,8 @@ export function OpenLayersIncidentMap({
         new Feature({
           geometry: new Point(fromLonLat([longitude, latitude])),
           incidentId: incident.id,
+          riskLevel: risk.level,
           riskScore: risk.score,
-          severity: incident.severity,
         }),
       ];
     });
@@ -153,7 +147,7 @@ export function OpenLayersIncidentMap({
 }
 
 function getMarkerStyle(feature: FeatureLike, selectedIncidentId?: string) {
-  const severity = feature.get("severity") as IncidentSeverity | undefined;
+  const riskLevel = feature.get("riskLevel") as IncidentRiskLevel | undefined;
   const riskScore = Number(feature.get("riskScore") ?? 0);
   const selected = feature.get("incidentId") === selectedIncidentId;
   const radius = selected ? 13 : Math.min(11, 7 + Math.floor(riskScore / 25));
@@ -161,7 +155,7 @@ function getMarkerStyle(feature: FeatureLike, selectedIncidentId?: string) {
   return new Style({
     image: new CircleStyle({
       fill: new Fill({
-        color: severity ? severityMarkerColors[severity] : "#2563eb",
+        color: riskLevel ? incidentRiskLevelColors[riskLevel] : "#2563eb",
       }),
       radius,
       stroke: new Stroke({

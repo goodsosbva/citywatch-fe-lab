@@ -18,7 +18,11 @@
     "engines": {
         "node": ">=20"
     },
+    "overrides": {
+        "postcss": "$postcss"
+    },
     "devDependencies": {
+        "postcss": "^8.5.10",
         "typescript": "^6.0.3"
     }
 }

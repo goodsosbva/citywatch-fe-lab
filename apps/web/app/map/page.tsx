@@ -77,6 +77,9 @@ export default function MapPage() {
           <h1>지도 사고 관제</h1>
         </div>
         <div className="topbar-actions">
+          <Link className="nav-link nav-link--strong" href="/risk-3d">
+            3D 위험 구역
+          </Link>
           <Link className="nav-link nav-link--strong" href="/incidents">
             사고 목록
           </Link>
