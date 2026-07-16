@@ -121,6 +121,22 @@ feature/realtime/ReconnectStream
 브라우저에서 수신한 payload는 `isRealtimeEvent`와 `isRealtimeEventListResponse`로 검증한 뒤 화면에 표시한다.
 자세한 구현 흐름은 `docs/10-websocket-polling-realtime.md`에 정리한다.
 
+### React Three Fiber / Three.js
+
+`/risk-3d` 화면에서 OpenStreetMap 타일을 R3F 바닥 텍스처로 렌더링하고, REST 사고 좌표를 같은 Web Mercator 좌표로 변환해 실제 위치 위에 위험 기둥을 세운다.
+
+```txt
+apps/web/app/risk-3d/page.tsx
+apps/web/app/risk-3d/risk-zone-scene.tsx
+calculateIncidentRisk
+Canvas / useFrame
+feature/risk-3d/SelectRiskZone
+```
+
+사고 위험 점수는 기둥 높이, 위험 단계는 색상, 위도/경도는 X/Z 위치가 된다.
+R3F 기둥의 pointer event와 접근 가능한 HTML 버튼은 모두 Redux의 `setSelectedIncidentId`를 호출하므로 같은 선택 상세와 강조 상태를 갱신한다.
+자세한 구현 흐름은 `docs/11-r3f-3d-risk-zone.md`에 정리한다.
+
 ### X-Ray Mode
 
 화면 위에 짧은 FSD-style 라벨을 표시한다.
@@ -183,7 +199,6 @@ button disabled 처리
 이후 단계에서는 같은 관제 시스템 안에 다음 기술을 추가한다.
 
 ```txt
-React Three Fiber
 성능 최적화
 Storybook
 Module Federation

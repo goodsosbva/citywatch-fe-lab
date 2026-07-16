@@ -572,9 +572,291 @@ h2 {
   font-weight: 800;
 }
 
+.sr-only {
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.risk-3d-workspace,
+.risk-zone-list-panel,
+.risk-zone-detail-panel,
+.risk-zone-detail-content {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.risk-3d-heading {
+  align-items: end;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.risk-3d-heading p {
+  color: #64748b;
+  font-size: 14px;
+  margin: 6px 0 0;
+}
+
+.risk-view-actions {
+  align-items: end;
+  display: grid;
+  gap: 8px;
+  justify-items: end;
+}
+
+.risk-view-mode {
+  background: #eef2f7;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 3px;
+}
+
+.risk-view-mode button {
+  background: transparent;
+  border: 0;
+  border-radius: 5px;
+  color: #475569;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  min-height: 36px;
+  padding: 0 12px;
+  white-space: nowrap;
+}
+
+.risk-view-mode button[aria-pressed="true"] {
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.14);
+  color: #1d4ed8;
+}
+
+.risk-view-mode button:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 1px;
+}
+
+.risk-view-mode button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.risk-3d-xray-scene {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.risk-3d-workspace .map-canvas {
+  height: min(68vh, 720px);
+  min-height: 520px;
+}
+
+.risk-3d-scene {
+  background: #e8edf3;
+  height: min(68vh, 720px);
+  min-height: 520px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.risk-3d-scene canvas {
+  display: block;
+}
+
+.risk-3d-map-attribution {
+  background: rgba(255, 255, 255, 0.88);
+  bottom: 0;
+  color: #334155;
+  font-size: 11px;
+  padding: 2px 5px;
+  position: absolute;
+  right: 0;
+  z-index: 2;
+}
+
+.risk-3d-map-attribution a {
+  color: inherit;
+}
+
+.risk-3d-tooltip {
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  display: grid;
+  gap: 4px;
+  left: 12px;
+  max-width: min(380px, calc(100% - 160px));
+  padding: 9px 11px;
+  pointer-events: none;
+  position: absolute;
+  top: 12px;
+  z-index: 2;
+}
+
+.risk-3d-tooltip strong,
+.risk-3d-tooltip span {
+  overflow-wrap: anywhere;
+}
+
+.risk-3d-tooltip strong {
+  font-size: 13px;
+}
+
+.risk-3d-tooltip span {
+  color: #475569;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.risk-3d-reset-view {
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  color: #172033;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+  min-height: 34px;
+  padding: 0 10px;
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  z-index: 2;
+}
+
+.risk-3d-reset-view:hover,
+.risk-3d-reset-view:focus-visible {
+  border-color: #2563eb;
+  outline: 3px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+.risk-3d-north {
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  color: #172033;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 5px 8px;
+  position: absolute;
+  right: 12px;
+  top: 56px;
+  z-index: 2;
+}
+
+.risk-3d-legend {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 18px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.risk-3d-legend li,
+.risk-zone-button-title {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+}
+
+.risk-3d-legend li {
+  color: #475569;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.risk-3d-scale-note {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+  margin: -4px 0 0;
+}
+
+.risk-level-swatch {
+  border: 1px solid rgba(15, 23, 42, 0.28);
+  border-radius: 3px;
+  flex: 0 0 auto;
+  height: 12px;
+  width: 12px;
+}
+
+.risk-impact-legend {
+  background: rgba(37, 99, 235, 0.18);
+  border: 2px solid #2563eb;
+  border-radius: 50%;
+  height: 14px;
+  width: 14px;
+}
+
+.risk-3d-detail-layout {
+  align-items: start;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+}
+
+.risk-zone-button-list {
+  display: grid;
+  gap: 8px;
+}
+
+.risk-zone-button {
+  background: #ffffff;
+  border: 1px solid #d9dee8;
+  border-radius: 8px;
+  color: #172033;
+  cursor: pointer;
+  display: grid;
+  gap: 6px;
+  min-height: 68px;
+  padding: 12px;
+  text-align: left;
+  width: 100%;
+}
+
+.risk-zone-button:hover,
+.risk-zone-button:focus-visible {
+  border-color: #2563eb;
+  outline: 3px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+.risk-zone-button--selected {
+  background: #eff6ff;
+  border-color: #2563eb;
+  box-shadow: inset 4px 0 0 #2563eb;
+}
+
+.risk-zone-button strong,
+.risk-zone-button span {
+  overflow-wrap: anywhere;
+}
+
+.risk-zone-button > span:last-child {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+}
+
 @media (max-width: 1000px) {
   .map-layout,
-  .realtime-layout {
+  .realtime-layout,
+  .risk-3d-detail-layout {
     grid-template-columns: 1fr;
   }
 
@@ -601,6 +883,25 @@ h2 {
 
   .topbar-actions {
     justify-content: flex-start;
+  }
+
+  .risk-3d-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .risk-view-actions {
+    justify-items: start;
+    width: 100%;
+  }
+
+  .risk-3d-scene {
+    height: 56vh;
+    min-height: 420px;
+  }
+
+  .risk-3d-tooltip {
+    max-width: calc(100% - 132px);
   }
 
   .metric-grid,

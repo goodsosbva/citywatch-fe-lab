@@ -32,6 +32,13 @@ export const incidentRiskLevelLabels: Record<IncidentRiskLevel, string> = {
   severe: "심각",
 };
 
+export const incidentRiskLevelColors: Record<IncidentRiskLevel, string> = {
+  low: "#16a34a",
+  guarded: "#2563eb",
+  elevated: "#f59e0b",
+  severe: "#dc2626",
+};
+
 const regionLabels: Record<string, string> = {
   seocho: "서초구",
   seongsu: "성동구",
