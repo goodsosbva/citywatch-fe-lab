@@ -16,11 +16,18 @@ app/incidents/IncidentsPage
 widget/IncidentList
 feature/incident/FetchIncidentList
 feature/incident/ChangeIncidentStatus
-entity/incident/IncidentListItem
-shared/ui/SeverityBadge
+entity/incident/IncidentListItems
 ```
 
 Avoid putting long stack descriptions directly into the label. The label is for quick visual scanning.
+
+## Boundary Density Rule
+
+Use one X-Ray boundary for one meaningful responsibility. Do not add a new boundary around every repeated row, badge, or button inside that responsibility.
+
+For example, an incident list has one `entity/incident/IncidentListItems` boundary around the whole collection. Each `SeverityBadge`, risk badge, selection button, and detail link stays inside that boundary without its own label.
+
+The parent boundary keeps its domain package in `data-xray-package` and records shared UI usage in `data-xray-stacks`. This keeps the architectural proof visible without making repeated UI unreadable.
 
 ## Stored Proof Data
 
@@ -103,11 +110,8 @@ UI block that proves PATCH status update flow.
 feature/incident/ShareIncidentFilters
 UI block that proves incident list filters are shared through Redux state and converted into REST query params.
 
-feature/incident/ShareSelectedIncident
-UI block that proves selected incident state is shared through Redux between list and detail views.
-
-entity/incident/IncidentListItem
-Domain-level incident item.
+entity/incident/IncidentListItems
+Domain-level incident collection rendered by the list widget.
 
 entity/incident/IncidentDetail
 Domain-level incident detail.
@@ -115,8 +119,7 @@ Domain-level incident detail.
 entity/incident/IncidentMapSelection
 Domain-level selected incident summary on the map page.
 
-shared/ui/SeverityBadge
-Reusable shared UI package component.
+`SeverityBadge` remains a reusable shared UI package component, but it is not given a separate visual boundary for every rendered instance.
 ```
 
 ## Why It Exists

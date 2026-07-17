@@ -207,16 +207,9 @@ export default function MapPage() {
               >
                 <div className="panel-title-row">
                   <h2 id="map-selection-title">선택 사고</h2>
-                  <XRayBox
-                    enabled={xray}
-                    label="feature/incident/ShareSelectedIncident"
-                    packageName="apps/web"
-                    stacks={["Redux Toolkit", "React Redux"]}
-                  >
-                    <Badge tone={selectedIncident ? "info" : "neutral"}>
-                      {selectedIncidentId ?? "선택 없음"}
-                    </Badge>
-                  </XRayBox>
+                  <Badge tone={selectedIncident ? "info" : "neutral"}>
+                    {selectedIncidentId ?? "선택 없음"}
+                  </Badge>
                 </div>
 
                 {selectedIncident ? (

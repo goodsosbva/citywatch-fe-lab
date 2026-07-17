@@ -199,11 +199,7 @@ export default function Risk3DPage() {
                       selectedIncidentId={selectedIncidentId}
                     />
                   ) : selectedIncident ? (
-                    <RiskZoneScene
-                      incidents={[selectedIncident]}
-                      onSelectIncident={selectIncident}
-                      selectedIncidentId={selectedIncidentId}
-                    />
+                    <RiskZoneScene incident={selectedIncident} />
                   ) : null}
                 </XRayBox>
 
@@ -239,7 +235,7 @@ export default function Risk3DPage() {
               enabled={xray}
               label="feature/risk-3d/SelectRiskZone"
               packageName="apps/web"
-              stacks={["R3F pointer events", "Redux Toolkit", "Accessibility"]}
+              stacks={["OpenLayers selection", "Redux Toolkit", "Accessibility"]}
             >
               <section aria-labelledby="risk-zone-list-title" className="panel risk-zone-list-panel">
                 <div className="panel-title-row">
@@ -271,7 +267,7 @@ export default function Risk3DPage() {
                   <SelectedRiskZone incident={selectedIncident} />
                 ) : (
                   <p className="state-message" role="status">
-                    3D 기둥이나 사고 버튼을 선택하면 위험 구역 상세가 표시됩니다.
+                    2D 지도 마커나 사고 버튼을 선택하면 위험 구역 상세가 표시됩니다.
                   </p>
                 )}
               </aside>

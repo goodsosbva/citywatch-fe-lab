@@ -120,13 +120,7 @@ shared/ui/SeverityBadge
 4. 있으면 IncidentDetailView에 incident 전달
 ```
 
-그리고 `generateStaticParams()`를 사용해서 현재 mock 데이터 기준 상세 페이지를 미리 만들 수 있게 했다.
-
-```txt
-INC-001
-INC-002
-INC-003
-```
+`[id]` 동적 경로는 URL의 사고 ID를 받아 `IncidentDetailView`에 전달한다. 상세 화면은 그 ID로 사고를 조회하므로, 등록 후 새로 생긴 사고도 초기 mock ID 목록과 별개로 같은 경로에서 열 수 있다.
 
 상세 화면 자체는 `incident-detail-view.tsx`에 두었다. 이유는 X-Ray toggle이 `useState`를 쓰기 때문이다. 즉, 상세 라우트는 서버에서 id를 찾고, 실제 토글 가능한 화면은 client component가 담당한다.
 
@@ -194,12 +188,12 @@ npm --workspace @citywatch/web run build
 빌드 결과 라우트:
 
 ```txt
-/                         Static
-/incidents                Static
-/incidents/[id]           SSG
-/incidents/INC-001        generateStaticParams
-/incidents/INC-002        generateStaticParams
-/incidents/INC-003        generateStaticParams
+/                         홈 경로
+/incidents                사고 목록 경로
+/incidents/[id]           사고 ID를 받는 동적 상세 경로
+/incidents/INC-001        [id] = INC-001
+/incidents/INC-002        [id] = INC-002
+/incidents/INC-003        [id] = INC-003
 ```
 
 실행 중인 dev 서버 응답 확인:

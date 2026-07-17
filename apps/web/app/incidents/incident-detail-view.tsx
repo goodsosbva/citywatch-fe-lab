@@ -109,7 +109,7 @@ export function IncidentDetailView({ incidentId }: { incidentId: string }) {
 
           {incident ? (
             <>
-              <XRayBox enabled={xray} label="widget/IncidentDetailHeader" packageName="apps/web" stacks={["React", "Shared UI"]}>
+              <XRayBox enabled={xray} label="widget/IncidentDetailHeader" packageName="apps/web" stacks={["React", "Shared UI", "Redux Selected State", "Shared Risk Score"]}>
                 <section className="panel detail-hero" aria-labelledby="incident-detail-title">
                   <div>
                     <p className="eyebrow">{incident.id}</p>
@@ -117,17 +117,11 @@ export function IncidentDetailView({ incidentId }: { incidentId: string }) {
                     <p>{incident.description}</p>
                   </div>
                   <div className="detail-badges" aria-label="사고 상태 요약">
-                    <XRayBox enabled={xray} label="shared/ui/SeverityBadge" packageName="packages/ui" stacks={["React", "Shared UI"]}>
-                      <SeverityBadge severity={incident.severity} />
-                    </XRayBox>
+                    <SeverityBadge severity={incident.severity} />
                     <Badge tone={getStatusTone(incident.status)}>{incidentStatusLabels[incident.status]}</Badge>
-                    <XRayBox enabled={xray} label="feature/incident/ShareSelectedIncident" packageName="apps/web" stacks={["Redux Toolkit", "React Redux"]}>
-                      <Badge tone={selectedIncidentId === incident.id ? "info" : "warning"}>Redux 선택 {selectedIncidentId ?? "없음"}</Badge>
-                    </XRayBox>
+                    <Badge tone={selectedIncidentId === incident.id ? "info" : "warning"}>Redux 선택 {selectedIncidentId ?? "없음"}</Badge>
                     {risk ? (
-                      <XRayBox enabled={xray} label="feature/incident/CalculateRiskScore" packageName="packages/api-types" stacks={["Unit Test", "Pure Function"]}>
-                        <Badge tone={getRiskTone(risk.level)}>위험도 {risk.score}</Badge>
-                      </XRayBox>
+                      <Badge tone={getRiskTone(risk.level)}>위험도 {risk.score}</Badge>
                     ) : null}
                   </div>
                 </section>

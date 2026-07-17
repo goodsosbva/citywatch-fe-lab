@@ -98,7 +98,7 @@ http://127.0.0.1:3000/realtime
 WebSocket close/error
 → http://127.0.0.1:3001/events?after={lastEventId} polling
 → isRealtimeEventListResponse 검증
-→ 중복 이벤트 제거 후 표시
+→ lastEventId보다 큰 이벤트만 화면에 표시
 ```
 
 ## 6. 검증 방법

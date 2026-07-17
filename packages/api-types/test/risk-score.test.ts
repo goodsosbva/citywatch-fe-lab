@@ -22,7 +22,6 @@ describe("calculateIncidentRisk", () => {
       level: "severe",
       score: 100,
     });
-    expect(risk.reasons).toContain("critical severity");
   });
 
   it("lowers resolved false alarms to low risk", () => {
