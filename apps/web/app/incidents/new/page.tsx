@@ -55,7 +55,6 @@ export default function NewIncidentPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string>();
 
-  // updateFieldfunction
   function updateField(field: keyof FormState, value: string) {
     setForm((current) => ({ ...current, [field]: value }));
     setFieldErrors((current) => ({ ...current, [field]: undefined }));

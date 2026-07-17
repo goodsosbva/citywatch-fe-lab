@@ -209,17 +209,23 @@ export default function IncidentsPage() {
                   </p>
                 ) : null}
                 {!loading && !error && incidents.length > 0 ? (
-                  <ul className="incident-list">
-                    {incidents.map((incident) => (
-                      <IncidentListItem
-                        incident={incident}
-                        key={incident.id}
-                        onSelect={() => dispatch(setSelectedIncidentId(incident.id))}
-                        selected={incident.id === selectedIncidentId}
-                        xray={xray}
-                      />
-                    ))}
-                  </ul>
+                  <XRayBox
+                    enabled={xray}
+                    label="entity/incident/IncidentListItems"
+                    packageName="packages/api-types"
+                    stacks={["TypeScript", "Shared Contract", "@citywatch/ui"]}
+                  >
+                    <ul className="incident-list">
+                      {incidents.map((incident) => (
+                        <IncidentListItem
+                          incident={incident}
+                          key={incident.id}
+                          onSelect={() => dispatch(setSelectedIncidentId(incident.id))}
+                          selected={incident.id === selectedIncidentId}
+                        />
+                      ))}
+                    </ul>
+                  </XRayBox>
                 ) : null}
               </XRayBox>
             </section>
@@ -374,103 +380,66 @@ function IncidentListItem({
   incident,
   onSelect,
   selected,
-  xray,
 }: {
   incident: Incident;
   onSelect: () => void;
   selected: boolean;
-  xray: boolean;
 }) {
   const risk = calculateIncidentRisk(incident);
 
   return (
     <li>
-      <XRayBox
-        enabled={xray}
-        label="entity/incident/IncidentListItem"
-        packageName="packages/api-types"
-        stacks={["TypeScript", "Shared Contract"]}
-      >
-        <article className={`incident-card${selected ? " incident-card--selected" : ""}`}>
-          <div className="incident-card-main">
-            <div className="incident-card-title-row">
-              <Link
-                className="incident-title-link"
-                href={`/incidents/${incident.id}`}
-              >
-                {incident.title}
-              </Link>
-              <XRayBox
-                enabled={xray}
-                label="shared/ui/SeverityBadge"
-                packageName="packages/ui"
-                stacks={["React", "Shared UI"]}
-              >
-                <SeverityBadge severity={incident.severity} />
-              </XRayBox>
-              <XRayBox
-                enabled={xray}
-                label="feature/incident/CalculateRiskScore"
-                packageName="packages/api-types"
-                stacks={["Unit Test", "Pure Function"]}
-              >
-                <Badge tone={getRiskTone(risk.level)}>위험도 {risk.score}</Badge>
-              </XRayBox>
-            </div>
-            <p>{incident.description}</p>
-            <dl className="incident-meta">
-              <MetaItem
-                label="상태"
-                value={incidentStatusLabels[incident.status]}
-              />
-              <MetaItem
-                label="위험도"
-                value={`${incidentRiskLevelLabels[risk.level]} ${risk.score}`}
-              />
-              <MetaItem
-                label="분류"
-                value={incidentCategoryLabels[incident.category]}
-              />
-              <MetaItem label="지역" value={getRegionName(incident.regionId)} />
-              <MetaItem
-                label="접수"
-                value={formatIncidentDate(incident.reportedAt)}
-              />
-            </dl>
-          </div>
-          <div className="incident-actions">
-            <XRayBox
-              enabled={xray}
-              label="feature/incident/ShareSelectedIncident"
-              packageName="apps/web"
-              stacks={["Redux Toolkit", "React Redux"]}
+      <article className={`incident-card${selected ? " incident-card--selected" : ""}`}>
+        <div className="incident-card-main">
+          <div className="incident-card-title-row">
+            <Link
+              className="incident-title-link"
+              href={`/incidents/${incident.id}`}
             >
-              <button
-                aria-pressed={selected}
-                className="nav-link"
-                onClick={onSelect}
-                type="button"
-              >
-                {selected ? "선택됨" : "선택"}
-              </button>
-            </XRayBox>
-            <XRayBox
-              enabled={xray}
-              label="feature/incident/ViewIncidentDetail"
-              packageName="apps/web"
-              stacks={["Next Link", "Accessibility"]}
-            >
-              <Link
-                className="nav-link nav-link--strong"
-                href={`/incidents/${incident.id}`}
-                aria-label={`${incident.title} 상세 보기`}
-              >
-                상세
-              </Link>
-            </XRayBox>
+              {incident.title}
+            </Link>
+            <SeverityBadge severity={incident.severity} />
+            <Badge tone={getRiskTone(risk.level)}>위험도 {risk.score}</Badge>
           </div>
-        </article>
-      </XRayBox>
+          <p>{incident.description}</p>
+          <dl className="incident-meta">
+            <MetaItem
+              label="상태"
+              value={incidentStatusLabels[incident.status]}
+            />
+            <MetaItem
+              label="위험도"
+              value={`${incidentRiskLevelLabels[risk.level]} ${risk.score}`}
+            />
+            <MetaItem
+              label="분류"
+              value={incidentCategoryLabels[incident.category]}
+            />
+            <MetaItem label="지역" value={getRegionName(incident.regionId)} />
+            <MetaItem
+              label="접수"
+              value={formatIncidentDate(incident.reportedAt)}
+            />
+          </dl>
+        </div>
+        <div className="incident-actions">
+          <button
+            aria-pressed={selected}
+            className="nav-link"
+            onClick={onSelect}
+            type="button"
+          >
+            {selected ? "선택됨" : "선택"}
+          </button>
+          <Link
+            className="nav-link nav-link--strong"
+            href={`/incidents/${incident.id}`}
+            aria-label={`${incident.title} 상세 보기`}
+          >
+            상세
+          </Link>
+        </div>
+      </article>
     </li>
   );
 }

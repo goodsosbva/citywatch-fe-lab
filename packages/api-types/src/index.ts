@@ -207,7 +207,6 @@ export type IncidentRiskLevel = "low" | "guarded" | "elevated" | "severe";
 export type IncidentRisk = {
   score: number;
   level: IncidentRiskLevel;
-  reasons: string[];
 };
 
 export type IncidentRiskInput = Pick<
@@ -252,7 +251,6 @@ export function calculateIncidentRisk(incident: IncidentRiskInput): IncidentRisk
   return {
     score,
     level: getIncidentRiskLevel(score),
-    reasons: getIncidentRiskReasons(incident, affectedPeople),
   };
 }
 
@@ -269,16 +267,6 @@ function getIncidentRiskLevel(score: number): IncidentRiskLevel {
   if (score >= 60) return "elevated";
   if (score >= 35) return "guarded";
   return "low";
-}
-
-function getIncidentRiskReasons(incident: IncidentRiskInput, affectedPeople: number) {
-  const reasons = [
-    `${incident.severity} severity`,
-    `${incident.status} status`,
-    `${incident.category} category`,
-  ];
-  if (affectedPeople > 0) reasons.push(`${affectedPeople} affected people`);
-  return reasons;
 }
 
 function clampRiskScore(score: number) {

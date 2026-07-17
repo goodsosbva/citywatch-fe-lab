@@ -84,10 +84,6 @@ export function getIncidentById(id: string) {
   return incidents.get(id);
 }
 
-export function getIncidentIds() {
-  return [...incidents.keys()];
-}
-
 export function updateIncidentStatus(id: string, status: IncidentStatus) {
   const incident = incidents.get(id);
 

@@ -36,7 +36,6 @@ export default function RealtimePage() {
   const [urls, setUrls] = useState<RealtimeUrls>();
   const [connectionRun, setConnectionRun] = useState(0);
   const lastEventIdRef = useRef(0);
-  const seenEventIdsRef = useRef(new Set<number>());
 
   useEffect(() => {
     let disposed = false;
@@ -51,14 +50,15 @@ export default function RealtimePage() {
     });
 
     function recordEvents(nextEvents: RealtimeEvent[]) {
-      const uniqueEvents = nextEvents.filter((event) => {
-        if (seenEventIdsRef.current.has(event.id)) return false;
-        seenEventIdsRef.current.add(event.id);
-        lastEventIdRef.current = Math.max(lastEventIdRef.current, event.id);
-        return true;
-      });
+      const lastEventId = lastEventIdRef.current;
+      const uniqueEvents = nextEvents.filter((event) => event.id > lastEventId);
 
       if (uniqueEvents.length === 0) return;
+
+      lastEventIdRef.current = Math.max(
+        lastEventId,
+        ...uniqueEvents.map((event) => event.id),
+      );
 
       setEvents((current) =>
         [...uniqueEvents.sort((a, b) => b.id - a.id), ...current].slice(
@@ -155,7 +155,6 @@ export default function RealtimePage() {
 
   function reconnect() {
     lastEventIdRef.current = 0;
-    seenEventIdsRef.current = new Set();
     setEvents([]);
     setError(undefined);
     setConnectionRun((value) => value + 1);
@@ -220,7 +219,7 @@ export default function RealtimePage() {
               enabled={xray}
               label="widget/RealtimeFeed"
               packageName="apps/web"
-              stacks={["WebSocket", "fetch", "Polling fallback"]}
+              stacks={["WebSocket lifecycle", "fetch", "Polling fallback", "cleanup"]}
             >
               <section className="panel realtime-feed" aria-labelledby="realtime-feed-title">
                 <div className="panel-title-row">
@@ -230,16 +229,9 @@ export default function RealtimePage() {
                       {getConnectionLabel(connection.mode)}
                     </Badge>
                   </div>
-                  <XRayBox
-                    enabled={xray}
-                    label="feature/realtime/ReconnectStream"
-                    packageName="apps/web"
-                    stacks={["WebSocket lifecycle", "cleanup"]}
-                  >
-                    <button className="secondary-button" onClick={reconnect} type="button">
-                      재연결
-                    </button>
-                  </XRayBox>
+                  <button className="secondary-button" onClick={reconnect} type="button">
+                    재연결
+                  </button>
                 </div>
 
                 <p className="redux-proof" aria-live="polite">

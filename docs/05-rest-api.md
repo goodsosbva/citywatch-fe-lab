@@ -161,7 +161,6 @@ apps/web/app/api/incidents/incident-store.ts
 ```txt
 listIncidents(query)
 getIncidentById(id)
-getIncidentIds()
 updateIncidentStatus(id, status)
 ```
 

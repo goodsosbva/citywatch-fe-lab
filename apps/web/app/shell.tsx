@@ -65,10 +65,10 @@ export function CityWatchShell() {
         <section className="dashboard" aria-label="도시 안전 관제 요약">
           <XRayBox enabled={xray} label="widget/SafetyOverview" packageName="apps/web" stacks={["React", "CSS Grid"]}>
             <div className="panel metric-grid">
-              <Metric title="전체 사고" value={stats.total} xray={xray} />
-              <Metric title="긴급 사고" value={stats.critical} tone="danger" xray={xray} />
-              <Metric title="대응 중" value={stats.active} tone="warning" xray={xray} />
-              <Metric title="영향 인원" value={stats.affectedPeople} tone="info" xray={xray} />
+              <Metric title="전체 사고" value={stats.total} />
+              <Metric title="긴급 사고" value={stats.critical} tone="danger" />
+              <Metric title="대응 중" value={stats.active} tone="warning" />
+              <Metric title="영향 인원" value={stats.affectedPeople} tone="info" />
             </div>
           </XRayBox>
 
@@ -79,22 +79,22 @@ export function CityWatchShell() {
                   <h2 id="recent-incidents-title">최근 사고</h2>
                   <Badge tone={error ? "danger" : loading ? "info" : "success"}>{error ? "REST error" : loading ? "loading" : "REST API"}</Badge>
                 </div>
-                <XRayBox enabled={xray} label="feature/incident/OpenIncidentList" packageName="apps/web" stacks={["Next Link"]}>
-                  <Link className="nav-link nav-link--strong" href="/incidents">
-                    전체 보기
-                  </Link>
-                </XRayBox>
+                <Link className="nav-link nav-link--strong" href="/incidents">
+                  전체 보기
+                </Link>
               </div>
 
               <XRayBox enabled={xray} label="feature/incident/FetchIncidentList" packageName="apps/web" stacks={["fetch", "REST API"]}>
                 {loading ? <p className="state-message" role="status">REST API에서 사고 데이터를 불러오는 중입니다.</p> : null}
                 {error ? <p className="state-message state-message--error" role="alert">{error}</p> : null}
                 {!loading && !error ? (
-                  <ul>
-                    {incidents.map((incident) => (
-                      <IncidentRow incident={incident} key={incident.id} xray={xray} />
-                    ))}
-                  </ul>
+                  <XRayBox enabled={xray} label="entity/incident/IncidentRows" packageName="packages/api-types" stacks={["TypeScript", "Shared Contract"]}>
+                    <ul>
+                      {incidents.map((incident) => (
+                        <IncidentRow incident={incident} key={incident.id} />
+                      ))}
+                    </ul>
+                  </XRayBox>
                 ) : null}
               </XRayBox>
             </section>
@@ -105,33 +105,27 @@ export function CityWatchShell() {
   );
 }
 
-function Metric({ title, value, tone = "neutral", xray }: { title: string; value: number; tone?: "neutral" | "info" | "warning" | "danger"; xray: boolean }) {
+function Metric({ title, value, tone = "neutral" }: { title: string; value: number; tone?: "neutral" | "info" | "warning" | "danger" }) {
   return (
-    <XRayBox enabled={xray} label="entity/incident/IncidentMetric" packageName="packages/api-types" stacks={["TypeScript"]}>
-      <article className={`metric metric--${tone}`}>
-        <span>{title}</span>
-        <strong>{value}</strong>
-      </article>
-    </XRayBox>
+    <article className={`metric metric--${tone}`}>
+      <span>{title}</span>
+      <strong>{value}</strong>
+    </article>
   );
 }
 
-function IncidentRow({ incident, xray }: { incident: Incident; xray: boolean }) {
+function IncidentRow({ incident }: { incident: Incident }) {
   return (
     <li>
-      <XRayBox enabled={xray} label="entity/incident/IncidentRow" packageName="packages/api-types" stacks={["TypeScript", "Shared Contract"]}>
-        <div className="incident-row">
-          <div>
-            <Link className="incident-title-link" href={`/incidents/${incident.id}`}>
-              {incident.title}
-            </Link>
-            <span className="incident-description">{incident.description}</span>
-          </div>
-          <XRayBox enabled={xray} label="shared/ui/SeverityBadge" packageName="packages/ui" stacks={["React", "Shared UI"]}>
-            <SeverityBadge severity={incident.severity} />
-          </XRayBox>
+      <div className="incident-row">
+        <div>
+          <Link className="incident-title-link" href={`/incidents/${incident.id}`}>
+            {incident.title}
+          </Link>
+          <span className="incident-description">{incident.description}</span>
         </div>
-      </XRayBox>
+        <SeverityBadge severity={incident.severity} />
+      </div>
     </li>
   );
 }

@@ -3,6 +3,24 @@
 이 문서는 코드와 설명을 분리하지 않는다.
 코드를 먼저 보여주고, 바로 아래에서 그 코드가 어떤 흐름으로 동작하는지 설명한다.
 
+> 리팩터링 메모: 아래 본문은 7단계를 최초 구현했을 때 `reasons` 배열도 반환하던 설계 기록이다. 현재 `calculateIncidentRisk`의 반환 계약은 화면 호출부가 사용하는 `score`, `level` 두 값으로 축소됐다. 현재 코드와 테스트에서는 `reasons`를 반환하거나 검증하지 않는다.
+
+## 현재 반환 계약
+
+```ts
+type IncidentRisk = {
+  score: number;
+  level: IncidentRiskLevel;
+};
+
+expect(risk).toMatchObject({
+  level: "severe",
+  score: 100,
+});
+```
+
+이후 본문에서 `reasons`를 설명하는 부분은 제거 전 설계와 감축 근거를 이해하기 위한 기록이며, 현재 구현 코드로 복사하면 안 된다.
+
 읽는 순서:
 
 ```txt

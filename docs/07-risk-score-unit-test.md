@@ -6,7 +6,15 @@
 
 ```txt
 docs/07-risk-score-code-walkthrough.md
-docs/07-risk-score-test-explainer.md
+```
+
+> 리팩터링 메모: 이 문서의 아래 본문은 7단계 최초 구현 기록이며, 당시에는 `IncidentRisk.reasons`도 반환했다. 현재 구현은 화면에서 실제로 사용하는 `score`, `level`만 반환하고, `risk-score.test.ts`도 두 값만 검증한다.
+
+```ts
+expect(risk).toMatchObject({
+  level: "severe",
+  score: 100,
+});
 ```
 
 ## 1. 지금까지 한 것
