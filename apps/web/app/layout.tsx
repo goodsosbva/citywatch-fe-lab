@@ -6,7 +6,7 @@ import { StoreProvider } from "./store-provider";
 
 export const metadata: Metadata = {
   title: "CityWatch FE Lab",
-  description: "A city safety monitoring frontend lab with X-Ray stack overlays.",
+  description: "A frontend side project that exposes architecture and implementation evidence through X-Ray.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

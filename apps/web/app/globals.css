@@ -572,6 +572,197 @@ h2 {
   font-weight: 800;
 }
 
+.performance-summary,
+.performance-map-panel,
+.performance-list,
+.performance-selection {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.performance-summary {
+  align-items: end;
+  grid-template-columns: minmax(0, 1fr) minmax(160px, 220px);
+}
+
+.performance-summary p,
+.performance-hint,
+.performance-range,
+.performance-selection > span,
+.performance-3d-note {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.performance-summary p {
+  margin-top: 6px;
+}
+
+.performance-size-control {
+  min-width: 0;
+}
+
+.performance-map-canvas {
+  background: #e2e8f0;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  height: min(58vh, 560px);
+  min-height: 420px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.performance-visual-actions {
+  align-items: end;
+  display: grid;
+  gap: 8px;
+  justify-items: end;
+}
+
+.performance-view-mode {
+  background: #eef2f7;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 3px;
+}
+
+.performance-view-mode button {
+  background: transparent;
+  border: 0;
+  border-radius: 5px;
+  color: #475569;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  min-height: 36px;
+  padding: 0 12px;
+  white-space: nowrap;
+}
+
+.performance-view-mode button[aria-pressed="true"] {
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.14);
+  color: #1d4ed8;
+}
+
+.performance-view-mode button:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 1px;
+}
+
+.performance-view-mode button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.performance-3d-note {
+  margin: 0;
+}
+
+.performance-lower-layout {
+  align-items: start;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.55fr);
+}
+
+.performance-list-viewport {
+  border: 1px solid #d9dee8;
+  border-radius: 8px;
+  height: 456px;
+  overflow: auto;
+}
+
+.performance-list-viewport:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+.performance-list-items {
+  left: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  right: 0;
+}
+
+.performance-list-items li {
+  height: 76px;
+  padding: 4px;
+}
+
+.performance-list-row {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  color: #172033;
+  cursor: pointer;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  height: 68px;
+  padding: 10px;
+  text-align: left;
+  width: 100%;
+}
+
+.performance-list-row:hover,
+.performance-list-row:focus-visible {
+  border-color: #2563eb;
+  outline: 3px solid #93c5fd;
+  outline-offset: 1px;
+}
+
+.performance-list-row--selected {
+  background: #eff6ff;
+  box-shadow: inset 4px 0 0 #2563eb;
+}
+
+.performance-list-row__main,
+.performance-list-row__badges {
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+}
+
+.performance-list-row__main {
+  flex-direction: column;
+}
+
+.performance-list-row__main strong,
+.performance-list-row__main span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.performance-list-row__main span {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.performance-list-row__badges {
+  align-items: center;
+}
+
+.performance-selection {
+  position: sticky;
+  top: 16px;
+}
+
+.performance-selection > strong {
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
 .sr-only {
   height: 1px;
   margin: -1px;
@@ -856,11 +1047,13 @@ h2 {
 @media (max-width: 1000px) {
   .map-layout,
   .realtime-layout,
-  .risk-3d-detail-layout {
+  .risk-3d-detail-layout,
+  .performance-lower-layout {
     grid-template-columns: 1fr;
   }
 
-  .map-side-panel {
+  .map-side-panel,
+  .performance-selection {
     position: static;
   }
 }
@@ -890,7 +1083,16 @@ h2 {
     flex-direction: column;
   }
 
+  .performance-summary {
+    grid-template-columns: 1fr;
+  }
+
   .risk-view-actions {
+    justify-items: start;
+    width: 100%;
+  }
+
+  .performance-visual-actions {
     justify-items: start;
     width: 100%;
   }

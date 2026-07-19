@@ -1,8 +1,8 @@
 # X-Ray Labels
 
-X-Ray mode is the visual proof layer of this project.
+X-Ray mode is the visual proof layer of this frontend side project. City monitoring is the product theme; the purpose of X-Ray is to expose the architecture and implementation evidence behind the visible UI.
 
-The goal is to make the screen explain where each UI block came from. This is inspired by the idea that a learning project should not only work, but also show which architecture and skill produced each visible part.
+The goal is to make the screen explain where each UI block came from and which learned frontend implementation produced it.
 
 ## Visible Label Rule
 
@@ -42,6 +42,20 @@ title
 ```
 
 This keeps the UI readable while still leaving enough information for inspection or a future X-Ray Inspector panel.
+
+## Inspector Direction
+
+The current toggle exposes FSD-style architecture boundaries. A future selector will let the viewer inspect the same screen from different proof perspectives.
+
+```txt
+architecture → app, widget, feature, entity, shared
+rendering    → SSR, client boundary, and related rendering evidence
+technology   → OpenLayers, React Three Fiber, WebSocket, and other implementations
+source       → app, shared package, or remote
+delivery     → local bundle or Module Federation
+```
+
+Only implemented evidence should appear as an available option. A future technology or remote boundary must not be presented as complete before the corresponding code is connected.
 
 ## Layer Meaning
 
@@ -137,4 +151,4 @@ which part came from shared UI
 which parts prove REST API usage
 ```
 
-This makes the project easier to explain in review or interview situations.
+This turns the side project into an explorable record of learned frontend implementations instead of leaving the viewer with only a finished dashboard.

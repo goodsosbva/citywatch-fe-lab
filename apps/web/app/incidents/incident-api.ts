@@ -23,6 +23,13 @@ export async function fetchIncidents(query: IncidentListQuery = {}) {
   return data.incidents;
 }
 
+export async function fetchPerformanceIncidents(size: number) {
+  const data = await requestJson<IncidentListResponse>(
+    `/api/incidents/many-data?size=${encodeURIComponent(size)}`,
+  );
+  return data.incidents;
+}
+
 export async function fetchIncident(id: string) {
   const data = await requestJson<IncidentDetailResponse>(`/api/incidents/${encodeURIComponent(id)}`);
   return data.incident;
