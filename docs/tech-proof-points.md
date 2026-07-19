@@ -180,6 +180,21 @@ XRayBox
 XRayToggle
 ```
 
+### Storybook
+
+`packages/ui` 공용 컴포넌트를 Storybook에서 격리 렌더링한다.
+
+```txt
+.storybook/main.ts
+.storybook/preview.ts
+packages/ui/src/*.stories.tsx
+npm run storybook
+Badge
+SeverityBadge
+XRayBox
+XRayToggle
+```
+
 ### 상태 처리와 접근성
 
 현재 화면 흐름에 포함된 기본 처리:
@@ -199,7 +214,5 @@ button disabled 처리
 이후 단계에서는 같은 관제 시스템 안에 다음 기술을 추가한다.
 
 ```txt
-성능 최적화
-Storybook
 Module Federation
 ```

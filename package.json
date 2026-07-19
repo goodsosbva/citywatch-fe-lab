@@ -10,6 +10,8 @@
         "dev:web": "npm --workspace @citywatch/web run dev",
         "dev:remote": "npm --workspace @citywatch/analytics-remote run dev",
         "dev:realtime": "npm --workspace @citywatch/realtime-server run dev",
+        "storybook": "storybook dev -p 6006",
+        "build-storybook": "storybook build",
         "build": "npm run build --workspaces --if-present",
         "test": "npm run test --workspaces --if-present",
         "lint": "npm run lint --workspaces --if-present",
@@ -19,10 +21,12 @@
         "node": ">=20"
     },
     "overrides": {
-        "postcss": "$postcss"
+        "postcss": "^8.5.10"
     },
     "devDependencies": {
+        "@storybook/react-vite": "^10.5.2",
         "postcss": "^8.5.10",
+        "storybook": "^10.5.2",
         "typescript": "^6.0.3"
     }
 }

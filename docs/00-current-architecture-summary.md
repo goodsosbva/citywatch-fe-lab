@@ -388,7 +388,7 @@ X-Ray 라벨 DOM 확인 완료
 http://127.0.0.1:3000/map 브라우저 확인
 OpenLayers 지도와 사고 마커 확인
 http://127.0.0.1:3000/risk-3d 브라우저 확인
-R3F 캔버스와 실제 위치 지도, 애니메이션, 공유 선택, 모바일 배치 확인
+R3F 캔버스와 선택 사고 중심 실제 위치 지도, 모바일 배치 확인
 ```
 
 X-Ray 라벨은 화면에서 짧은 FSD 경로만 보인다.
@@ -421,8 +421,8 @@ shared/ui/SeverityBadge
 9. OpenLayers 지도 관제 - 완료
 10. WebSocket/Polling 실시간 처리 - 완료
 11. R3F 3D 위험 구역 - 완료
-12. performance page 대량 데이터 관제 - 아직
-13. Storybook UI 증명 - 아직
+12. performance page 대량 데이터 관제 - 완료
+13. Storybook UI 증명 - 완료
 14. realtime-server 분리 - 10단계에서 기본 서버 구현됨
 15. analytics-remote + Module Federation - 자리만 있음
 ```
