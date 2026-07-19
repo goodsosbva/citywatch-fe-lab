@@ -1,6 +1,6 @@
 # 프론트엔드 기술 적용 포인트
 
-이 문서는 CityWatch FE Lab에서 관제 시스템 기능 안에 어떤 프론트엔드 기술을 녹였는지 정리한다.
+이 문서는 CityWatch FE Lab이 어떤 프론트엔드 학습 결과를 실제 기능으로 증명하는지 정리한다. 도시 안전 관제는 기술들을 하나의 제품 흐름으로 연결하는 주제이며, X-Ray는 화면에서 구현 근거를 탐색하는 증명 장치다.
 
 ## 현재 적용된 기술
 
@@ -139,7 +139,7 @@ R3F 기둥의 pointer event와 접근 가능한 HTML 버튼은 모두 Redux의 `
 
 ### X-Ray Mode
 
-화면 위에 짧은 FSD-style 라벨을 표시한다.
+현재 화면 위에 짧은 FSD-style 경계와 라벨을 표시한다.
 
 ```txt
 app
@@ -158,6 +158,18 @@ feature/incident/ChangeIncidentStatus
 entity/incident/IncidentListItem
 shared/ui/SeverityBadge
 ```
+
+X-Ray는 최종적으로 단순한 FSD 라벨을 넘어 선택형 기술 Inspector로 확장한다.
+
+```txt
+architecture → FSD 계층
+rendering    → SSR, client boundary 등
+technology   → OpenLayers, React Three Fiber, WebSocket 등
+source       → app, shared package, remote
+delivery     → local bundle, Module Federation
+```
+
+현재 구현된 것은 `architecture` 관점의 FSD-style 표시다. 나머지 관점은 해당 기술의 실제 연결과 함께 추가한다.
 
 ### Monorepo
 
@@ -211,7 +223,7 @@ button disabled 처리
 
 ## 이후 적용 예정
 
-이후 단계에서는 같은 관제 시스템 안에 다음 기술을 추가한다.
+이후 단계에서는 같은 사이드 프로젝트 안에 다음 기술 증명을 추가한다.
 
 ```txt
 Module Federation
