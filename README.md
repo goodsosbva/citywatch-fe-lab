@@ -1,12 +1,14 @@
 # CityWatch FE Lab
 
-CityWatch FE Lab은 도시 안전 사고를 접수, 분류, 조회, 상태 변경할 수 있도록 구현한 **도시 안전 관제 시스템**입니다.
+CityWatch FE Lab은 학습한 프론트엔드 기술을 실제 기능으로 구현하고, 그 구현 근거를 X-Ray로 직접 보여주기 위한 **프론트엔드 사이드 프로젝트**입니다.
 
-사고 목록과 상세, 대응 상태 변경, 관제 요약 지표를 중심으로 실제 관제 화면의 흐름을 구성합니다. 이 기능을 구현하는 과정에서 Next.js App Router, TypeScript, REST API, X-Ray 라벨, 모노레포 같은 프론트엔드 기술을 단계적으로 적용합니다.
+도시 안전 관제는 서로 다른 기술을 하나의 제품 흐름 안에서 연결하기 위한 주제입니다. 사고 접수·분류·조회·상태 변경 화면에는 Next.js App Router, TypeScript, REST API, Redux, OpenLayers, React Three Fiber, WebSocket, Storybook 같은 학습 결과가 실제 코드로 구현되어 있습니다.
 
-## 기술 적용 요약
+X-Ray는 이 프로젝트의 핵심 증명 장치입니다. 현재는 UI 블록의 FSD 계층을 표시하며, 이후에는 선택한 관점에 따라 SSR 같은 렌더링 방식, OpenLayers·3D 같은 적용 기술, shared package와 remote 출처, Module Federation을 통해 들어온 UI까지 구분해 보여주는 Inspector로 확장합니다.
 
-관제 시스템 기능 안에서 라우팅, 타입 공유, REST API, Zod 기반 등록 폼 검증, 접근성, 위험도 계산 단위 테스트, Redux 상태 공유, OpenLayers 지도 관제, WebSocket/Polling 실시간 피드, React Three Fiber 3D 위험 구역, 대량 데이터 성능 관제, X-Ray 시각화, 모노레포 구조, Storybook UI 증명을 확인할 수 있습니다. 이후 단계에서는 Module Federation까지 같은 관제 흐름 안에 확장합니다.
+## 학습 증명 요약
+
+관제 시스템 화면을 사용하면서 라우팅, 타입 공유, REST API, Zod 기반 등록 폼 검증, 접근성, 위험도 계산 단위 테스트, Redux 상태 공유, OpenLayers 지도, WebSocket/Polling 실시간 피드, React Three Fiber 3D 위험 구역, 대량 데이터 성능 처리, 모노레포 구조, Storybook UI 검증을 확인할 수 있습니다. X-Ray는 화면을 구성한 코드와 기술의 근거를 사용자가 직접 탐색할 수 있게 합니다.
 
 자세한 기술 적용 설명은 [docs/tech-proof-points.md](docs/tech-proof-points.md)에 정리합니다.
 

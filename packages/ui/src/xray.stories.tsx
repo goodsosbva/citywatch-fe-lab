@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { XRayBox, XRayToggle } from "./xray";
-import { expect } from "storybook/test";
+import { expect, userEvent, within } from "storybook/test";
 
 const meta = {
   title: "Shared UI/XRay",
@@ -57,20 +57,21 @@ export const ToggleDemo: Story = {
     }
     return <Demo />;
   },
-  play: async ({ canvas, userEvent }) => {
-    const toggle = canvas.getByRole("button", {
-      name: "X-Ray mode",
-    });
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole("button", { name: "X-Ray mode" });
 
-    await expect(toggle).toHaveAttribute("aria-pressed", "false");
+    expect(button).toHaveAttribute("aria-pressed", "false");
 
-    await userEvent.click(toggle);
+    await userEvent.click(button);
 
-    await expect(toggle).toHaveAttribute("aria-pressed", "true");
+    expect(button).toHaveAttribute("aria-pressed", "true");
 
-    await expect(
-      canvas.getByText("widget/incident/IncidentSummaryCard"),
-    ).toBeVisible();
+    expect(
+      canvasElement.querySelector(
+        '[data-xray-label="widget/incident/IncidentSummaryCard"]',
+      ),
+    ).toBeInTheDocument();
   },
 };
 
