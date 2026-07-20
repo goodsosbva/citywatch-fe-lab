@@ -4,6 +4,7 @@ import type { Incident } from "@citywatch/api-types";
 import { Badge, SeverityBadge, XRayBox, XRayToggle } from "@citywatch/ui";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { AnalyticsRemotePanel } from "./analytics-remote-panel";
 import { fetchIncidents } from "./incidents/incident-api";
 
 export function CityWatchShell() {
@@ -74,6 +75,10 @@ export function CityWatchShell() {
               <Metric title="영향 인원" value={stats.affectedPeople} tone="info" />
             </div>
           </XRayBox>
+
+          {!loading && !error ? (
+            <AnalyticsRemotePanel incidents={incidents} xray={xray} />
+          ) : null}
 
           <XRayBox enabled={xray} label="widget/RecentIncidents" packageName="apps/web" stacks={["React", "Shared Types"]}>
             <section className="panel incidents" aria-labelledby="recent-incidents-title" aria-busy={loading}>

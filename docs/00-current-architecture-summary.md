@@ -74,7 +74,7 @@ apps/web
 실제 브라우저에서 실행되는 Next.js App Router 앱이다.
 
 apps/analytics-remote
-Module Federation remote 앱으로 확장하기 위한 자리다. 현재는 package.json만 있는 준비 상태다.
+Vite로 빌드되는 Module Federation remote다. 사고 배열을 받아 분석 지표를 계산하는 순수 함수를 manifest로 공개한다.
 
 apps/realtime-server
 WebSocket/Polling 실시간 서버다. 현재는 Node 표준 `http`/`crypto`만 사용해서 `/ws`, `/events`, `/health`를 제공한다.
@@ -89,7 +89,7 @@ packages/config
 공유 설정이 필요해질 때 쓰기 위한 자리다. 현재는 package.json만 있는 준비 상태다.
 ```
 
-중요한 점은 "폴더가 있다"와 "기능이 구현됐다"를 구분하는 것이다. 현재 `realtime-server`는 10단계에서 실제 기능이 들어갔고, `analytics-remote`, `config`는 구조상 자리만 잡힌 상태다.
+중요한 점은 "폴더가 있다"와 "기능이 구현됐다"를 구분하는 것이다. 현재 `realtime-server`와 `analytics-remote`에는 실제 기능이 들어갔고, `config`만 구조상 자리만 잡힌 상태다.
 
 ## 3. 루트 package.json 세팅
 
@@ -123,7 +123,7 @@ npm run test
 → 모든 workspace의 test 실행, 있는 경우만 실행
 ```
 
-현재 `dev:realtime`은 `@citywatch/realtime-server`의 Node 서버를 실행한다. `dev:remote`는 아직 해당 workspace 내부 script가 비어 있어 나중에 Module Federation 단계에서 연결할 자리다.
+`dev:realtime`은 `@citywatch/realtime-server`의 Node 서버를 실행하고, `dev:remote`는 `@citywatch/analytics-remote`의 Vite 개발 서버를 3002번 포트에서 실행한다.
 
 ## 4. 현재 구현된 패키지
 
@@ -174,7 +174,20 @@ CreateIncidentInput
 UpdateIncidentStatusInput
 ```
 
-아직 데이터는 mock이지만, mock도 이 타입을 기준으로 맞춰두었다. 나중에 REST API와 실시간 서버가 생기면 같은 타입 계약을 계속 사용할 수 있다.
+REST API 응답과 실시간 서버 payload는 이 타입 계약과 런타임 타입 가드를 기준으로 검증한다.
+
+### apps/analytics-remote
+
+`apps/analytics-remote`는 Vite 기반 Module Federation provider다.
+
+```txt
+apps/analytics-remote/vite.config.ts
+apps/analytics-remote/src/incident-analytics.ts
+apps/analytics-remote/src/incident-analytics.test.ts
+apps/web/app/analytics-remote-panel.tsx
+```
+
+remote는 `./incident-analytics`를 공개하고 host는 `mf-manifest.json`을 읽어 `citywatch_analytics/incident-analytics`를 런타임에 불러온다. 원격 모듈은 React UI 대신 순수 계산 함수만 제공하므로 host의 React 렌더링 경계와 분리된다.
 
 ### packages/ui
 
@@ -363,6 +376,22 @@ npm run dev:web
 → http://127.0.0.1:3000
 ```
 
+Module Federation remote 실행:
+
+```bash
+npm run dev:remote
+```
+
+내부 흐름:
+
+```txt
+npm run dev:remote
+→ @citywatch/analytics-remote의 Vite 개발 서버 실행
+→ http://127.0.0.1:3002/mf-manifest.json 공개
+→ web host가 manifest에서 원격 모듈 위치 확인
+→ 원격 분석 함수를 로드하고 기존 REST 사고 데이터를 전달
+```
+
 타입 검증:
 
 ```bash
@@ -397,6 +426,8 @@ npm run test 통과
 npm --workspace @citywatch/web run build 통과
 http://127.0.0.1:3000 브라우저 확인
 X-Ray 라벨 DOM 확인 완료
+Module Federation manifest와 remote 함수 로드 확인
+remote 분석 수치와 X-Ray `remote` 경계 확인
 http://127.0.0.1:3000/map 브라우저 확인
 OpenLayers 지도와 사고 마커 확인
 http://127.0.0.1:3000/risk-3d 브라우저 확인
@@ -412,6 +443,7 @@ entity/incident/IncidentMetric
 widget/RecentIncidents
 entity/incident/IncidentRow
 shared/ui/SeverityBadge
+remote/analytics/CalculateIncidentAnalytics
 ```
 
 패키지명과 기술스택은 화면 라벨에는 직접 섞지 않는다. 대신 DOM 속성에 남긴다.
@@ -435,11 +467,11 @@ shared/ui/SeverityBadge
 11. R3F 3D 위험 구역 - 완료
 12. performance page 대량 데이터 관제 - 완료
 13. Storybook UI 증명 - 완료
-14. realtime-server 분리 - 10단계에서 기본 서버 구현됨
-15. analytics-remote + Module Federation - 자리만 있음
+14. realtime-server 분리 - 완료
+15. analytics-remote + Module Federation - 완료
 ```
 
-주의할 점은 현재 `apps/analytics-remote`, `apps/realtime-server` 폴더가 있다고 해서 해당 기술이 구현된 것은 아니라는 점이다. 지금은 나중에 붙일 위치만 먼저 잡아둔 상태다.
+`apps/realtime-server`는 독립 workspace와 프로세스로 구현되어 있다. `apps/analytics-remote`는 독립 Vite remote로 구현되어 있고, `packages/config`만 이후 단계를 위한 준비 상태다.
 
 ## 10. 앞으로 단계 정리할 때 쓸 형식
 

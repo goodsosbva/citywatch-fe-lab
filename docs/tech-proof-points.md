@@ -207,6 +207,20 @@ XRayBox
 XRayToggle
 ```
 
+### Module Federation
+
+`apps/analytics-remote`가 사고 분석 함수를 Vite remote로 공개하고, Next.js host가 runtime manifest를 통해 실행 중에 불러온다.
+
+```txt
+apps/analytics-remote/vite.config.ts
+apps/analytics-remote/src/incident-analytics.ts
+apps/web/app/analytics-remote-panel.tsx
+citywatch_analytics/incident-analytics
+remote/analytics/CalculateIncidentAnalytics
+```
+
+host는 기존 REST API에서 받은 사고 배열을 remote 함수에 전달한다. 결과는 분석 대상, 고위험 사고, 해결률, 평균 영향 인원으로 렌더링되며 원격 로드 실패 시 오류와 재시도 버튼을 표시한다.
+
 ### 상태 처리와 접근성
 
 현재 화면 흐름에 포함된 기본 처리:
@@ -221,10 +235,6 @@ label 연결
 button disabled 처리
 ```
 
-## 이후 적용 예정
+## 이후 확장
 
-이후 단계에서는 같은 사이드 프로젝트 안에 다음 기술 증명을 추가한다.
-
-```txt
-Module Federation
-```
+X-Ray 선택형 Inspector에서 architecture, rendering, technology, source, delivery 관점을 전환하는 기능은 이후 단계에서 추가한다.

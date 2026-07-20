@@ -2,5 +2,18 @@
   "name": "@citywatch/analytics-remote",
   "version": "0.0.0",
   "private": true,
-  "scripts": {}
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@citywatch/api-types": "0.0.0",
+    "@module-federation/vite": "^1.18.2",
+    "vite": "^8.1.5",
+    "vitest": "^4.1.10"
+  }
 }
