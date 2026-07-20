@@ -144,6 +144,19 @@ h2 {
   gap: 10px;
 }
 
+.remote-source {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.remote-error {
+  align-items: flex-start;
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+}
+
 .nav-link {
   align-items: center;
   background: #ffffff;

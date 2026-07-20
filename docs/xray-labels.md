@@ -76,7 +76,7 @@ shared
 Reusable UI or utility code not owned by one feature.
 
 remote
-Future Module Federation remote content.
+Code loaded from a Module Federation remote, such as the analytics calculation module.
 
 package
 Future package-level proof blocks when needed.
@@ -132,6 +132,9 @@ Domain-level incident detail.
 
 entity/incident/IncidentMapSelection
 Domain-level selected incident summary on the map page.
+
+remote/analytics/CalculateIncidentAnalytics
+Analytics function loaded from `apps/analytics-remote` through a runtime manifest.
 
 `SeverityBadge` remains a reusable shared UI package component, but it is not given a separate visual boundary for every rendered instance.
 ```

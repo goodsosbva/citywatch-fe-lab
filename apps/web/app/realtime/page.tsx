@@ -274,12 +274,12 @@ export default function RealtimePage() {
               stacks={["RealtimeEvent", "RealtimeMessage"]}
             >
               <aside className="panel realtime-proof" aria-labelledby="realtime-proof-title">
-                <h2 id="realtime-proof-title">10단계 증명</h2>
+                <h2 id="realtime-proof-title">10·14단계 증명</h2>
                 <dl className="detail-grid map-detail-grid">
                   <ProofItem label="WebSocket" value="/ws 연결 후 이벤트 수신" />
                   <ProofItem label="Polling" value="/events?after=id fallback" />
                   <ProofItem label="검증" value="isRealtimeEventListResponse" />
-                  <ProofItem label="서버" value="apps/realtime-server" />
+                  <ProofItem label="서버" value="apps/realtime-server 독립 workspace" />
                 </dl>
               </aside>
             </XRayBox>
