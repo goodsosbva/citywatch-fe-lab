@@ -6,10 +6,11 @@ import {
   incidentStatuses,
   type Incident,
 } from "@citywatch/api-types";
-import { Badge, SeverityBadge, XRayBox, XRayToggle } from "@citywatch/ui";
+import { Badge, SeverityBadge, XRayBox } from "@citywatch/ui";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../store-hooks";
+import { useXRay, XRaySelector } from "../xray-selector";
 import {
   resetIncidentFilters,
   selectActiveIncidentFilterCount,
@@ -38,7 +39,7 @@ const regionFilterOptions = ["seocho", "seongsu", "junggu"] as const;
 
 export default function IncidentsPage() {
   const dispatch = useAppDispatch();
-  const [xray, setXray] = useState(true);
+  const { enabled: xray } = useXRay();
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
@@ -109,7 +110,7 @@ export default function IncidentsPage() {
           <Link className="nav-link" href="/">
             관제 홈
           </Link>
-          <XRayToggle enabled={xray} onChange={setXray} />
+          <XRaySelector />
         </div>
       </header>
 

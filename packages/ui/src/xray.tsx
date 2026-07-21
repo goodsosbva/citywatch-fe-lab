@@ -12,6 +12,7 @@ export type XRayBoxProps = HTMLAttributes<HTMLDivElement> & {
   label: string;
   layer?: XRayLayer;
   packageName?: string;
+  proofs?: string[];
   stacks?: string[];
 };
 
@@ -22,6 +23,7 @@ export function XRayBox({
   label,
   layer,
   packageName,
+  proofs = ["fsd-style"],
   stacks = [],
   style,
   title,
@@ -39,6 +41,7 @@ export function XRayBox({
       data-xray-layer={resolvedLayer}
       data-xray-label={label}
       data-xray-package={packageName}
+      data-xray-proofs={proofs.join(" ")}
       data-xray-stacks={stacks.join(",")}
       style={style}
       title={title ?? getXRayTitle(label, packageName, stacks)}

@@ -2,10 +2,11 @@
 
 import type { Incident, IncidentStatus } from "@citywatch/api-types";
 import { calculateIncidentRisk, incidentStatuses } from "@citywatch/api-types";
-import { Badge, SeverityBadge, XRayBox, XRayToggle } from "@citywatch/ui";
+import { Badge, SeverityBadge, XRayBox } from "@citywatch/ui";
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../store-hooks";
+import { useXRay, XRaySelector } from "../xray-selector";
 import {
   selectSelectedIncidentId,
   setSelectedIncidentId,
@@ -24,7 +25,7 @@ import {
 export function IncidentDetailView({ incidentId }: { incidentId: string }) {
   const dispatch = useAppDispatch();
   const selectedIncidentId = useAppSelector(selectSelectedIncidentId);
-  const [xray, setXray] = useState(true);
+  const { enabled: xray } = useXRay();
   const [incident, setIncident] = useState<Incident>();
   const [selectedStatus, setSelectedStatus] = useState<IncidentStatus>("reported");
   const [loading, setLoading] = useState(true);
@@ -96,7 +97,7 @@ export function IncidentDetailView({ incidentId }: { incidentId: string }) {
           <Link className="nav-link" href="/incidents">
             사고 목록
           </Link>
-          <XRayToggle enabled={xray} onChange={setXray} />
+          <XRaySelector />
         </div>
       </header>
 

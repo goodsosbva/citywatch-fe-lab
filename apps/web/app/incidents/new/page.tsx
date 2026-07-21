@@ -6,10 +6,11 @@ import {
   incidentSeverities,
   validateCreateIncidentInput,
 } from "@citywatch/api-types";
-import { Badge, XRayBox, XRayToggle } from "@citywatch/ui";
+import { Badge, XRayBox } from "@citywatch/ui";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
+import { useXRay, XRaySelector } from "../../xray-selector";
 import { createIncident } from "../incident-api";
 import {
   incidentCategoryLabels,
@@ -48,7 +49,7 @@ const initialForm: FormState = {
 
 export default function NewIncidentPage() {
   const router = useRouter();
-  const [xray, setXray] = useState(true);
+  const { enabled: xray } = useXRay();
   const [form, setForm] = useState<FormState>(initialForm);
   const [fieldErrors, setFieldErrors] =
     useState<CreateIncidentValidationErrors>({});
@@ -98,7 +99,7 @@ export default function NewIncidentPage() {
           <Link className="nav-link" href="/">
             관제 홈
           </Link>
-          <XRayToggle enabled={xray} onChange={setXray} />
+          <XRaySelector />
         </div>
       </header>
 
