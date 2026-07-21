@@ -1,9 +1,10 @@
 "use client";
 
 import type { Incident } from "@citywatch/api-types";
-import { Badge, XRayBox, XRayToggle } from "@citywatch/ui";
+import { Badge, XRayBox } from "@citywatch/ui";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { useXRay, XRaySelector } from "../xray-selector";
 import { fetchPerformanceIncidents } from "../incidents/incident-api";
 import { RiskZoneScene } from "../risk-3d/risk-zone-scene";
 import { ClusteredPerformanceMap } from "./clustered-performance-map";
@@ -16,7 +17,7 @@ import { VirtualIncidentList } from "./virtual-incident-list";
 type PerformanceViewMode = "2d" | "3d";
 
 export default function PerformancePage() {
-  const [xray, setXray] = useState(true);
+  const { enabled: xray } = useXRay();
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [scenarioSize, setScenarioSize] = useState<PerformanceScenarioSize>(10000);
   const [selectedIncidentId, setSelectedIncidentId] = useState<string>();
@@ -82,7 +83,7 @@ export default function PerformancePage() {
           <Link className="nav-link" href="/">
             관제 홈
           </Link>
-          <XRayToggle enabled={xray} onChange={setXray} />
+          <XRaySelector />
         </div>
       </header>
 

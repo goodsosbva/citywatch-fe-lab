@@ -1,14 +1,15 @@
 "use client";
 
 import type { Incident } from "@citywatch/api-types";
-import { Badge, SeverityBadge, XRayBox, XRayToggle } from "@citywatch/ui";
+import { Badge, SeverityBadge, XRayBox } from "@citywatch/ui";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { AnalyticsRemotePanel } from "./analytics-remote-panel";
 import { fetchIncidents } from "./incidents/incident-api";
+import { useXRay, XRaySelector } from "./xray-selector";
 
 export function CityWatchShell() {
-  const [xray, setXray] = useState(true);
+  const { enabled: xray } = useXRay();
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
@@ -61,7 +62,7 @@ export function CityWatchShell() {
           <Link className="nav-link" href="/incidents">
             사고 목록
           </Link>
-          <XRayToggle enabled={xray} onChange={setXray} />
+          <XRaySelector />
         </div>
       </header>
 

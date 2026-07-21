@@ -5,7 +5,7 @@ import {
   type Incident,
   type IncidentRiskLevel,
 } from "@citywatch/api-types";
-import { Badge, SeverityBadge, XRayBox, XRayToggle } from "@citywatch/ui";
+import { Badge, SeverityBadge, XRayBox } from "@citywatch/ui";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { fetchIncidents } from "../incidents/incident-api";
@@ -24,6 +24,7 @@ import {
   setSelectedIncidentId,
 } from "../incidents/incident-control-slice";
 import { useAppDispatch, useAppSelector } from "../store-hooks";
+import { useXRay, XRaySelector } from "../xray-selector";
 import { OpenLayersIncidentMap } from "../map/openlayers-incident-map";
 import { RiskZoneScene } from "./risk-zone-scene";
 
@@ -32,7 +33,7 @@ type RiskViewMode = "2d" | "3d";
 
 export default function Risk3DPage() {
   const dispatch = useAppDispatch();
-  const [xray, setXray] = useState(true);
+  const { enabled: xray } = useXRay();
   const [viewMode, setViewMode] = useState<RiskViewMode>("2d");
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
@@ -102,7 +103,7 @@ export default function Risk3DPage() {
           <Link className="nav-link" href="/">
             관제 홈
           </Link>
-          <XRayToggle enabled={xray} onChange={setXray} />
+          <XRaySelector />
         </div>
       </header>
 

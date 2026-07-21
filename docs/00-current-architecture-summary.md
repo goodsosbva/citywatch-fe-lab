@@ -448,9 +448,9 @@ remote/analytics/CalculateIncidentAnalytics
 
 패키지명과 기술스택은 화면 라벨에는 직접 섞지 않는다. 대신 DOM 속성에 남긴다.
 
-## 9. 15단계 진행표
+## 9. 16단계 진행표
 
-현재 로드맵은 15단계로 본다. 모노레포 세팅은 0단계 선행 작업으로 둔다.
+현재 로드맵은 16단계까지 완료했다. 모노레포 세팅은 0단계 선행 작업으로 둔다.
 
 ```txt
 0. Monorepo workspace 세팅 - 완료
@@ -469,6 +469,7 @@ remote/analytics/CalculateIncidentAnalytics
 13. Storybook UI 증명 - 완료
 14. realtime-server 분리 - 완료
 15. analytics-remote + Module Federation - 완료
+16. X-Ray selector 기본형 - 완료
 ```
 
 `apps/realtime-server`는 독립 workspace와 프로세스로 구현되어 있다. `apps/analytics-remote`는 독립 Vite remote로 구현되어 있고, `packages/config`만 이후 단계를 위한 준비 상태다.

@@ -6,9 +6,10 @@ import {
   type RealtimeEvent,
   type RealtimeMessage,
 } from "@citywatch/api-types";
-import { Badge, XRayBox, XRayToggle, type BadgeTone } from "@citywatch/ui";
+import { Badge, XRayBox, type BadgeTone } from "@citywatch/ui";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { useXRay, XRaySelector } from "../xray-selector";
 import { incidentStatusLabels } from "../incidents/incident-format";
 
 type ConnectionMode = "connecting" | "websocket" | "polling" | "offline";
@@ -26,7 +27,7 @@ type RealtimeUrls = {
 const maxVisibleEvents = 12;
 
 export default function RealtimePage() {
-  const [xray, setXray] = useState(true);
+  const { enabled: xray } = useXRay();
   const [connection, setConnection] = useState<ConnectionState>({
     detail: "실시간 서버 연결을 준비합니다.",
     mode: "connecting",
@@ -180,7 +181,7 @@ export default function RealtimePage() {
           <Link className="nav-link" href="/">
             관제 홈
           </Link>
-          <XRayToggle enabled={xray} onChange={setXray} />
+          <XRaySelector />
         </div>
       </header>
 
