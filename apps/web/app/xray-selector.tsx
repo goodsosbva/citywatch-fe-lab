@@ -3,7 +3,8 @@
 import { usePathname, useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 
-type XRayMode = "off" | "all" | "fsd-style";
+export type XRayProof = "fsd-style" | "module-federation";
+type XRayMode = "off" | "all" | XRayProof;
 
 const XRayContext = createContext<{ mode: XRayMode; setMode: (mode: XRayMode) => void } | null>(null);
 
@@ -45,14 +46,18 @@ export function XRaySelector() {
         <option value="off">끄기</option>
         <option value="all">전체</option>
         <option value="fsd-style">FSD-style</option>
+        <option value="module-federation">Module Federation</option>
       </select>
     </label>
   );
 }
 
-export function useXRay() {
+export function useXRay(proofs: readonly XRayProof[] = ["fsd-style"]) {
   const { mode } = useXRayContext();
-  return { enabled: mode !== "off", mode };
+  return {
+    enabled: mode === "all" || (mode !== "off" && proofs.includes(mode)),
+    mode,
+  };
 }
 
 function useXRayContext() {
@@ -62,5 +67,7 @@ function useXRayContext() {
 }
 
 function getXRayMode(value: string | null): XRayMode {
-  return value === "off" || value === "fsd-style" ? value : "all";
+  return value === "off" || value === "fsd-style" || value === "module-federation"
+    ? value
+    : "all";
 }

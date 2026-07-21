@@ -37,6 +37,7 @@ Detailed proof data is stored on DOM attributes instead.
 data-xray-layer
 data-xray-label
 data-xray-package
+data-xray-proofs
 data-xray-stacks
 title
 ```
@@ -45,7 +46,7 @@ This keeps the UI readable while still leaving enough information for inspection
 
 ## Inspector Direction
 
-The current toggle exposes FSD-style architecture boundaries. A future selector will let the viewer inspect the same screen from different proof perspectives.
+The current selector separates all boundaries, FSD-style boundaries, and the Module Federation remote boundary. More implemented proof perspectives will be added incrementally.
 
 ```txt
 architecture → app, widget, feature, entity, shared
@@ -55,7 +56,7 @@ source       → app, shared package, or remote
 delivery     → local bundle or Module Federation
 ```
 
-Only implemented evidence should appear as an available option. A future technology or remote boundary must not be presented as complete before the corresponding code is connected.
+Only implemented evidence appears as an available option. A future technology boundary must not be presented as complete before the corresponding code is connected.
 
 ## Layer Meaning
 

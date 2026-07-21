@@ -15,7 +15,7 @@
 
 면접관이나 사용자가 화면을 봤을 때 단순히 "대시보드를 만들었다"에서 끝나지 않도록 X-Ray를 둔다. X-Ray는 어떤 UI가 어느 FSD 계층, 패키지, 기술스택에서 왔는지 직접 탐색하게 하는 학습 증명 장치다.
 
-현재 X-Ray 토글은 FSD-style 경계와 라벨을 표시한다. 이후에는 선택형 Inspector로 확장해 같은 화면을 다음 관점으로 구분해 보여준다.
+현재 X-Ray selector는 전체, FSD-style, Module Federation 경계를 구분해 표시한다. 이후에는 같은 방식으로 다음 관점을 단계적으로 추가한다.
 
 ```txt
 architecture → app, widget, feature, entity, shared
@@ -42,6 +42,7 @@ shared/ui/SeverityBadge
 data-xray-layer
 data-xray-label
 data-xray-package
+data-xray-proofs
 data-xray-stacks
 title
 ```
@@ -448,9 +449,9 @@ remote/analytics/CalculateIncidentAnalytics
 
 패키지명과 기술스택은 화면 라벨에는 직접 섞지 않는다. 대신 DOM 속성에 남긴다.
 
-## 9. 16단계 진행표
+## 9. 17단계 진행표
 
-현재 로드맵은 16단계까지 완료했다. 모노레포 세팅은 0단계 선행 작업으로 둔다.
+현재 로드맵은 17단계까지 완료했다. 모노레포 세팅은 0단계 선행 작업으로 둔다.
 
 ```txt
 0. Monorepo workspace 세팅 - 완료
@@ -470,6 +471,7 @@ remote/analytics/CalculateIncidentAnalytics
 14. realtime-server 분리 - 완료
 15. analytics-remote + Module Federation - 완료
 16. X-Ray selector 기본형 - 완료
+17. Module Federation 시범 필터 - 완료
 ```
 
 `apps/realtime-server`는 독립 workspace와 프로세스로 구현되어 있다. `apps/analytics-remote`는 독립 Vite remote로 구현되어 있고, `packages/config`만 이후 단계를 위한 준비 상태다.

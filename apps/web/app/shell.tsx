@@ -78,7 +78,7 @@ export function CityWatchShell() {
           </XRayBox>
 
           {!loading && !error ? (
-            <AnalyticsRemotePanel incidents={incidents} xray={xray} />
+            <AnalyticsRemotePanel incidents={incidents} />
           ) : null}
 
           <XRayBox enabled={xray} label="widget/RecentIncidents" packageName="apps/web" stacks={["React", "Shared Types"]}>

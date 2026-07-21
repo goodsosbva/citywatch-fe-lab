@@ -139,7 +139,7 @@ R3F 기둥의 pointer event와 접근 가능한 HTML 버튼은 모두 Redux의 `
 
 ### X-Ray Mode
 
-현재 화면 위에 짧은 FSD-style 경계와 라벨을 표시한다.
+현재 selector에서 전체, FSD-style, Module Federation 관점을 선택한다. FSD-style은 일반 UI 책임 경계를, Module Federation은 runtime remote에서 가져온 원격 분석 경계만 표시한다.
 
 ```txt
 app
@@ -169,7 +169,7 @@ source       → app, shared package, remote
 delivery     → local bundle, Module Federation
 ```
 
-현재 구현된 것은 `architecture` 관점의 FSD-style 표시다. 나머지 관점은 해당 기술의 실제 연결과 함께 추가한다.
+현재 구현된 관점은 `architecture`의 FSD-style 표시와 `delivery`의 Module Federation 표시다. 나머지 관점은 해당 기술의 실제 연결과 함께 추가한다.
 
 ### Monorepo
 

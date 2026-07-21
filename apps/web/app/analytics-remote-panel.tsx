@@ -3,6 +3,7 @@
 import type { Incident } from "@citywatch/api-types";
 import { Badge, XRayBox } from "@citywatch/ui";
 import { useEffect, useState } from "react";
+import { useXRay } from "./xray-selector";
 
 type AnalyticsSnapshot = {
   averageAffectedPeople: number;
@@ -31,13 +32,8 @@ const remoteManifestUrl =
 let runtimePromise: Promise<FederationRuntime> | undefined;
 let analyticsModulePromise: Promise<AnalyticsModule> | undefined;
 
-export function AnalyticsRemotePanel({
-  incidents,
-  xray,
-}: {
-  incidents: Incident[];
-  xray: boolean;
-}) {
+export function AnalyticsRemotePanel({ incidents }: { incidents: Incident[] }) {
+  const { enabled: xray } = useXRay(["module-federation"]);
   const [loadRun, setLoadRun] = useState(0);
   const [state, setState] = useState<AnalyticsState>({ status: "loading" });
 
@@ -69,6 +65,7 @@ export function AnalyticsRemotePanel({
       label="remote/analytics/CalculateIncidentAnalytics"
       layer="remote"
       packageName="apps/analytics-remote"
+      proofs={["module-federation"]}
       stacks={["Module Federation", "Vite Remote", "Runtime Manifest"]}
     >
       <section aria-labelledby="remote-analytics-title" className="panel">

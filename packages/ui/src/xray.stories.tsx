@@ -71,7 +71,7 @@ export const ToggleDemo: Story = {
       canvasElement.querySelector(
         '[data-xray-label="widget/incident/IncidentSummaryCard"]',
       ),
-    ).toBeInTheDocument();
+    ).toHaveAttribute("data-xray-proofs", "fsd-style");
   },
 };
 
