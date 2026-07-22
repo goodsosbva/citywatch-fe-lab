@@ -12,11 +12,16 @@ export default defineConfig({
     federation({
       dts: false,
       exposes: {
-        "./incident-analytics": "./src/incident-analytics.ts",
+        "./analytics-metrics": "./src/analytics-metrics.tsx",
       },
       filename: "remoteEntry.js",
       manifest: true,
       name: "citywatch_analytics",
+      shared: {
+        react: {
+          singleton: true,
+        },
+      },
     }),
   ],
   preview: {

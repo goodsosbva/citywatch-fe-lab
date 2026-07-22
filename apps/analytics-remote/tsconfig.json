@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "lib": ["ES2022"],
+    "jsx": "react",
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "noEmit": true,
@@ -8,5 +9,5 @@
     "strict": true,
     "target": "ES2022"
   },
-  "include": ["src/**/*.ts", "vite.config.ts"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts"]
 }

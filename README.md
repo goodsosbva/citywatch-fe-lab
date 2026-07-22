@@ -1,117 +1,77 @@
 # CityWatch FE Lab
 
-CityWatch FE Lab은 학습한 프론트엔드 기술을 실제 기능으로 구현하고, 그 구현 근거를 X-Ray로 직접 보여주기 위한 **프론트엔드 사이드 프로젝트**입니다.
+## X-Ray로 프론트엔드 구현 능력을 증명하는 사이드 프로젝트
 
-도시 안전 관제는 서로 다른 기술을 하나의 제품 흐름 안에서 연결하기 위한 주제입니다. 사고 접수·분류·조회·상태 변경 화면에는 Next.js App Router, TypeScript, REST API, Redux, OpenLayers, React Three Fiber, WebSocket, Storybook, Module Federation 같은 학습 결과가 실제 코드로 구현되어 있습니다.
+CityWatch FE Lab은 도시 안전 관제 서비스를 만드는 것이 목적이 아닙니다.
 
-X-Ray는 이 프로젝트의 핵심 증명 장치입니다. 현재 selector로 경계를 끄거나 전체·FSD-style·Module Federation 관점을 선택할 수 있으며, 이후에는 Monorepo, OpenLayers·3D 같은 구현 증거도 원하는 관점만 골라 보는 Inspector로 확장합니다.
+도시 안전 관제라는 도메인은 여러 프론트엔드 기술을 한 화면 흐름 안에 묶기 위한 예시 주제입니다. 이 저장소의 목적은 기술명을 나열하는 것이 아니라, 구현한 기능을 **실행 화면, X-Ray 라벨, 실제 코드, 상세 문서**로 이어서 증명하는 것입니다.
 
-## 학습 증명 요약
+핵심 장치는 **X-Ray**입니다. 화면 위에 `FSD-style` UI 경계와 `remote` 실행 경계를 표시해서, 보는 사람이 “이 UI가 어떤 기술과 코드로 만들어졌는지”를 화면에서 먼저 확인하고 코드와 문서로 바로 따라갈 수 있게 합니다.
 
-관제 시스템 화면을 사용하면서 라우팅, 타입 공유, REST API, Zod 기반 등록 폼 검증, 접근성, 위험도 계산 단위 테스트, Redux 상태 공유, OpenLayers 지도, WebSocket/Polling 실시간 피드, React Three Fiber 3D 위험 구역, 대량 데이터 성능 처리, 모노레포 구조, Storybook UI 검증을 확인할 수 있습니다. X-Ray는 화면을 구성한 코드와 기술의 근거를 사용자가 직접 탐색할 수 있게 합니다.
+![X-Ray home with Module Federation](docs/assets/readme/xray-home-module-federation.png)
 
-자세한 기술 적용 설명은 [docs/tech-proof-points.md](docs/tech-proof-points.md)에 정리합니다.
+## 이 프로젝트를 보는 흐름
 
-## 현재 구현 범위
+```mermaid
+flowchart LR
+  A["실행 화면"] --> B["X-Ray 라벨"]
+  B --> C["실제 코드"]
+  C --> D["상세 구현 문서"]
+  D --> E["테스트와 빌드 검증"]
+```
 
-현재까지 구현된 범위입니다.
-
-- 도시 안전 관제 홈 대시보드
-- 사고 목록 페이지
-- 사고 상세 페이지
-- 사고 등록 페이지
-- 사고 목록/상세/등록/상태 변경용 내부 REST API
-- 사고 위험도 계산과 단위 테스트
-- 사고 목록 필터와 선택 사고를 공유하는 Redux 상태
-- 사고 위치를 OpenLayers 지도에 표시하는 지도 관제 페이지
-- 독립 Node workspace의 WebSocket 서버와 실패 시 polling fallback으로 전환되는 실시간 사고 피드
-- OpenStreetMap 실제 위치 위에서 위험 점수를 3D 기둥으로 비교하는 위험 구역
-- OpenLayers 클러스터 지도와 가상 목록으로 5,000·10,000건을 확인하는 성능 시나리오
-- UI 블록의 출처를 화면에 보여주는 X-Ray 모드
-- `packages/ui` 공용 컴포넌트를 격리 검증하는 Storybook
-- Vite remote의 분석 함수를 runtime manifest로 불러오는 Module Federation
+루트 README는 프로젝트의 의의와 실행 방법만 안내합니다. 구현을 어떻게 했고 왜 그렇게 했는지는 `docs/` 문서에서 확인합니다.
 
 ## 실행 방법
 
 저장소 루트에서 실행합니다.
 
 ```bash
+npm install
 npm run dev
 ```
 
-이 명령은 web, analytics remote, realtime server를 함께 실행하며 `Ctrl+C`로 모두 종료한다. 특정 서비스만 확인할 때는 `npm run dev:web`, `npm run dev:remote`, `npm run dev:realtime`을 각각 사용한다.
+`npm run dev`는 프로젝트를 확인하는 데 필요한 세 서비스를 한 번에 실행합니다.
 
-브라우저에서 확인합니다.
+| 서비스 | 역할 | 주소 |
+| --- | --- | --- |
+| `@citywatch/web` | Next.js App Router shell | `http://127.0.0.1:3000` |
+| `@citywatch/analytics-remote` | Module Federation remote | `http://127.0.0.1:3002` |
+| `@citywatch/realtime-server` | WebSocket/Polling realtime server | `http://127.0.0.1:3001` |
+
+브라우저에서 아래 주소로 들어갑니다.
 
 ```txt
 http://127.0.0.1:3000/
 ```
 
-주요 화면입니다.
+홈 화면 우측 상단의 X-Ray selector에서 `전체`, `FSD-style`, `Module Federation` 관점을 선택해 구현 경계를 확인합니다.
 
-```txt
-http://127.0.0.1:3000/incidents
-http://127.0.0.1:3000/map
-http://127.0.0.1:3000/risk-3d
-http://127.0.0.1:3000/performance
-http://127.0.0.1:3000/realtime
-http://127.0.0.1:3000/incidents/new
-http://127.0.0.1:3000/incidents/INC-001
-```
+## 주요 문서
 
-확인용 API입니다.
+처음 보는 사람은 아래 순서로 보면 됩니다.
 
-```txt
-GET  http://127.0.0.1:3000/api/incidents
-GET  http://127.0.0.1:3000/api/incidents/many-data?size=10000
-POST http://127.0.0.1:3000/api/incidents
-GET  http://127.0.0.1:3000/api/incidents/INC-001
-GET  http://127.0.0.1:3001/health
-GET  http://127.0.0.1:3001/events
-GET  http://127.0.0.1:3002/mf-manifest.json
-```
+| 목적 | 문서 |
+| --- | --- |
+| 프로젝트가 어떤 기술을 증명하는지 | [docs/tech-proof-points.md](docs/tech-proof-points.md) |
+| X-Ray selector를 왜 만들었고 어떻게 동작하는지 | [docs/16-xray-selector.md](docs/16-xray-selector.md) |
+| Module Federation만 골라 보는 필터 구현 | [docs/17-module-federation-xray-filter.md](docs/17-module-federation-xray-filter.md) |
+| analytics remote와 Module Federation 구현 | [docs/15-analytics-remote-module-federation.md](docs/15-analytics-remote-module-federation.md) |
+| realtime server를 왜 분리했는지 | [docs/14-realtime-server-separation.md](docs/14-realtime-server-separation.md) |
+| Storybook을 어떻게 구현하고 보는지 | [docs/13-storybook-ui-proof.md](docs/13-storybook-ui-proof.md) |
+| 전체 아키텍처 요약 | [docs/00-current-architecture-summary.md](docs/00-current-architecture-summary.md) |
 
-## 검증 방법
+## 실제 코드 입구
 
-```bash
-npm run typecheck
-npm run test
-npm --workspace @citywatch/web run build
-```
+| 보고 싶은 것 | 코드 |
+| --- | --- |
+| X-Ray selector | [apps/web/app/xray-selector.tsx](apps/web/app/xray-selector.tsx) |
+| X-Ray 라벨 컴포넌트 | [packages/ui/src/xray.tsx](packages/ui/src/xray.tsx) |
+| FSD-style 화면 조립부 | [apps/web/app/shell.tsx](apps/web/app/shell.tsx) |
+| Module Federation 사용부 | [apps/web/app/analytics-remote-panel.tsx](apps/web/app/analytics-remote-panel.tsx) |
+| Module Federation remote | [apps/analytics-remote/src/incident-analytics.ts](apps/analytics-remote/src/incident-analytics.ts) |
+| 통합 개발 서버 실행 | [scripts/dev.mjs](scripts/dev.mjs) |
 
-## 작업 공간 구조
+## 프로젝트 한 줄 정의
 
-```txt
-apps/web                현재 실행되는 Next App Router 앱
-apps/analytics-remote   Vite Module Federation 분석 remote
-apps/realtime-server    독립 실행되는 WebSocket/Polling Node 서버
-packages/api-types      API/도메인 공유 타입
-packages/ui             공통 UI와 X-Ray 컴포넌트
-docs                    단계별 학습/구현 정리 문서
-```
-
-## 문서
-
-자세한 구현 설명은 `docs/` 하위에 정리합니다.
-
-```txt
-docs/00-current-architecture-summary.md
-docs/04-incidents-list-detail.md
-docs/05-rest-api.md
-docs/06-create-form-validation-accessibility.md
-docs/07-risk-score-unit-test.md
-docs/07-risk-score-code-walkthrough.md
-docs/08-redux-shared-state.md
-docs/09-openlayers-map-monitoring.md
-docs/10-websocket-polling-realtime.md
-docs/10-websocket-polling-code-walkthrough.md
-docs/11-r3f-3d-risk-zone.md
-docs/12-performance-large-data-monitoring.md
-docs/13-storybook-ui-proof.md
-docs/14-realtime-server-separation.md
-docs/15-analytics-remote-module-federation.md
-docs/16-xray-selector.md
-docs/17-module-federation-xray-filter.md
-docs/tech-proof-points.md
-docs/xray-labels.md
-```
+CityWatch FE Lab은 도시 안전 관제 화면을 예시 도메인으로 사용해, 프론트엔드 기술 학습 결과를 X-Ray로 추적 가능하게 보여주는 구현 증명형 사이드 프로젝트입니다.

@@ -2,24 +2,18 @@
 
 import type { Incident } from "@citywatch/api-types";
 import { Badge, XRayBox } from "@citywatch/ui";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ComponentType } from "react";
+import * as React from "react";
 import { useXRay } from "./xray-selector";
 
-type AnalyticsSnapshot = {
-  averageAffectedPeople: number;
-  highRisk: number;
-  resolutionRate: number;
-  total: number;
-};
-
 type AnalyticsModule = {
-  calculateIncidentAnalytics: (incidents: readonly Incident[]) => unknown;
+  AnalyticsMetrics: ComponentType<{ incidents: readonly Incident[] }>;
 };
 
 type AnalyticsState =
   | { status: "loading" }
   | { message: string; status: "error" }
-  | { snapshot: AnalyticsSnapshot; status: "ready" };
+  | { AnalyticsMetrics: AnalyticsModule["AnalyticsMetrics"]; status: "ready" };
 
 type FederationRuntime = {
   loadRemote: <T>(id: string) => Promise<T | null>;
@@ -33,7 +27,7 @@ let runtimePromise: Promise<FederationRuntime> | undefined;
 let analyticsModulePromise: Promise<AnalyticsModule> | undefined;
 
 export function AnalyticsRemotePanel({ incidents }: { incidents: Incident[] }) {
-  const { enabled: xray } = useXRay(["module-federation"]);
+  const { enabled: xray, mode } = useXRay(["module-federation"]);
   const [loadRun, setLoadRun] = useState(0);
   const [state, setState] = useState<AnalyticsState>({ status: "loading" });
 
@@ -43,12 +37,8 @@ export function AnalyticsRemotePanel({ incidents }: { incidents: Incident[] }) {
     setState({ status: "loading" });
 
     void loadAnalyticsModule()
-      .then((remoteModule) => remoteModule.calculateIncidentAnalytics(incidents))
-      .then((snapshot) => {
-        if (!isAnalyticsSnapshot(snapshot)) {
-          throw new Error("Remote analytics result shape is invalid.");
-        }
-        if (active) setState({ snapshot, status: "ready" });
+      .then((remoteModule) => {
+        if (active) setState({ AnalyticsMetrics: remoteModule.AnalyticsMetrics, status: "ready" });
       })
       .catch((reason) => {
         if (active) setState({ message: getErrorMessage(reason), status: "error" });
@@ -59,10 +49,12 @@ export function AnalyticsRemotePanel({ incidents }: { incidents: Incident[] }) {
     };
   }, [incidents, loadRun]);
 
+  const AnalyticsMetrics = state.status === "ready" ? state.AnalyticsMetrics : null;
+
   return (
     <XRayBox
       enabled={xray}
-      label="remote/analytics/CalculateIncidentAnalytics"
+      label="remote/analytics/AnalyticsMetrics"
       layer="remote"
       packageName="apps/analytics-remote"
       proofs={["module-federation"]}
@@ -100,43 +92,58 @@ export function AnalyticsRemotePanel({ incidents }: { incidents: Incident[] }) {
           </div>
         ) : null}
 
-        {state.status === "ready" ? (
-          <div className="metric-grid">
-            <AnalyticsMetric title="분석 대상" value={state.snapshot.total} />
-            <AnalyticsMetric title="고위험 사고" tone="danger" value={state.snapshot.highRisk} />
-            <AnalyticsMetric title="해결률" tone="success" unit="%" value={state.snapshot.resolutionRate} />
-            <AnalyticsMetric
-              title="평균 영향 인원"
-              tone="info"
-              unit="명"
-              value={state.snapshot.averageAffectedPeople}
-            />
-          </div>
+        {AnalyticsMetrics ? <AnalyticsMetrics incidents={incidents} /> : null}
+
+        {mode === "module-federation" ? (
+          <ModuleFederationEvidencePanel status={state.status} />
         ) : null}
       </section>
     </XRayBox>
   );
 }
 
-function AnalyticsMetric({
-  title,
-  tone = "neutral",
-  unit,
-  value,
-}: {
-  title: string;
-  tone?: "neutral" | "info" | "success" | "danger";
-  unit?: string;
-  value: number;
-}) {
+function ModuleFederationEvidencePanel({ status }: { status: AnalyticsState["status"] }) {
+  const statusLabel =
+    status === "ready" ? "원격 모듈 연결됨" : status === "error" ? "원격 로드 실패" : "원격 모듈 로드 중";
+
   return (
-    <article className={`metric metric--${tone}`}>
-      <span>{title}</span>
-      <strong>
-        {value}
-        {unit}
-      </strong>
-    </article>
+    <aside aria-labelledby="module-federation-evidence-title" className="module-federation-evidence">
+      <div className="panel-title-row">
+        <h3 id="module-federation-evidence-title">Module Federation 증거</h3>
+        <Badge tone={status === "ready" ? "success" : status === "error" ? "danger" : "info"}>
+          {statusLabel}
+        </Badge>
+      </div>
+
+      <p>
+        Next.js host가 Vite remote의 React 지표 컴포넌트를 실행 중에 불러와 렌더링합니다.
+      </p>
+
+      <ol className="module-federation-flow">
+        <li><code>mf-manifest.json</code>에서 remote 진입점을 확인합니다.</li>
+        <li><code>citywatch_analytics/analytics-metrics</code> 모듈을 불러옵니다.</li>
+        <li>remote의 <code>AnalyticsMetrics</code>가 계산과 지표 렌더링을 담당합니다.</li>
+      </ol>
+
+      <dl className="module-federation-code">
+        <div>
+          <dt>Host 로더</dt>
+          <dd><code>apps/web/app/analytics-remote-panel.tsx</code></dd>
+        </div>
+        <div>
+          <dt>Remote 설정</dt>
+          <dd><code>apps/analytics-remote/vite.config.ts</code></dd>
+        </div>
+        <div>
+          <dt>Remote React UI</dt>
+          <dd><code>apps/analytics-remote/src/analytics-metrics.tsx</code></dd>
+        </div>
+      </dl>
+
+      <p className="module-federation-note">
+        검증: remote가 중단되면 오류 상태와 재시도 동작이 나타납니다. 현재 범위는 원격 지표 UI이며, 전체 화면 단위의 remote 또는 SSR Federation은 포함하지 않습니다.
+      </p>
+    </aside>
   );
 }
 
@@ -144,7 +151,7 @@ function loadAnalyticsModule() {
   if (!analyticsModulePromise) {
     analyticsModulePromise = getFederationRuntime()
       .then((runtime) =>
-        runtime.loadRemote<unknown>("citywatch_analytics/incident-analytics"),
+        runtime.loadRemote<unknown>("citywatch_analytics/analytics-metrics"),
       )
       .then((remoteModule) => {
         if (!isAnalyticsModule(remoteModule)) {
@@ -172,6 +179,17 @@ function getFederationRuntime() {
             name: "citywatch_analytics",
           },
         ],
+        shared: {
+          react: {
+            lib: () => React,
+            scope: "default",
+            shareConfig: {
+              requiredVersion: React.version,
+              singleton: true,
+            },
+            version: React.version,
+          },
+        },
       }),
   );
 
@@ -182,16 +200,8 @@ function isAnalyticsModule(value: unknown): value is AnalyticsModule {
   return (
     typeof value === "object" &&
     value !== null &&
-    "calculateIncidentAnalytics" in value &&
-    typeof value.calculateIncidentAnalytics === "function"
-  );
-}
-
-function isAnalyticsSnapshot(value: unknown): value is AnalyticsSnapshot {
-  if (typeof value !== "object" || value === null) return false;
-
-  return ["averageAffectedPeople", "highRisk", "resolutionRate", "total"].every(
-    (key) => key in value && typeof value[key as keyof typeof value] === "number",
+    "AnalyticsMetrics" in value &&
+    typeof value.AnalyticsMetrics === "function"
   );
 }
 
