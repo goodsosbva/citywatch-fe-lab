@@ -105,19 +105,13 @@ server: {
 
 ## 2. Host 주소 설정은 왜 환경 변수로 분리하는가
 
-파일: `apps/web/.env.example`
+파일: `apps/web/.env.dev`
 
 ```env
 NEXT_PUBLIC_ANALYTICS_REMOTE_URL=http://127.0.0.1:3002/mf-manifest.json
 ```
 
-실제 개발 환경에서 기본값을 바꿔야 하면 이 파일을 복사해 `apps/web/.env.local`을 만든다.
-
-```powershell
-Copy-Item apps/web/.env.example apps/web/.env.local
-```
-
-그 뒤 `NEXT_PUBLIC_ANALYTICS_REMOTE_URL`만 배포 환경의 manifest URL로 바꾼다. `.env.local`은 `.gitignore`의 `.env.*` 규칙으로 Git에 포함되지 않으므로 개인 또는 배포 환경 주소를 저장소에 고정하지 않는다.
+`apps/web/package.json`의 개발 명령은 Node의 `--env-file=.env.dev`로 이 파일을 읽는다. 로컬 주소는 이 파일에 두고, Preview와 Production의 실제 배포 URL은 Vercel Dashboard 환경 변수로 관리한다. 따라서 배포 주소를 Git에 고정하지 않는다.
 
 Host 코드가 이 값을 읽는 위치는 `apps/web/app/analytics-remote-panel.tsx`다.
 
