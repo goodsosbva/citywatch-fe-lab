@@ -1,7 +1,8 @@
 import { federation } from "@module-federation/vite";
 import { defineConfig } from "vite";
 
-const origin = "http://127.0.0.1:3002";
+const origin =
+  process.env.VITE_ANALYTICS_REMOTE_ORIGIN ?? "http://127.0.0.1:3002";
 
 export default defineConfig({
   base: `${origin}/`,

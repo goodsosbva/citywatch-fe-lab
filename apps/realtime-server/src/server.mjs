@@ -75,9 +75,9 @@ server.on("upgrade", (request, socket) => {
   sendEvent(socket, appendEvent({ sentAt: now(), type: "heartbeat" }));
 });
 
-server.listen(port, "127.0.0.1", () => {
+server.listen(port, () => {
   appendEvent({ sentAt: now(), type: "heartbeat" });
-  console.log(`CityWatch realtime server listening on http://127.0.0.1:${port}`);
+  console.log(`CityWatch realtime server listening on port ${port}`);
 });
 
 setInterval(() => {
