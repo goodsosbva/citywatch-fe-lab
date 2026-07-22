@@ -157,7 +157,7 @@ data-xray-proofs={proofs.join(" ")}
 ```tsx
 <XRayBox
   enabled={xray}
-  label="remote/analytics/CalculateIncidentAnalytics"
+  label="remote/analytics/AnalyticsMetrics"
   layer="remote"
   packageName="apps/analytics-remote"
   proofs={["module-federation"]}
@@ -174,7 +174,7 @@ data-xray-proofs={proofs.join(" ")}
 ```html
 <div
   data-xray-layer="remote"
-  data-xray-label="remote/analytics/CalculateIncidentAnalytics"
+  data-xray-label="remote/analytics/AnalyticsMetrics"
   data-xray-package="apps/analytics-remote"
   data-xray-proofs="module-federation"
   data-xray-stacks="Module Federation,Vite Remote,Runtime Manifest"

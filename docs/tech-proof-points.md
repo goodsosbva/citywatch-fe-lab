@@ -139,14 +139,11 @@ R3F 기둥의 pointer event와 접근 가능한 HTML 버튼은 모두 Redux의 `
 
 ### X-Ray Mode
 
-현재 selector에서 전체, FSD-style, Module Federation 관점을 선택한다. FSD-style은 일반 UI 책임 경계를, Module Federation은 runtime remote에서 가져온 원격 분석 경계만 표시한다.
+현재 selector에서 전체, FSD-style, Module Federation 관점을 선택한다. FSD-style은 일반 UI 책임 경계를 하나의 관점으로 보여주고, Module Federation은 runtime remote에서 가져온 원격 분석 경계만 표시한다.
 
 ```txt
-app
-widget
-feature
-entity
-shared
+FSD-style UI boundary
+Module Federation remote boundary
 ```
 
 예시:
@@ -165,7 +162,7 @@ X-Ray는 최종적으로 단순한 FSD 라벨을 넘어 선택형 기술 Inspect
 architecture → FSD 계층
 rendering    → SSR, client boundary 등
 technology   → OpenLayers, React Three Fiber, WebSocket 등
-source       → app, shared package, remote
+source       → local workspace, shared package, remote
 delivery     → local bundle, Module Federation
 ```
 
@@ -209,17 +206,18 @@ XRayToggle
 
 ### Module Federation
 
-`apps/analytics-remote`가 사고 분석 함수를 Vite remote로 공개하고, Next.js host가 runtime manifest를 통해 실행 중에 불러온다.
+`apps/analytics-remote`가 사고 분석 React UI를 Vite remote로 공개하고, Next.js host가 runtime manifest를 통해 실행 중에 불러온다.
 
 ```txt
 apps/analytics-remote/vite.config.ts
 apps/analytics-remote/src/incident-analytics.ts
+apps/analytics-remote/src/analytics-metrics.tsx
 apps/web/app/analytics-remote-panel.tsx
-citywatch_analytics/incident-analytics
-remote/analytics/CalculateIncidentAnalytics
+citywatch_analytics/analytics-metrics
+remote/analytics/AnalyticsMetrics
 ```
 
-host는 기존 REST API에서 받은 사고 배열을 remote 함수에 전달한다. 결과는 분석 대상, 고위험 사고, 해결률, 평균 영향 인원으로 렌더링되며 원격 로드 실패 시 오류와 재시도 버튼을 표시한다.
+host는 기존 REST API에서 받은 사고 배열을 remote React 컴포넌트에 전달한다. remote가 분석 대상, 고위험 사고, 해결률, 평균 영향 인원을 렌더링하며 원격 로드 실패 시 Host는 오류와 재시도 버튼을 표시한다.
 
 ### 상태 처리와 접근성
 

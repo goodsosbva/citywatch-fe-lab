@@ -49,10 +49,10 @@ This keeps the UI readable while still leaving enough information for inspection
 The current selector separates all boundaries, FSD-style boundaries, and the Module Federation remote boundary. More implemented proof perspectives will be added incrementally.
 
 ```txt
-architecture → app, widget, feature, entity, shared
+architecture → FSD-style UI boundary
 rendering    → SSR, client boundary, and related rendering evidence
 technology   → OpenLayers, React Three Fiber, WebSocket, and other implementations
-source       → app, shared package, or remote
+source       → local workspace, shared package, or remote
 delivery     → local bundle or Module Federation
 ```
 
@@ -134,8 +134,8 @@ Domain-level incident detail.
 entity/incident/IncidentMapSelection
 Domain-level selected incident summary on the map page.
 
-remote/analytics/CalculateIncidentAnalytics
-Analytics function loaded from `apps/analytics-remote` through a runtime manifest.
+remote/analytics/AnalyticsMetrics
+Analytics React UI loaded from `apps/analytics-remote` through a runtime manifest.
 
 `SeverityBadge` remains a reusable shared UI package component, but it is not given a separate visual boundary for every rendered instance.
 ```

@@ -12,7 +12,9 @@
   },
   "devDependencies": {
     "@citywatch/api-types": "0.0.0",
+    "@types/react": "^19.2.17",
     "@module-federation/vite": "^1.18.2",
+    "react": "^19.2.7",
     "vite": "^8.1.5",
     "vitest": "^4.1.10"
   }
