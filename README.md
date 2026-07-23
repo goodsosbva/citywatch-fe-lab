@@ -1,4 +1,4 @@
-# CityWatch FE Lab
+# CityWatch FE Lab (url: https://citywatch-web.vercel.app/?xray=all)
 
 ## X-Ray로 프론트엔드 구현 능력을 증명하는 사이드 프로젝트
 
