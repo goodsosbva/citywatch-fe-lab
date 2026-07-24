@@ -1,41 +1,46 @@
 import { federation } from "@module-federation/vite";
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 
-const origin =
-  process.env.VITE_ANALYTICS_REMOTE_ORIGIN ?? "http://127.0.0.1:3002";
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), "VITE_");
+  const origin =
+    process.env.VITE_ANALYTICS_REMOTE_ORIGIN ??
+    env.VITE_ANALYTICS_REMOTE_ORIGIN ??
+    "http://127.0.0.1:3002";
 
-export default defineConfig({
-  base: `${origin}/`,
-  build: {
-    target: "es2022",
-  },
-  plugins: [
-    federation({
-      dts: false,
-      exposes: {
-        "./analytics-metrics": "./src/analytics-metrics.tsx",
-      },
-      filename: "remoteEntry.js",
-      manifest: true,
-      name: "citywatch_analytics",
-      shared: {
-        react: {
-          singleton: true,
+  return {
+    base: `${origin}/`,
+    build: {
+      target: "es2022",
+    },
+    plugins: [
+      federation({
+        dts: false,
+        exposes: {
+          "./analytics-metrics": "./src/analytics-metrics.tsx",
         },
-      },
-    }),
-  ],
-  preview: {
-    cors: true,
-    host: "127.0.0.1",
-    port: 3002,
-    strictPort: true,
-  },
-  server: {
-    cors: true,
-    host: "127.0.0.1",
-    origin,
-    port: 3002,
-    strictPort: true,
-  },
+        filename: "remoteEntry.js",
+        manifest: true,
+        name: "citywatch_analytics",
+        shared: {
+          react: {
+            singleton: true,
+          },
+        },
+      }),
+    ],
+    preview: {
+      cors: true,
+      host: "127.0.0.1",
+      port: 3002,
+      strictPort: true,
+    },
+    server: {
+      cors: true,
+      host: "127.0.0.1",
+      origin,
+      port: 3002,
+      strictPort: true,
+    },
+  };
 });

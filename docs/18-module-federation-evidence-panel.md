@@ -105,13 +105,13 @@ server: {
 
 ## 2. Host 주소 설정은 왜 환경 변수로 분리하는가
 
-파일: `apps/web/.env.dev`
+파일: `apps/web/.env.development`
 
 ```env
 NEXT_PUBLIC_ANALYTICS_REMOTE_URL=http://127.0.0.1:3002/mf-manifest.json
 ```
 
-`apps/web/package.json`의 개발 명령은 Node의 `--env-file=.env.dev`로 이 파일을 읽는다. 로컬 주소는 이 파일에 두고, Preview와 Production의 실제 배포 URL은 Vercel Dashboard 환경 변수로 관리한다. 따라서 배포 주소를 Git에 고정하지 않는다.
+Next.js는 `next dev` 실행 시 `.env.development`를 자동으로 읽는다. 로컬 주소는 이 파일에 두고, Preview와 Production의 실제 배포 URL은 Vercel Dashboard 환경 변수로 관리한다. 따라서 배포 주소를 Git에 고정하지 않는다.
 
 Host 코드가 이 값을 읽는 위치는 `apps/web/app/analytics-remote-panel.tsx`다.
 

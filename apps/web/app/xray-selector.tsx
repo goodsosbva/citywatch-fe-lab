@@ -3,7 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 
-export type XRayProof = "fsd-style" | "module-federation";
+export type XRayProof = "fsd-style" | "module-federation" | "monorepo";
 type XRayMode = "off" | "all" | XRayProof;
 
 const XRayContext = createContext<{ mode: XRayMode; setMode: (mode: XRayMode) => void } | null>(null);
@@ -21,7 +21,10 @@ export function XRayProvider({ children }: { children: ReactNode }) {
       initialized.current = true;
       const initialMode = getXRayMode(url.searchParams.get("xray"));
       setMode(initialMode);
+      if (url.searchParams.get("xray") === initialMode) return;
       url.searchParams.set("xray", initialMode);
+    } else if (url.searchParams.get("xray") === mode) {
+      return;
     } else {
       url.searchParams.set("xray", mode);
     }
@@ -47,6 +50,7 @@ export function XRaySelector() {
         <option value="all">전체</option>
         <option value="fsd-style">FSD-style</option>
         <option value="module-federation">Module Federation</option>
+        <option value="monorepo">Monorepo</option>
       </select>
     </label>
   );
@@ -67,7 +71,10 @@ function useXRayContext() {
 }
 
 function getXRayMode(value: string | null): XRayMode {
-  return value === "off" || value === "fsd-style" || value === "module-federation"
+  return value === "off" ||
+    value === "fsd-style" ||
+    value === "module-federation" ||
+    value === "monorepo"
     ? value
     : "all";
 }
