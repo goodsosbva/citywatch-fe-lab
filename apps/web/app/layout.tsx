@@ -8,6 +8,9 @@ import { XRayProvider } from "./xray-selector";
 export const metadata: Metadata = {
   title: "CityWatch FE Lab",
   description: "A frontend side project that exposes architecture and implementation evidence through X-Ray.",
+  icons: {
+    icon: "/icon.png",
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

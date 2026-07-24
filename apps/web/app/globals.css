@@ -218,6 +218,75 @@ h2 {
   padding-left: 10px;
 }
 
+.monorepo-evidence {
+  display: grid;
+  gap: 14px;
+}
+
+.monorepo-evidence p {
+  color: #475569;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.monorepo-relations {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.monorepo-relations li {
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  padding: 10px 12px;
+}
+
+.monorepo-relations code,
+.monorepo-code code {
+  color: #0e7490;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.monorepo-relations span {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.monorepo-code {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.monorepo-code div,
+.monorepo-code dd {
+  display: grid;
+  gap: 6px;
+}
+
+.monorepo-code dt {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.monorepo-code dd {
+  margin: 0;
+}
+
+.monorepo-code a {
+  justify-self: start;
+}
+
 .nav-link {
   align-items: center;
   background: #ffffff;
@@ -1190,6 +1259,15 @@ h2 {
   .incident-meta,
   .detail-grid {
     grid-template-columns: 1fr;
+  }
+
+  .monorepo-relations li {
+    align-items: start;
+    grid-template-columns: 1fr;
+  }
+
+  .monorepo-relations span {
+    text-align: left;
   }
 
   .detail-badges {

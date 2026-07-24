@@ -10,6 +10,7 @@ import { useXRay, XRaySelector } from "./xray-selector";
 
 export function CityWatchShell() {
   const { enabled: xray } = useXRay();
+  const { enabled: monorepoXray, mode } = useXRay(["monorepo"]);
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
@@ -77,12 +78,33 @@ export function CityWatchShell() {
             </div>
           </XRayBox>
 
+          {mode === "monorepo" ? (
+            <XRayBox
+              enabled={monorepoXray}
+              label="package/web/WorkspaceConsumer"
+              layer="package"
+              packageName="apps/web"
+              proofs={["monorepo"]}
+              stacks={["npm workspaces", "Local Package Imports"]}
+            >
+              <MonorepoEvidencePanel />
+            </XRayBox>
+          ) : null}
+
           {!loading && !error ? (
             <AnalyticsRemotePanel incidents={incidents} />
           ) : null}
 
-          <XRayBox enabled={xray} label="widget/RecentIncidents" packageName="apps/web" stacks={["React", "Shared Types"]}>
-            <section className="panel incidents" aria-labelledby="recent-incidents-title" aria-busy={loading}>
+          <XRayBox
+            enabled={monorepoXray}
+            label="package/ui/SharedComponents"
+            layer="package"
+            packageName="packages/ui"
+            proofs={["monorepo"]}
+            stacks={["@citywatch/ui", "Badge", "SeverityBadge", "XRayBox"]}
+          >
+            <XRayBox enabled={xray} label="widget/RecentIncidents" packageName="apps/web" stacks={["React", "Shared Types"]}>
+              <section className="panel incidents" aria-labelledby="recent-incidents-title" aria-busy={loading}>
               <div className="panel-title-row">
                 <div>
                   <h2 id="recent-incidents-title">최근 사고</h2>
@@ -97,7 +119,13 @@ export function CityWatchShell() {
                 {loading ? <p className="state-message" role="status">REST API에서 사고 데이터를 불러오는 중입니다.</p> : null}
                 {error ? <p className="state-message state-message--error" role="alert">{error}</p> : null}
                 {!loading && !error ? (
-                  <XRayBox enabled={xray} label="entity/incident/IncidentRows" packageName="packages/api-types" stacks={["TypeScript", "Shared Contract"]}>
+                  <XRayBox
+                    enabled={xray || monorepoXray}
+                    label="entity/incident/IncidentRows"
+                    packageName="packages/api-types"
+                    proofs={["fsd-style", "monorepo"]}
+                    stacks={["@citywatch/api-types", "TypeScript", "Shared Contract"]}
+                  >
                     <ul>
                       {incidents.map((incident) => (
                         <IncidentRow incident={incident} key={incident.id} />
@@ -106,11 +134,56 @@ export function CityWatchShell() {
                   </XRayBox>
                 ) : null}
               </XRayBox>
-            </section>
+              </section>
+            </XRayBox>
           </XRayBox>
         </section>
       </XRayBox>
     </main>
+  );
+}
+
+function MonorepoEvidencePanel() {
+  return (
+    <aside aria-labelledby="monorepo-evidence-title" className="panel monorepo-evidence">
+      <div className="panel-title-row">
+        <h2 id="monorepo-evidence-title">Monorepo 증거</h2>
+        <Badge tone="success">npm workspaces</Badge>
+      </div>
+
+      <p>하나의 저장소에서 실행 앱과 공유 패키지를 관리하고, 관계에 맞는 방식으로 연결합니다.</p>
+
+      <ul className="monorepo-relations">
+        <li><code>apps/web</code><span>imports</span><code>packages/api-types</code></li>
+        <li><code>apps/web</code><span>imports</span><code>packages/ui</code></li>
+        <li><code>apps/web</code><span>runtime remote</span><code>apps/analytics-remote</code></li>
+        <li><code>apps/web</code><span>network</span><code>apps/realtime-server</code></li>
+      </ul>
+
+      <dl className="monorepo-code">
+        <div>
+          <dt>Workspace 설정</dt>
+          <dd>
+            <a
+              href="https://github.com/goodsosbva/citywatch-fe-lab/blob/master/package.json#L5-L8"
+              rel="noreferrer"
+              target="_blank"
+            >
+              <code>package.json:5-8</code>
+            </a>
+            <code>workspaces: [&quot;apps/*&quot;, &quot;packages/*&quot;]</code>
+          </dd>
+        </div>
+        <div>
+          <dt>공유 타입 import</dt>
+          <dd><code>import type &#123; Incident &#125; from &quot;@citywatch/api-types&quot;;</code></dd>
+        </div>
+        <div>
+          <dt>공유 UI import</dt>
+          <dd><code>import &#123; Badge, SeverityBadge, XRayBox &#125; from &quot;@citywatch/ui&quot;;</code></dd>
+        </div>
+      </dl>
+    </aside>
   );
 }
 

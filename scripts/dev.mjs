@@ -1,10 +1,12 @@
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 
 const services = [
   ["web", "@citywatch/web"],
   ["remote", "@citywatch/analytics-remote"],
   ["realtime", "@citywatch/realtime-server"],
 ];
+
+stopExistingDevServers([3000, 3001, 3002]);
 
 const children = services.map(([name, workspace]) => {
   const child = spawn("npm", ["--workspace", workspace, "run", "dev"], {
@@ -41,5 +43,41 @@ function shutdown(exitCode, message) {
     } else {
       child.kill("SIGTERM");
     }
+  }
+}
+
+function stopExistingDevServers(ports) {
+  if (process.platform !== "win32") return;
+
+  const result = spawnSync("netstat", ["-ano", "-p", "tcp"], {
+    encoding: "utf8",
+  });
+
+  if (result.error) {
+    console.error(`[dev] 기존 서버 확인 실패: ${result.error.message}`);
+    process.exit(1);
+  }
+
+  const targetPorts = new Set(ports.map(String));
+  const pids = new Set(
+    result.stdout
+      .split(/\r?\n/)
+      .map((line) => line.trim().split(/\s+/))
+      .filter(
+        ([protocol, address, , state]) =>
+          protocol === "TCP" &&
+          state === "LISTENING" &&
+          targetPorts.has(address?.split(":").at(-1)),
+      )
+      .map((fields) => fields.at(-1))
+      .filter(Boolean),
+  );
+
+  for (const pid of pids) {
+    console.log(`[dev] 기존 개발 서버 종료: PID ${pid}`);
+    const stopped = spawnSync("taskkill", ["/PID", pid, "/T", "/F"], {
+      stdio: "inherit",
+    });
+    if (stopped.status !== 0) process.exit(stopped.status ?? 1);
   }
 }
