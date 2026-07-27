@@ -46,7 +46,7 @@ This keeps the UI readable while still leaving enough information for inspection
 
 ## Inspector Direction
 
-The current selector separates all boundaries, FSD-style boundaries, and the Module Federation remote boundary. More implemented proof perspectives will be added incrementally.
+The current selector separates all boundaries and the FSD-style, Module Federation, Monorepo, and OpenLayers proof boundaries. More implemented proof perspectives will be added incrementally.
 
 ```txt
 architecture → FSD-style UI boundary

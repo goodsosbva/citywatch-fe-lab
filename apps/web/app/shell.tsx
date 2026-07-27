@@ -78,19 +78,6 @@ export function CityWatchShell() {
             </div>
           </XRayBox>
 
-          {mode === "monorepo" ? (
-            <XRayBox
-              enabled={monorepoXray}
-              label="package/web/WorkspaceConsumer"
-              layer="package"
-              packageName="apps/web"
-              proofs={["monorepo"]}
-              stacks={["npm workspaces", "Local Package Imports"]}
-            >
-              <MonorepoEvidencePanel />
-            </XRayBox>
-          ) : null}
-
           {!loading && !error ? (
             <AnalyticsRemotePanel incidents={incidents} />
           ) : null}
@@ -137,6 +124,19 @@ export function CityWatchShell() {
               </section>
             </XRayBox>
           </XRayBox>
+
+          {mode === "monorepo" ? (
+            <XRayBox
+              enabled={monorepoXray}
+              label="package/web/WorkspaceConsumer"
+              layer="package"
+              packageName="apps/web"
+              proofs={["monorepo"]}
+              stacks={["npm workspaces", "Local Package Imports"]}
+            >
+              <MonorepoEvidencePanel />
+            </XRayBox>
+          ) : null}
         </section>
       </XRayBox>
     </main>

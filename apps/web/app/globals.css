@@ -218,18 +218,21 @@ h2 {
   padding-left: 10px;
 }
 
-.monorepo-evidence {
+.monorepo-evidence,
+.openlayers-evidence {
   display: grid;
   gap: 14px;
 }
 
-.monorepo-evidence p {
+.monorepo-evidence p,
+.openlayers-evidence p {
   color: #475569;
   line-height: 1.6;
   margin: 0;
 }
 
-.monorepo-relations {
+.monorepo-relations,
+.openlayers-flow {
   display: grid;
   gap: 8px;
   list-style: none;
@@ -237,7 +240,8 @@ h2 {
   padding: 0;
 }
 
-.monorepo-relations li {
+.monorepo-relations li,
+.openlayers-flow li {
   align-items: center;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
@@ -248,38 +252,46 @@ h2 {
 }
 
 .monorepo-relations code,
-.monorepo-code code {
+.monorepo-code code,
+.openlayers-flow code,
+.openlayers-code code {
   color: #0e7490;
   font-size: 12px;
   overflow-wrap: anywhere;
 }
 
-.monorepo-relations span {
+.monorepo-relations span,
+.openlayers-flow span {
   color: #64748b;
   font-size: 11px;
   font-weight: 800;
   text-align: center;
 }
 
-.monorepo-code {
+.monorepo-code,
+.openlayers-code {
   display: grid;
   gap: 10px;
   margin: 0;
 }
 
 .monorepo-code div,
-.monorepo-code dd {
+.monorepo-code dd,
+.openlayers-code div,
+.openlayers-code dd {
   display: grid;
   gap: 6px;
 }
 
-.monorepo-code dt {
+.monorepo-code dt,
+.openlayers-code dt {
   color: #64748b;
   font-size: 12px;
   font-weight: 800;
 }
 
-.monorepo-code dd {
+.monorepo-code dd,
+.openlayers-code dd {
   margin: 0;
 }
 
@@ -1261,12 +1273,14 @@ h2 {
     grid-template-columns: 1fr;
   }
 
-  .monorepo-relations li {
+  .monorepo-relations li,
+  .openlayers-flow li {
     align-items: start;
     grid-template-columns: 1fr;
   }
 
-  .monorepo-relations span {
+  .monorepo-relations span,
+  .openlayers-flow span {
     text-align: left;
   }
 

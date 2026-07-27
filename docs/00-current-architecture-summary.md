@@ -15,7 +15,7 @@
 
 면접관이나 사용자가 화면을 봤을 때 단순히 "대시보드를 만들었다"에서 끝나지 않도록 X-Ray를 둔다. X-Ray는 어떤 UI가 어느 FSD 계층, 패키지, 기술스택에서 왔는지 직접 탐색하게 하는 학습 증명 장치다.
 
-현재 X-Ray selector는 전체, FSD-style, Module Federation 경계를 구분해 표시한다. 이후에는 같은 방식으로 다음 관점을 단계적으로 추가한다.
+현재 X-Ray selector는 전체, FSD-style, Module Federation, Monorepo, OpenLayers 경계를 구분해 표시한다. 이후에는 같은 방식으로 다음 관점을 단계적으로 추가한다.
 
 ```txt
 architecture → FSD-style UI boundary

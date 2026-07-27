@@ -61,6 +61,28 @@ apps/web/app/performance/page.tsx
 
 기존 `XRayBox` 구현은 수정하지 않았다. 각 화면이 이미 `enabled={xray}`를 사용하고 있었기 때문에 상태 공급자만 로컬 state에서 공통 hook으로 바꿨다.
 
+## 선택 이동과 페이지 고정의 경계
+
+기술별 대표 화면 이동은 selector를 직접 바꾼 순간에만 실행한다.
+
+```ts
+function selectMode(nextMode: XRayMode) {
+  modeRef.current = nextMode;
+  setMode(nextMode);
+  router.replace(`${getXRayPathname(nextMode, pathname)}?${url.searchParams.toString()}`);
+}
+```
+
+`Module Federation`과 `Monorepo`는 홈, `OpenLayers`는 지도 화면으로 한 번 이동한다. 그 뒤 사용자가 링크로 다른 페이지를 열면 pathname 감시 코드는 이동 규칙을 다시 실행하지 않고 현재 페이지에 `xray` query만 유지한다.
+
+```txt
+/risk-3d에서 Monorepo 선택 → /?xray=monorepo
+지도 관제 클릭 → /map?xray=monorepo
+다시 홈으로 강제 이동하지 않음
+```
+
+설정 위치가 `apps/web/app/xray-selector.tsx`인 이유는 selector 변경, 전역 mode, URL 동기화가 모두 이 Provider의 책임이기 때문이다. 각 페이지에 이동 조건을 나누어 넣지 않는다.
+
 ## 현재 각 옵션의 의미
 
 `끄기`는 모든 X-Ray 경계와 라벨을 제거한다.

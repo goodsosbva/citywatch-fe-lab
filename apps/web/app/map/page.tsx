@@ -27,6 +27,7 @@ import { OpenLayersIncidentMap } from "./openlayers-incident-map";
 export default function MapPage() {
   const dispatch = useAppDispatch();
   const { enabled: xray } = useXRay();
+  const { enabled: openLayersXray, mode } = useXRay(["openlayers"]);
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
@@ -126,9 +127,10 @@ export default function MapPage() {
 
           <div className="map-layout">
             <XRayBox
-              enabled={xray}
+              enabled={xray || openLayersXray}
               label="widget/IncidentMapBoard"
               packageName="apps/web"
+              proofs={["fsd-style", "openlayers"]}
               stacks={["OpenLayers", "OpenStreetMap", "CSS"]}
             >
               <section
@@ -182,9 +184,10 @@ export default function MapPage() {
                 </XRayBox>
 
                 <XRayBox
-                  enabled={xray}
+                  enabled={xray || openLayersXray}
                   label="feature/map/RenderIncidentMarkers"
                   packageName="apps/web"
+                  proofs={["fsd-style", "openlayers"]}
                   stacks={["OpenLayers", "OpenStreetMap Tile", "Canvas"]}
                 >
                   <OpenLayersIncidentMap
@@ -241,9 +244,90 @@ export default function MapPage() {
               </aside>
             </XRayBox>
           </div>
+
+          {mode === "openlayers" ? (
+            <XRayBox
+              enabled={openLayersXray}
+              label="feature/map/OpenLayersPipeline"
+              packageName="apps/web"
+              proofs={["openlayers"]}
+              stacks={["OpenLayers", "OpenStreetMap", "VectorSource", "VectorLayer"]}
+            >
+              <OpenLayersEvidencePanel />
+            </XRayBox>
+          ) : null}
         </section>
       </XRayBox>
     </main>
+  );
+}
+
+function OpenLayersEvidencePanel() {
+  return (
+    <aside
+      aria-labelledby="openlayers-evidence-title"
+      className="panel openlayers-evidence"
+    >
+      <div className="panel-title-row">
+        <h2 id="openlayers-evidence-title">OpenLayers 증거</h2>
+        <Badge tone="success">실제 지도 렌더링</Badge>
+      </div>
+
+      <p>
+        REST 사고 좌표를 OpenLayers 객체로 변환하고, OpenStreetMap 타일 위에
+        선택 가능한 벡터 마커로 표시합니다.
+      </p>
+
+      <ul className="openlayers-flow">
+        <li>
+          <code>Incident.location</code>
+          <span>fromLonLat</span>
+          <code>Feature&lt;Point&gt;</code>
+        </li>
+        <li>
+          <code>VectorSource</code>
+          <span>feeds</span>
+          <code>VectorLayer</code>
+        </li>
+        <li>
+          <code>OSM TileLayer</code>
+          <span>composed in</span>
+          <code>Map</code>
+        </li>
+        <li>
+          <code>singleclick</code>
+          <span>dispatches</span>
+          <code>selectedIncidentId</code>
+        </li>
+      </ul>
+
+      <dl className="openlayers-code">
+        <div>
+          <dt>좌표 투영과 Feature 생성</dt>
+          <dd>
+            <code>new Point(fromLonLat([longitude, latitude]))</code>
+          </dd>
+        </div>
+        <div>
+          <dt>벡터 데이터 연결</dt>
+          <dd>
+            <code>source.addFeatures(features)</code>
+          </dd>
+        </div>
+        <div>
+          <dt>지도 클릭 선택</dt>
+          <dd>
+            <code>map.on(&quot;singleclick&quot;, handler)</code>
+          </dd>
+        </div>
+        <div>
+          <dt>React 종료 정리</dt>
+          <dd>
+            <code>unByKey(clickKey); map.setTarget(undefined)</code>
+          </dd>
+        </div>
+      </dl>
+    </aside>
   );
 }
 
