@@ -21,7 +21,7 @@ import {
   setSelectedIncidentId,
 } from "../incidents/incident-control-slice";
 import { useAppDispatch, useAppSelector } from "../store-hooks";
-import { useXRay, XRaySelector } from "../xray-selector";
+import { useXRay } from "../xray-selector";
 import { OpenLayersIncidentMap } from "./openlayers-incident-map";
 
 export default function MapPage() {
@@ -77,21 +77,6 @@ export default function MapPage() {
         <div>
           <p className="eyebrow">Map Control</p>
           <h1>지도 사고 관제</h1>
-        </div>
-        <div className="topbar-actions">
-          <Link className="nav-link nav-link--strong" href="/risk-3d">
-            3D 위험 구역
-          </Link>
-          <Link className="nav-link nav-link--strong" href="/incidents">
-            사고 목록
-          </Link>
-          <Link className="nav-link nav-link--strong" href="/realtime">
-            실시간 피드
-          </Link>
-          <Link className="nav-link" href="/">
-            관제 홈
-          </Link>
-          <XRaySelector />
         </div>
       </header>
 

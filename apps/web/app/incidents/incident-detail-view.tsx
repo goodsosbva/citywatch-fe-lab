@@ -3,10 +3,9 @@
 import type { Incident, IncidentStatus } from "@citywatch/api-types";
 import { calculateIncidentRisk, incidentStatuses } from "@citywatch/api-types";
 import { Badge, SeverityBadge, XRayBox } from "@citywatch/ui";
-import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../store-hooks";
-import { useXRay, XRaySelector } from "../xray-selector";
+import { useXRay } from "../xray-selector";
 import {
   selectSelectedIncidentId,
   setSelectedIncidentId,
@@ -92,12 +91,6 @@ export function IncidentDetailView({ incidentId }: { incidentId: string }) {
         <div>
           <p className="eyebrow">Incident Detail</p>
           <h1>{incident?.title ?? "사고 상세 관제"}</h1>
-        </div>
-        <div className="topbar-actions">
-          <Link className="nav-link" href="/incidents">
-            사고 목록
-          </Link>
-          <XRaySelector />
         </div>
       </header>
 

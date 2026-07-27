@@ -2,9 +2,8 @@
 
 import type { Incident } from "@citywatch/api-types";
 import { Badge, XRayBox } from "@citywatch/ui";
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { useXRay, XRaySelector } from "../xray-selector";
+import { useXRay } from "../xray-selector";
 import { fetchPerformanceIncidents } from "../incidents/incident-api";
 import { RiskZoneScene } from "../risk-3d/risk-zone-scene";
 import { ClusteredPerformanceMap } from "./clustered-performance-map";
@@ -69,21 +68,6 @@ export default function PerformancePage() {
         <div>
           <p className="eyebrow">Performance Control</p>
           <h1>대량 사고 관제</h1>
-        </div>
-        <div className="topbar-actions">
-          <Link className="nav-link nav-link--strong" href="/map">
-            지도 관제
-          </Link>
-          <Link className="nav-link nav-link--strong" href="/realtime">
-            실시간 피드
-          </Link>
-          <Link className="nav-link" href="/incidents">
-            사고 목록
-          </Link>
-          <Link className="nav-link" href="/">
-            관제 홈
-          </Link>
-          <XRaySelector />
         </div>
       </header>
 

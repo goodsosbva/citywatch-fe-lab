@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "@citywatch/ui/styles.css";
 import "ol/ol.css";
 import "./globals.css";
+import { AppNavigation } from "./app-navigation";
 import { StoreProvider } from "./store-provider";
 import { XRayProvider } from "./xray-selector";
 
@@ -18,7 +19,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="ko">
       <body>
         <StoreProvider>
-          <XRayProvider>{children}</XRayProvider>
+          <XRayProvider>
+            <AppNavigation />
+            {children}
+          </XRayProvider>
         </StoreProvider>
       </body>
     </html>

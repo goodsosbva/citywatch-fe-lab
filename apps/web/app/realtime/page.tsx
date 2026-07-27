@@ -7,9 +7,8 @@ import {
   type RealtimeMessage,
 } from "@citywatch/api-types";
 import { Badge, XRayBox, type BadgeTone } from "@citywatch/ui";
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { useXRay, XRaySelector } from "../xray-selector";
+import { useXRay } from "../xray-selector";
 import { incidentStatusLabels } from "../incidents/incident-format";
 
 type ConnectionMode = "connecting" | "websocket" | "polling" | "offline";
@@ -167,21 +166,6 @@ export default function RealtimePage() {
         <div>
           <p className="eyebrow">Realtime Control</p>
           <h1>실시간 사고 피드</h1>
-        </div>
-        <div className="topbar-actions">
-          <Link className="nav-link nav-link--strong" href="/map">
-            지도 관제
-          </Link>
-          <Link className="nav-link nav-link--strong" href="/risk-3d">
-            3D 위험 구역
-          </Link>
-          <Link className="nav-link" href="/incidents">
-            사고 목록
-          </Link>
-          <Link className="nav-link" href="/">
-            관제 홈
-          </Link>
-          <XRaySelector />
         </div>
       </header>
 
