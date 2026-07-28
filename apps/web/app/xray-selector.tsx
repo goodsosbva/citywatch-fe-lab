@@ -3,7 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 
-export type XRayProof = "fsd-style" | "module-federation" | "monorepo";
+export type XRayProof = "fsd-style" | "module-federation" | "monorepo" | "openlayers";
 type XRayMode = "off" | "all" | XRayProof;
 
 const XRayContext = createContext<{ mode: XRayMode; setMode: (mode: XRayMode) => void } | null>(null);
@@ -13,26 +13,36 @@ export function XRayProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const initialized = useRef(false);
   const [mode, setMode] = useState<XRayMode>("all");
+  const modeRef = useRef<XRayMode>("all");
 
   useEffect(() => {
     const url = new URL(window.location.href);
 
     if (!initialized.current) {
       initialized.current = true;
-      const initialMode = getXRayMode(url.searchParams.get("xray"));
-      setMode(initialMode);
-      if (url.searchParams.get("xray") === initialMode) return;
-      url.searchParams.set("xray", initialMode);
-    } else if (url.searchParams.get("xray") === mode) {
-      return;
-    } else {
-      url.searchParams.set("xray", mode);
+      modeRef.current = getXRayMode(url.searchParams.get("xray"));
+      setMode(modeRef.current);
     }
 
-    router.replace(`${pathname}?${url.searchParams.toString()}`, { scroll: false });
-  }, [mode, pathname, router]);
+    if (url.searchParams.get("xray") === modeRef.current) return;
 
-  return <XRayContext value={{ mode, setMode }}>{children}</XRayContext>;
+    url.searchParams.set("xray", modeRef.current);
+    router.replace(`${pathname}?${url.searchParams.toString()}`, {
+      scroll: false,
+    });
+  }, [pathname, router]);
+
+  function selectMode(nextMode: XRayMode) {
+    const url = new URL(window.location.href);
+    modeRef.current = nextMode;
+    setMode(nextMode);
+    url.searchParams.set("xray", nextMode);
+    router.replace(`${getXRayPathname(nextMode, pathname)}?${url.searchParams.toString()}`, {
+      scroll: false,
+    });
+  }
+
+  return <XRayContext value={{ mode, setMode: selectMode }}>{children}</XRayContext>;
 }
 
 export function XRaySelector() {
@@ -46,11 +56,12 @@ export function XRaySelector() {
         onChange={(event) => setMode(event.target.value as XRayMode)}
         value={mode}
       >
-        <option value="off">끄기</option>
+        <option value="off">X-Ray만 끄기</option>
         <option value="all">전체</option>
         <option value="fsd-style">FSD-style</option>
         <option value="module-federation">Module Federation</option>
         <option value="monorepo">Monorepo</option>
+        <option value="openlayers">OpenLayers</option>
       </select>
     </label>
   );
@@ -74,7 +85,14 @@ function getXRayMode(value: string | null): XRayMode {
   return value === "off" ||
     value === "fsd-style" ||
     value === "module-federation" ||
-    value === "monorepo"
+    value === "monorepo" ||
+    value === "openlayers"
     ? value
     : "all";
+}
+
+function getXRayPathname(mode: XRayMode, currentPathname: string) {
+  if (mode === "module-federation" || mode === "monorepo") return "/";
+  if (mode === "openlayers") return "/map";
+  return currentPathname;
 }

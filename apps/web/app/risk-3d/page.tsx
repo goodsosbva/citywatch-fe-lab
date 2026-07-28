@@ -24,7 +24,7 @@ import {
   setSelectedIncidentId,
 } from "../incidents/incident-control-slice";
 import { useAppDispatch, useAppSelector } from "../store-hooks";
-import { useXRay, XRaySelector } from "../xray-selector";
+import { useXRay } from "../xray-selector";
 import { OpenLayersIncidentMap } from "../map/openlayers-incident-map";
 import { RiskZoneScene } from "./risk-zone-scene";
 
@@ -89,21 +89,6 @@ export default function Risk3DPage() {
         <div>
           <p className="eyebrow">3D Risk Control</p>
           <h1>3D 위험 구역 관제</h1>
-        </div>
-        <div className="topbar-actions">
-          <Link className="nav-link nav-link--strong" href="/map">
-            지도 관제
-          </Link>
-          <Link className="nav-link" href="/realtime">
-            실시간 피드
-          </Link>
-          <Link className="nav-link" href="/incidents">
-            사고 목록
-          </Link>
-          <Link className="nav-link" href="/">
-            관제 홈
-          </Link>
-          <XRaySelector />
         </div>
       </header>
 

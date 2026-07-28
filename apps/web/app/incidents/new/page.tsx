@@ -10,7 +10,7 @@ import { Badge, XRayBox } from "@citywatch/ui";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
-import { useXRay, XRaySelector } from "../../xray-selector";
+import { useXRay } from "../../xray-selector";
 import { createIncident } from "../incident-api";
 import {
   incidentCategoryLabels,
@@ -91,15 +91,6 @@ export default function NewIncidentPage() {
         <div>
           <p className="eyebrow">Incident Intake</p>
           <h1>사고 등록</h1>
-        </div>
-        <div className="topbar-actions">
-          <Link className="nav-link" href="/incidents">
-            사고 목록
-          </Link>
-          <Link className="nav-link" href="/">
-            관제 홈
-          </Link>
-          <XRaySelector />
         </div>
       </header>
 

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { AnalyticsRemotePanel } from "./analytics-remote-panel";
 import { fetchIncidents } from "./incidents/incident-api";
-import { useXRay, XRaySelector } from "./xray-selector";
+import { useXRay } from "./xray-selector";
 
 export function CityWatchShell() {
   const { enabled: xray } = useXRay();
@@ -47,24 +47,6 @@ export function CityWatchShell() {
           <p className="eyebrow">CityWatch FE Lab</p>
           <h1>도시 안전 관제 X-Ray Shell</h1>
         </div>
-        <div className="topbar-actions">
-          <Link className="nav-link nav-link--strong" href="/map">
-            지도 관제
-          </Link>
-          <Link className="nav-link nav-link--strong" href="/risk-3d">
-            3D 위험 구역
-          </Link>
-          <Link className="nav-link nav-link--strong" href="/realtime">
-            실시간 피드
-          </Link>
-          <Link className="nav-link nav-link--strong" href="/performance">
-            대량 관제
-          </Link>
-          <Link className="nav-link" href="/incidents">
-            사고 목록
-          </Link>
-          <XRaySelector />
-        </div>
       </header>
 
       <XRayBox enabled={xray} label="app/home/HomePage" layer="app" packageName="apps/web" stacks={["Next App Router", "React", "TypeScript"]}>
@@ -77,19 +59,6 @@ export function CityWatchShell() {
               <Metric title="영향 인원" value={stats.affectedPeople} tone="info" />
             </div>
           </XRayBox>
-
-          {mode === "monorepo" ? (
-            <XRayBox
-              enabled={monorepoXray}
-              label="package/web/WorkspaceConsumer"
-              layer="package"
-              packageName="apps/web"
-              proofs={["monorepo"]}
-              stacks={["npm workspaces", "Local Package Imports"]}
-            >
-              <MonorepoEvidencePanel />
-            </XRayBox>
-          ) : null}
 
           {!loading && !error ? (
             <AnalyticsRemotePanel incidents={incidents} />
@@ -137,6 +106,19 @@ export function CityWatchShell() {
               </section>
             </XRayBox>
           </XRayBox>
+
+          {mode === "monorepo" ? (
+            <XRayBox
+              enabled={monorepoXray}
+              label="package/web/WorkspaceConsumer"
+              layer="package"
+              packageName="apps/web"
+              proofs={["monorepo"]}
+              stacks={["npm workspaces", "Local Package Imports"]}
+            >
+              <MonorepoEvidencePanel />
+            </XRayBox>
+          ) : null}
         </section>
       </XRayBox>
     </main>

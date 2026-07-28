@@ -10,7 +10,7 @@ import { Badge, SeverityBadge, XRayBox } from "@citywatch/ui";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../store-hooks";
-import { useXRay, XRaySelector } from "../xray-selector";
+import { useXRay } from "../xray-selector";
 import {
   resetIncidentFilters,
   selectActiveIncidentFilterCount,
@@ -93,24 +93,6 @@ export default function IncidentsPage() {
         <div>
           <p className="eyebrow">Incident Control</p>
           <h1>사고 목록 관제</h1>
-        </div>
-        <div className="topbar-actions">
-          <Link className="nav-link nav-link--strong" href="/incidents/new">
-            사고 등록
-          </Link>
-          <Link className="nav-link nav-link--strong" href="/map">
-            지도 관제
-          </Link>
-          <Link className="nav-link nav-link--strong" href="/risk-3d">
-            3D 위험 구역
-          </Link>
-          <Link className="nav-link nav-link--strong" href="/realtime">
-            실시간 피드
-          </Link>
-          <Link className="nav-link" href="/">
-            관제 홈
-          </Link>
-          <XRaySelector />
         </div>
       </header>
 
