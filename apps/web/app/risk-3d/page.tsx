@@ -33,7 +33,7 @@ type RiskViewMode = "2d" | "3d";
 
 export default function Risk3DPage() {
   const dispatch = useAppDispatch();
-  const { enabled: xray } = useXRay();
+  const { enabled: xray, mode } = useXRay();
   const [viewMode, setViewMode] = useState<RiskViewMode>("2d");
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,6 +46,10 @@ export default function Risk3DPage() {
     [incidents, selectedIncidentId],
   );
   const stats = useMemo(() => getRiskStats(incidents), [incidents]);
+
+  useEffect(() => {
+    if (mode === "r3f" && selectedIncident) setViewMode("3d");
+  }, [mode, selectedIncident]);
 
   useEffect(() => {
     let active = true;
@@ -173,9 +177,10 @@ export default function Risk3DPage() {
               <>
                 <XRayBox
                   className="risk-3d-xray-scene"
-                  enabled={xray}
+                  enabled={xray || (mode === "r3f" && viewMode === "3d")}
                   label={viewMode === "2d" ? "widget/OpenLayersIncidentMap" : "widget/RiskZoneScene"}
                   packageName="apps/web"
+                  proofs={viewMode === "2d" ? ["fsd-style"] : ["fsd-style", "r3f"]}
                   stacks={viewMode === "2d" ? ["OpenLayers", "OpenStreetMap"] : ["React Three Fiber", "Three.js", "OpenStreetMap"]}
                 >
                   {viewMode === "2d" ? (
@@ -215,6 +220,18 @@ export default function Risk3DPage() {
               </>
             ) : null}
           </section>
+
+          {mode === "r3f" ? (
+            <XRayBox
+              enabled={mode === "r3f"}
+              label="feature/risk-3d/R3FThreePipeline"
+              packageName="apps/web"
+              proofs={["r3f"]}
+              stacks={["React Three Fiber", "Three.js", "WebGL", "OpenStreetMap"]}
+            >
+              <R3FEvidencePanel />
+            </XRayBox>
+          ) : null}
 
           <div className="risk-3d-detail-layout">
             <XRayBox
@@ -262,6 +279,75 @@ export default function Risk3DPage() {
         </section>
       </XRayBox>
     </main>
+  );
+}
+
+function R3FEvidencePanel() {
+  return (
+    <aside
+      aria-labelledby="r3f-evidence-title"
+      className="panel technology-evidence"
+    >
+      <div className="panel-title-row">
+        <h2 id="r3f-evidence-title">R3F / Three.js 증거</h2>
+        <Badge tone="success">실제 WebGL 렌더링</Badge>
+      </div>
+
+      <p>
+        선택한 사고 한 건을 위험 점수와 지도 타일 데이터로 변환한 뒤,
+        R3F Canvas 안에서 Three.js geometry와 material로 렌더링합니다.
+      </p>
+
+      <ul className="technology-flow">
+        <li>
+          <code>Incident</code>
+          <span>calculateIncidentRisk</span>
+          <code>RiskZone</code>
+        </li>
+        <li>
+          <code>Incident.location</code>
+          <span>createMapTiles</span>
+          <code>OSM Texture[]</code>
+        </li>
+        <li>
+          <code>RiskZone</code>
+          <span>renders in</span>
+          <code>R3F Canvas</code>
+        </li>
+        <li>
+          <code>cylinderGeometry</code>
+          <span>styled by</span>
+          <code>meshStandardMaterial</code>
+        </li>
+      </ul>
+
+      <dl className="technology-code">
+        <div>
+          <dt>R3F 장면 진입점</dt>
+          <dd>
+            <code>&lt;Canvas camera=&#123;&#123; fov: 38 &#125;&#125;&gt;</code>
+          </dd>
+        </div>
+        <div>
+          <dt>지도 텍스처 로딩</dt>
+          <dd>
+            <code>useLoader(TextureLoader, tileUrls)</code>
+          </dd>
+        </div>
+        <div>
+          <dt>위험 기둥 생성</dt>
+          <dd>
+            <code>&lt;cylinderGeometry args=&#123;[...]&#125; /&gt;</code>
+          </dd>
+        </div>
+        <div>
+          <dt>Three.js 자원 정리</dt>
+          <dd>
+            <code>controls.dispose()</code>
+          </dd>
+        </div>
+      </dl>
+    </aside>
   );
 }
 

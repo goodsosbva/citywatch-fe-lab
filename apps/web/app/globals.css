@@ -245,20 +245,20 @@ h2 {
 }
 
 .monorepo-evidence,
-.openlayers-evidence {
+.technology-evidence {
   display: grid;
   gap: 14px;
 }
 
 .monorepo-evidence p,
-.openlayers-evidence p {
+.technology-evidence p {
   color: #475569;
   line-height: 1.6;
   margin: 0;
 }
 
 .monorepo-relations,
-.openlayers-flow {
+.technology-flow {
   display: grid;
   gap: 8px;
   list-style: none;
@@ -267,7 +267,7 @@ h2 {
 }
 
 .monorepo-relations li,
-.openlayers-flow li {
+.technology-flow li {
   align-items: center;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
@@ -279,15 +279,15 @@ h2 {
 
 .monorepo-relations code,
 .monorepo-code code,
-.openlayers-flow code,
-.openlayers-code code {
+.technology-flow code,
+.technology-code code {
   color: #0e7490;
   font-size: 12px;
   overflow-wrap: anywhere;
 }
 
 .monorepo-relations span,
-.openlayers-flow span {
+.technology-flow span {
   color: #64748b;
   font-size: 11px;
   font-weight: 800;
@@ -295,7 +295,7 @@ h2 {
 }
 
 .monorepo-code,
-.openlayers-code {
+.technology-code {
   display: grid;
   gap: 10px;
   margin: 0;
@@ -303,21 +303,21 @@ h2 {
 
 .monorepo-code div,
 .monorepo-code dd,
-.openlayers-code div,
-.openlayers-code dd {
+.technology-code div,
+.technology-code dd {
   display: grid;
   gap: 6px;
 }
 
 .monorepo-code dt,
-.openlayers-code dt {
+.technology-code dt {
   color: #64748b;
   font-size: 12px;
   font-weight: 800;
 }
 
 .monorepo-code dd,
-.openlayers-code dd {
+.technology-code dd {
   margin: 0;
 }
 
@@ -1322,13 +1322,13 @@ h2 {
   }
 
   .monorepo-relations li,
-  .openlayers-flow li {
+  .technology-flow li {
     align-items: start;
     grid-template-columns: 1fr;
   }
 
   .monorepo-relations span,
-  .openlayers-flow span {
+  .technology-flow span {
     text-align: left;
   }
 

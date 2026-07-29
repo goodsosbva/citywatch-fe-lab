@@ -251,7 +251,7 @@ function OpenLayersEvidencePanel() {
   return (
     <aside
       aria-labelledby="openlayers-evidence-title"
-      className="panel openlayers-evidence"
+      className="panel technology-evidence"
     >
       <div className="panel-title-row">
         <h2 id="openlayers-evidence-title">OpenLayers 증거</h2>
@@ -263,7 +263,7 @@ function OpenLayersEvidencePanel() {
         선택 가능한 벡터 마커로 표시합니다.
       </p>
 
-      <ul className="openlayers-flow">
+      <ul className="technology-flow">
         <li>
           <code>Incident.location</code>
           <span>fromLonLat</span>
@@ -286,7 +286,7 @@ function OpenLayersEvidencePanel() {
         </li>
       </ul>
 
-      <dl className="openlayers-code">
+      <dl className="technology-code">
         <div>
           <dt>좌표 투영과 Feature 생성</dt>
           <dd>
