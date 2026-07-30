@@ -3,7 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 
-export type XRayProof = "fsd-style" | "module-federation" | "monorepo" | "openlayers";
+export type XRayProof = "fsd-style" | "module-federation" | "monorepo" | "openlayers" | "r3f";
 type XRayMode = "off" | "all" | XRayProof;
 
 const XRayContext = createContext<{ mode: XRayMode; setMode: (mode: XRayMode) => void } | null>(null);
@@ -62,6 +62,7 @@ export function XRaySelector() {
         <option value="module-federation">Module Federation</option>
         <option value="monorepo">Monorepo</option>
         <option value="openlayers">OpenLayers</option>
+        <option value="r3f">R3F / Three.js</option>
       </select>
     </label>
   );
@@ -86,7 +87,8 @@ function getXRayMode(value: string | null): XRayMode {
     value === "fsd-style" ||
     value === "module-federation" ||
     value === "monorepo" ||
-    value === "openlayers"
+    value === "openlayers" ||
+    value === "r3f"
     ? value
     : "all";
 }
@@ -94,5 +96,6 @@ function getXRayMode(value: string | null): XRayMode {
 function getXRayPathname(mode: XRayMode, currentPathname: string) {
   if (mode === "module-federation" || mode === "monorepo") return "/";
   if (mode === "openlayers") return "/map";
+  if (mode === "r3f") return "/risk-3d";
   return currentPathname;
 }
