@@ -3,7 +3,13 @@
 import { usePathname, useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 
-export type XRayProof = "fsd-style" | "module-federation" | "monorepo" | "openlayers" | "r3f";
+export type XRayProof =
+  | "fsd-style"
+  | "module-federation"
+  | "monorepo"
+  | "openlayers"
+  | "r3f"
+  | "websocket";
 type XRayMode = "off" | "all" | XRayProof;
 
 const XRayContext = createContext<{ mode: XRayMode; setMode: (mode: XRayMode) => void } | null>(null);
@@ -63,6 +69,7 @@ export function XRaySelector() {
         <option value="monorepo">Monorepo</option>
         <option value="openlayers">OpenLayers</option>
         <option value="r3f">R3F / Three.js</option>
+        <option value="websocket">WebSocket / Polling</option>
       </select>
     </label>
   );
@@ -88,7 +95,8 @@ function getXRayMode(value: string | null): XRayMode {
     value === "module-federation" ||
     value === "monorepo" ||
     value === "openlayers" ||
-    value === "r3f"
+    value === "r3f" ||
+    value === "websocket"
     ? value
     : "all";
 }
@@ -97,5 +105,6 @@ function getXRayPathname(mode: XRayMode, currentPathname: string) {
   if (mode === "module-federation" || mode === "monorepo") return "/";
   if (mode === "openlayers") return "/map";
   if (mode === "r3f") return "/risk-3d";
+  if (mode === "websocket") return "/realtime";
   return currentPathname;
 }
