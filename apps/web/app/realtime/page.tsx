@@ -26,7 +26,7 @@ type RealtimeUrls = {
 const maxVisibleEvents = 12;
 
 export default function RealtimePage() {
-  const { enabled: xray } = useXRay();
+  const { enabled: xray, mode } = useXRay();
   const [connection, setConnection] = useState<ConnectionState>({
     detail: "실시간 서버 연결을 준비합니다.",
     mode: "connecting",
@@ -178,9 +178,10 @@ export default function RealtimePage() {
       >
         <section aria-label="실시간 사고 피드" className="dashboard">
           <XRayBox
-            enabled={xray}
+            enabled={xray || mode === "websocket"}
             label="widget/RealtimeConnectionSummary"
             packageName="apps/web"
+            proofs={["fsd-style", "websocket"]}
             stacks={["WebSocket", "Polling", "Shared Types"]}
           >
             <div className="panel metric-grid">
@@ -201,9 +202,10 @@ export default function RealtimePage() {
 
           <div className="realtime-layout">
             <XRayBox
-              enabled={xray}
+              enabled={xray || mode === "websocket"}
               label="widget/RealtimeFeed"
               packageName="apps/web"
+              proofs={["fsd-style", "websocket"]}
               stacks={["WebSocket lifecycle", "fetch", "Polling fallback", "cleanup"]}
             >
               <section className="panel realtime-feed" aria-labelledby="realtime-feed-title">
@@ -232,9 +234,10 @@ export default function RealtimePage() {
                 ) : null}
 
                 <XRayBox
-                  enabled={xray}
+                  enabled={xray || mode === "websocket"}
                   label="feature/realtime/ValidateRealtimeEvents"
                   packageName="packages/api-types"
+                  proofs={["fsd-style", "websocket"]}
                   stacks={["Runtime validation", "TypeScript"]}
                 >
                   {events.length === 0 ? (
@@ -253,9 +256,10 @@ export default function RealtimePage() {
             </XRayBox>
 
             <XRayBox
-              enabled={xray}
+              enabled={xray || mode === "websocket"}
               label="entity/realtime/RealtimeProof"
               packageName="packages/api-types"
+              proofs={["fsd-style", "websocket"]}
               stacks={["RealtimeEvent", "RealtimeMessage"]}
             >
               <aside className="panel realtime-proof" aria-labelledby="realtime-proof-title">
@@ -269,9 +273,105 @@ export default function RealtimePage() {
               </aside>
             </XRayBox>
           </div>
+
+          {mode === "websocket" ? (
+            <XRayBox
+              enabled={mode === "websocket"}
+              label="feature/realtime/WebSocketPollingPipeline"
+              packageName="apps/web"
+              proofs={["websocket"]}
+              stacks={["WebSocket", "Polling", "Runtime validation", "cleanup"]}
+            >
+              <WebSocketPollingEvidencePanel
+                connection={connection}
+                lastEventId={lastEventIdRef.current}
+                urls={urls}
+              />
+            </XRayBox>
+          ) : null}
         </section>
       </XRayBox>
     </main>
+  );
+}
+
+function WebSocketPollingEvidencePanel({
+  connection,
+  lastEventId,
+  urls,
+}: {
+  connection: ConnectionState;
+  lastEventId: number;
+  urls?: RealtimeUrls;
+}) {
+  return (
+    <aside
+      aria-labelledby="websocket-evidence-title"
+      className="panel technology-evidence"
+    >
+      <div className="panel-title-row">
+        <h2 id="websocket-evidence-title">WebSocket / Polling 증거</h2>
+        <Badge tone={getConnectionTone(connection.mode)}>
+          {getConnectionLabel(connection.mode)}
+        </Badge>
+      </div>
+
+      <p>
+        WebSocket으로 먼저 이벤트를 받고, 연결이 닫히면 마지막 이벤트 ID 다음부터
+        HTTP polling으로 이어받습니다. 두 경로의 외부 데이터는 화면에 저장하기 전에
+        런타임 타입 가드로 검증합니다.
+      </p>
+
+      <ul className="technology-flow">
+        <li>
+          <code>new WebSocket(url)</code>
+          <span>receives</span>
+          <code>socket.onmessage</code>
+        </li>
+        <li>
+          <code>event.data</code>
+          <span>JSON.parse + validates</span>
+          <code>isRealtimeEvent</code>
+        </li>
+        <li>
+          <code>socket.onclose</code>
+          <span>falls back to</span>
+          <code>pollEvents()</code>
+        </li>
+        <li>
+          <code>/events?after=id</code>
+          <span>validates</span>
+          <code>isRealtimeEventListResponse</code>
+        </li>
+      </ul>
+
+      <dl className="technology-code">
+        <div>
+          <dt>현재 연결</dt>
+          <dd>
+            <code>{urls?.websocket ?? "WebSocket URL 준비 중"}</code>
+          </dd>
+        </div>
+        <div>
+          <dt>Polling 이어받기 기준</dt>
+          <dd>
+            <code>{`${urls?.polling ?? "/events"}?after=${lastEventId}`}</code>
+          </dd>
+        </div>
+        <div>
+          <dt>공통 상태 반영</dt>
+          <dd>
+            <code>recordEvents(validatedEvents)</code>
+          </dd>
+        </div>
+        <div>
+          <dt>React 종료 정리</dt>
+          <dd>
+            <code>socket?.close(); clearTimeout(pollingTimer)</code>
+          </dd>
+        </div>
+      </dl>
+    </aside>
   );
 }
 
