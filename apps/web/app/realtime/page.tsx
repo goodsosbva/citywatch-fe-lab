@@ -236,7 +236,7 @@ export default function RealtimePage() {
                 <XRayBox
                   enabled={xray || mode === "websocket"}
                   label="feature/realtime/ValidateRealtimeEvents"
-                  packageName="packages/api-types"
+                  packageName="apps/web"
                   proofs={["fsd-style", "websocket"]}
                   stacks={["Runtime validation", "TypeScript"]}
                 >
@@ -258,7 +258,7 @@ export default function RealtimePage() {
             <XRayBox
               enabled={xray || mode === "websocket"}
               label="entity/realtime/RealtimeProof"
-              packageName="packages/api-types"
+              packageName="apps/web"
               proofs={["fsd-style", "websocket"]}
               stacks={["RealtimeEvent", "RealtimeMessage"]}
             >

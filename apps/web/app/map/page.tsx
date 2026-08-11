@@ -187,7 +187,7 @@ export default function MapPage() {
             <XRayBox
               enabled={xray}
               label="entity/incident/IncidentMapSelection"
-              packageName="packages/api-types"
+              packageName="apps/web"
               stacks={["TypeScript", "Redux Selected State"]}
             >
               <aside

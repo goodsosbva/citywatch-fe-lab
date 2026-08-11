@@ -71,6 +71,47 @@ textarea {
   justify-content: flex-end;
 }
 
+.route-loading {
+  min-height: 320px;
+}
+
+.route-loading__panel {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+}
+
+.route-loading__panel > div {
+  display: grid;
+  gap: 6px;
+}
+
+.route-loading__panel > div > p:last-child {
+  color: #64748b;
+}
+
+.route-loading__spinner {
+  animation: route-loading-spin 0.8s linear infinite;
+  border: 4px solid #dbeafe;
+  border-radius: 50%;
+  border-top-color: #2563eb;
+  flex: 0 0 auto;
+  height: 34px;
+  width: 34px;
+}
+
+@keyframes route-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-loading__spinner {
+    animation: none;
+  }
+}
+
 .eyebrow {
   color: #2563eb;
   font-size: 13px;
@@ -250,11 +291,227 @@ h2 {
   gap: 14px;
 }
 
+.monorepo-global {
+  padding-top: 0;
+}
+
+body[data-xray-mode="monorepo"] .cw-xray-box {
+  --cw-xray-color: #2563eb;
+  outline: 1px dashed var(--cw-xray-color);
+  outline-offset: -1px;
+}
+
+body[data-xray-mode="monorepo"] .cw-xray-box[data-xray-package="apps/analytics-remote"] {
+  --cw-xray-color: #ea580c;
+}
+
+body[data-xray-mode="monorepo"] .cw-xray-label {
+  background: #ffffff;
+  border: 1px solid var(--cw-xray-color);
+  color: var(--cw-xray-color);
+  font-size: 0;
+}
+
+body[data-xray-mode="monorepo"] .cw-xray-label::after {
+  content: attr(data-xray-package) " · " attr(data-xray-component);
+  font-size: 10px;
+}
+
+body[data-xray-mode="monorepo"] .cw-badge[data-workspace="packages/ui"]::before {
+  content: "packages/ui · ";
+  font-size: 9px;
+  opacity: 0.75;
+}
+
 .monorepo-evidence p,
 .technology-evidence p {
   color: #475569;
   line-height: 1.6;
   margin: 0;
+}
+
+.monorepo-map {
+  display: grid;
+  gap: 12px;
+}
+
+.monorepo-root {
+  background: #0f172a;
+  border-radius: 10px;
+  color: #ffffff;
+  display: grid;
+  gap: 5px;
+  justify-items: center;
+  padding: 16px;
+  text-align: center;
+}
+
+.monorepo-root span {
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.monorepo-root strong {
+  font-size: 18px;
+}
+
+.monorepo-root code {
+  color: #67e8f9;
+  font-size: 12px;
+}
+
+.monorepo-workspace-columns {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.monorepo-workspace-group {
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+}
+
+.monorepo-workspace-group h3 {
+  font-size: 13px;
+  margin: 0 0 2px;
+}
+
+.monorepo-workspace-group--apps {
+  background: #eff6ff;
+  border-color: #93c5fd;
+}
+
+.monorepo-workspace-group--packages {
+  background: #ecfeff;
+  border-color: #67e8f9;
+}
+
+.monorepo-workspace-card {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-left: 4px solid #64748b;
+  border-radius: 8px;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  min-width: 0;
+  padding: 10px;
+}
+
+.monorepo-workspace-group--apps .monorepo-workspace-card {
+  border-left-color: #2563eb;
+}
+
+.monorepo-workspace-group--packages .monorepo-workspace-card {
+  border-left-color: #0891b2;
+}
+
+.monorepo-workspace-card div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.monorepo-workspace-card code {
+  color: #0f172a;
+  font-size: 12px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.monorepo-workspace-card span {
+  color: #64748b;
+  font-size: 11px;
+}
+
+.monorepo-workspace-card--current {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px #bfdbfe;
+}
+
+.monorepo-workspace-card--current > strong {
+  background: #dbeafe;
+  border-radius: 999px;
+  color: #1d4ed8;
+  flex: 0 0 auto;
+  font-size: 10px;
+  padding: 4px 7px;
+}
+
+.workspace-source {
+  border: 1px solid;
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.2;
+  padding: 4px 7px;
+  white-space: nowrap;
+}
+
+.workspace-source--app {
+  background: #dbeafe;
+  border-color: #93c5fd;
+  color: #1d4ed8;
+}
+
+.workspace-source--package {
+  background: #cffafe;
+  border-color: #67e8f9;
+  color: #0e7490;
+}
+
+.workspace-source--contract {
+  background: #ede9fe;
+  border-color: #c4b5fd;
+  color: #6d28d9;
+}
+
+.workspace-source--remote {
+  background: #ffedd5;
+  border-color: #fdba74;
+  color: #c2410c;
+}
+
+.monorepo-page-sources {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+}
+
+.monorepo-page-sources h3 {
+  font-size: 13px;
+  margin: 0;
+}
+
+.monorepo-page-sources ul {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.monorepo-page-sources li {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.monorepo-page-sources li > strong {
+  color: #334155;
+  font-size: 12px;
+  margin-right: auto;
 }
 
 .monorepo-relations,
@@ -1318,6 +1575,10 @@ h2 {
   .detail-hero,
   .incident-meta,
   .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .monorepo-workspace-columns {
     grid-template-columns: 1fr;
   }
 

@@ -47,7 +47,14 @@ export function XRayBox({
       title={title ?? getXRayTitle(label, packageName, stacks)}
       {...props}
     >
-      <span className="cw-xray-label">{getXRayDisplayLabel(label)}</span>
+      <span
+        aria-hidden="true"
+        className="cw-xray-label"
+        data-xray-component={label.split("/").at(-1)}
+        data-xray-package={packageName}
+      >
+        {getXRayDisplayLabel(label)}
+      </span>
       {children}
     </div>
   );

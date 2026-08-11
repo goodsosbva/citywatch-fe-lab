@@ -27,7 +27,7 @@ let runtimePromise: Promise<FederationRuntime> | undefined;
 let analyticsModulePromise: Promise<AnalyticsModule> | undefined;
 
 export function AnalyticsRemotePanel({ incidents }: { incidents: Incident[] }) {
-  const { enabled: xray, mode } = useXRay(["module-federation"]);
+  const { enabled: xray, mode } = useXRay(["module-federation", "monorepo"]);
   const [loadRun, setLoadRun] = useState(0);
   const [state, setState] = useState<AnalyticsState>({ status: "loading" });
 
@@ -56,7 +56,7 @@ export function AnalyticsRemotePanel({ incidents }: { incidents: Incident[] }) {
       enabled={xray}
       label="remote/analytics/AnalyticsMetrics"
       layer="remote"
-      packageName="apps/analytics-remote"
+      packageName={mode === "monorepo" ? "apps/web" : "apps/analytics-remote"}
       proofs={["module-federation"]}
       stacks={["Module Federation", "Vite Remote", "Runtime Manifest"]}
     >
@@ -92,7 +92,17 @@ export function AnalyticsRemotePanel({ incidents }: { incidents: Incident[] }) {
           </div>
         ) : null}
 
-        {AnalyticsMetrics ? <AnalyticsMetrics incidents={incidents} /> : null}
+        {AnalyticsMetrics ? (
+          <XRayBox
+            enabled={mode === "monorepo"}
+            label="remote/analytics/AnalyticsMetricsContent"
+            layer="remote"
+            packageName="apps/analytics-remote"
+            proofs={["monorepo"]}
+          >
+            <AnalyticsMetrics incidents={incidents} />
+          </XRayBox>
+        ) : null}
 
         {mode === "module-federation" ? (
           <ModuleFederationEvidencePanel status={state.status} />

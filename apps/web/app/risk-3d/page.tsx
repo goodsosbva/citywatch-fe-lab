@@ -261,7 +261,7 @@ export default function Risk3DPage() {
             <XRayBox
               enabled={xray}
               label="entity/incident/SelectedRiskZone"
-              packageName="packages/api-types"
+              packageName="apps/web"
               stacks={["Incident", "IncidentRisk"]}
             >
               <aside aria-labelledby="selected-risk-zone-title" className="panel risk-zone-detail-panel">

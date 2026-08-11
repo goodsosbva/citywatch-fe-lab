@@ -11,20 +11,18 @@
 /incidents/new
 → Zod Validation
 → Input Validation
-→ Accessibility
 ```
 
 새 API, 새 slice, 새 schema, 새 상태, 새 CSS, 새 의존성은 추가하지 않았다. 기존 동작을 증거 경계와 패널에 연결했다.
 
 ## 1. 이번 단계에서 추가된 기능
 
-X-Ray selector에 네 관점을 추가했다.
+X-Ray selector에 세 관점을 추가했다.
 
 ```txt
 REST API
 Redux
 Zod Validation
-Accessibility
 ```
 
 대표 경로는 다음과 같다.
@@ -33,7 +31,6 @@ Accessibility
 ?xray=rest-api      → /incidents
 ?xray=redux         → /incidents
 ?xray=zod           → /incidents/new
-?xray=accessibility → /incidents/new
 ```
 
 선택한 순간에만 대표 화면으로 안내한다. 그 뒤 다른 메뉴로 이동하면 현재 route를 유지하고 `xray` query만 따라간다.
@@ -47,7 +44,9 @@ apps/web/app/incidents/new/page.tsx
 docs/20-4-rest-redux-validation-xray.md
 ```
 
-## 2. 네 기술의 책임을 먼저 구분한다
+접근성은 선택해서 켜는 X-Ray 기술이 아니라 모든 화면이 항상 지켜야 하는 기본기다. 실제 `label`, `aria-*`, 키보드 조작은 유지하지만 selector mode와 전용 증거 패널은 두지 않는다.
+
+## 2. 세 기술의 책임을 먼저 구분한다
 
 ### 2.1 REST API
 
@@ -212,7 +211,6 @@ validateCreateIncidentInput
 | "rest-api"
 | "redux"
 | "zod"
-| "accessibility"
 ```
 
 표시 문자열을 proof 판단에 사용하지 않는다. 예를 들어 화면 문구가 `Zod Validation`에서 `Zod 입력 검증`으로 바뀌어도 proof ID `zod`는 유지할 수 있다.
@@ -223,14 +221,13 @@ validateCreateIncidentInput
 <option value="rest-api">REST API</option>
 <option value="redux">Redux</option>
 <option value="zod">Zod Validation</option>
-<option value="accessibility">Accessibility</option>
 ```
 
 사용자가 보게 되는 문구와 URL에 들어가는 안정적인 값이 분리된다.
 
 ### 4.3 URL 외부 입력 검증
 
-사용자는 주소를 직접 수정할 수 있다. 따라서 `getXRayMode`가 네 값을 허용 목록과 비교한다.
+사용자는 주소를 직접 수정할 수 있다. 따라서 `getXRayMode`가 세 값을 허용 목록과 비교한다.
 
 ```txt
 ?xray=zod
@@ -247,10 +244,10 @@ TypeScript의 `as XRayMode`는 런타임 URL을 검사하지 못한다.
 
 ```ts
 if (mode === "rest-api" || mode === "redux") return "/incidents";
-if (mode === "zod" || mode === "accessibility") return "/incidents/new";
+if (mode === "zod") return "/incidents/new";
 ```
 
-REST와 Redux는 목록 조회에서 가장 분명하게 연결된다. Zod와 접근성은 등록 폼에서 실제 오류 상태를 만들 수 있다.
+REST와 Redux는 목록 조회에서 가장 분명하게 연결되고, Zod는 등록 폼에서 실제 오류 상태를 만들 수 있다.
 
 대표 경로는 selector를 변경할 때만 사용한다. 일반 메뉴 이동 때 다시 계산하지 않으므로 사용자를 특정 페이지에 고정하지 않는다.
 
@@ -647,7 +644,7 @@ const { enabled: xray, mode } = useXRay();
 
 ```tsx
 enabled={xray || mode === "rest-api"}
-enabled={xray || mode === "zod" || mode === "accessibility"}
+enabled={xray || mode === "zod"}
 ```
 
 별도 `useRestXRay`, `useReduxXRay`, `useValidationXRay` helper는 만들지 않았다. 한 페이지에서 한 번 쓰는 직접 비교보다 간접 경로만 늘어나기 때문이다.
@@ -672,13 +669,13 @@ entity/incident/IncidentListItems
 
 ```txt
 widget/IncidentCreateForm
-→ rest-api, zod, accessibility
+→ rest-api, zod
 
 feature/incident/CreateIncident
-→ rest-api, zod, accessibility
+→ rest-api, zod
 
 entity/incident/CreateIncidentInput
-→ rest-api, zod, accessibility, Shared Validation
+→ rest-api, zod, Shared Validation
 ```
 
 ### 12.3 동적 증거 패널
@@ -806,10 +803,10 @@ handleSubmit
 
 빈 숫자 문자열은 `0`으로 오해하지 않도록 먼저 `NaN`으로 바뀌고 검증에 실패한다.
 
-## 16. 직접 실습 4 — 접근성
+## 16. 직접 실습 4 — 접근성 기본기
 
 ```txt
-http://127.0.0.1:3000/incidents/new?xray=accessibility
+http://127.0.0.1:3000/incidents/new
 ```
 
 마우스를 사용하지 않고 진행한다.
@@ -949,9 +946,6 @@ git diff --check
 
 /incidents/new?xray=zod 직접 접근
 → invalid submit 후 오류 수와 필드 오류 표시
-
-/incidents/new?xray=accessibility 직접 접근
-→ label·aria-invalid·aria-describedby·live region 표시
 
 다른 메뉴 이동
 → xray query는 유지

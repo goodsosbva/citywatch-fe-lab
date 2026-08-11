@@ -198,7 +198,7 @@ export default function IncidentsPage() {
                   <XRayBox
                     enabled={xray || mode === "rest-api"}
                     label="entity/incident/IncidentListItems"
-                    packageName="packages/api-types"
+                    packageName="apps/web"
                     proofs={["fsd-style", "rest-api"]}
                     stacks={["TypeScript", "Shared Contract", "@citywatch/ui"]}
                   >

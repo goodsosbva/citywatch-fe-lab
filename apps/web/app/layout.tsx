@@ -3,6 +3,7 @@ import "@citywatch/ui/styles.css";
 import "ol/ol.css";
 import "./globals.css";
 import { AppNavigation } from "./app-navigation";
+import { MonorepoWorkspaceMap } from "./monorepo-workspace-map";
 import { StoreProvider } from "./store-provider";
 import { XRayProvider } from "./xray-selector";
 
@@ -22,6 +23,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <XRayProvider>
             <AppNavigation />
             {children}
+            <MonorepoWorkspaceMap />
           </XRayProvider>
         </StoreProvider>
       </body>
