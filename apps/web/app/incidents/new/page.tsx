@@ -49,7 +49,7 @@ const initialForm: FormState = {
 
 export default function NewIncidentPage() {
   const router = useRouter();
-  const { enabled: xray } = useXRay();
+  const { enabled: xray, mode } = useXRay();
   const [form, setForm] = useState<FormState>(initialForm);
   const [fieldErrors, setFieldErrors] =
     useState<CreateIncidentValidationErrors>({});
@@ -103,9 +103,15 @@ export default function NewIncidentPage() {
       >
         <section className="dashboard" aria-label="사고 등록 관제">
           <XRayBox
-            enabled={xray}
+            enabled={
+              xray ||
+              mode === "rest-api" ||
+              mode === "zod" ||
+              mode === "accessibility"
+            }
             label="widget/IncidentCreateForm"
             packageName="apps/web"
+            proofs={["fsd-style", "rest-api", "zod", "accessibility"]}
             stacks={["React Form", "Accessibility"]}
           >
             <section className="panel" aria-labelledby="incident-create-title">
@@ -115,9 +121,15 @@ export default function NewIncidentPage() {
               </div>
 
               <XRayBox
-                enabled={xray}
+                enabled={
+                  xray ||
+                  mode === "rest-api" ||
+                  mode === "zod" ||
+                  mode === "accessibility"
+                }
                 label="feature/incident/CreateIncident"
                 packageName="apps/web"
+                proofs={["fsd-style", "rest-api", "zod", "accessibility"]}
                 stacks={["REST API", "Schema Validation", "Accessibility"]}
               >
                 <form
@@ -130,9 +142,15 @@ export default function NewIncidentPage() {
                   }
                 >
                   <XRayBox
-                    enabled={xray}
+                    enabled={
+                      xray ||
+                      mode === "rest-api" ||
+                      mode === "zod" ||
+                      mode === "accessibility"
+                    }
                     label="entity/incident/CreateIncidentInput"
                     packageName="packages/api-types"
+                    proofs={["fsd-style", "rest-api", "zod", "accessibility"]}
                     stacks={["TypeScript", "Shared Validation"]}
                   >
                     <div className="form-grid">
@@ -422,9 +440,171 @@ export default function NewIncidentPage() {
               ) : null}
             </section>
           </XRayBox>
+
+          {mode === "zod" || mode === "accessibility" ? (
+            <XRayBox
+              enabled
+              label={
+                mode === "zod"
+                  ? "feature/incident/ZodValidationPipeline"
+                  : "feature/incident/AccessibleFormFeedback"
+              }
+              packageName={mode === "zod" ? "packages/api-types" : "apps/web"}
+              proofs={[mode]}
+              stacks={
+                mode === "zod"
+                  ? ["Zod", "safeParse", "Shared Validation"]
+                  : ["label", "aria-invalid", "aria-describedby", "live region"]
+              }
+            >
+              <CreateIncidentEvidencePanel
+                errorCount={Object.values(fieldErrors).filter(Boolean).length}
+                mode={mode}
+                saving={saving}
+              />
+            </XRayBox>
+          ) : null}
         </section>
       </XRayBox>
     </main>
+  );
+}
+
+function CreateIncidentEvidencePanel({
+  errorCount,
+  mode,
+  saving,
+}: {
+  errorCount: number;
+  mode: "zod" | "accessibility";
+  saving: boolean;
+}) {
+  const accessibility = mode === "accessibility";
+
+  return (
+    <aside
+      aria-labelledby="incident-create-evidence-title"
+      className="panel technology-evidence"
+    >
+      <div className="panel-title-row">
+        <h2 id="incident-create-evidence-title">
+          {accessibility ? "접근성 증거" : "Zod Validation 증거"}
+        </h2>
+        <Badge tone={errorCount ? "danger" : saving ? "info" : "success"}>
+          {errorCount ? `오류 ${errorCount}개` : saving ? "등록 중" : "입력 대기"}
+        </Badge>
+      </div>
+
+      <p>
+        {accessibility
+          ? "label과 입력 ID를 연결하고, 검증 오류를 aria-invalid·aria-describedby·live region으로 보조 기술에 전달합니다."
+          : "문자열로 수집한 폼 값을 공유 Zod schema로 변환·검증하고, 성공한 입력만 POST 요청에 사용합니다. 서버도 같은 validator로 다시 검사합니다."}
+      </p>
+
+      {accessibility ? (
+        <ul className="technology-flow">
+          <li>
+            <code>label htmlFor</code>
+            <span>names</span>
+            <code>input id</code>
+          </li>
+          <li>
+            <code>fieldErrors[field]</code>
+            <span>sets</span>
+            <code>aria-invalid</code>
+          </li>
+          <li>
+            <code>aria-describedby</code>
+            <span>points to</span>
+            <code>FieldError id</code>
+          </li>
+          <li>
+            <code>saving / error</code>
+            <span>announced by</span>
+            <code>role=status / alert</code>
+          </li>
+        </ul>
+      ) : (
+        <ul className="technology-flow">
+          <li>
+            <code>FormState strings</code>
+            <span>mapped by</span>
+            <code>buildIncidentInput</code>
+          </li>
+          <li>
+            <code>unknown input</code>
+            <span>safeParse</span>
+            <code>createIncidentInputSchema</code>
+          </li>
+          <li>
+            <code>Zod issues</code>
+            <span>mapped to</span>
+            <code>fieldErrors</code>
+          </li>
+          <li>
+            <code>validated input</code>
+            <span>POST</span>
+            <code>/api/incidents</code>
+          </li>
+        </ul>
+      )}
+
+      {accessibility ? (
+        <dl className="technology-code">
+          <div>
+            <dt>접근 가능한 이름</dt>
+            <dd>
+              <code>label htmlFor → input id</code>
+            </dd>
+          </div>
+          <div>
+            <dt>오류 설명 연결</dt>
+            <dd>
+              <code>aria-describedby → FieldError id</code>
+            </dd>
+          </div>
+          <div>
+            <dt>처리 상태</dt>
+            <dd>
+              <code>aria-busy={String(saving)}</code>
+            </dd>
+          </div>
+          <div>
+            <dt>현재 필드 오류</dt>
+            <dd>
+              <code>{errorCount}개</code>
+            </dd>
+          </div>
+        </dl>
+      ) : (
+        <dl className="technology-code">
+          <div>
+            <dt>공유 검증 진입점</dt>
+            <dd>
+              <code>validateCreateIncidentInput(value)</code>
+            </dd>
+          </div>
+          <div>
+            <dt>신뢰 경계</dt>
+            <dd>
+              <code>createIncidentInputSchema.safeParse(value)</code>
+            </dd>
+          </div>
+          <div>
+            <dt>클라이언트와 서버</dt>
+            <dd>
+              <code>같은 validator를 양쪽에서 실행</code>
+            </dd>
+          </div>
+          <div>
+            <dt>현재 필드 오류</dt>
+            <dd>
+              <code>{errorCount}개</code>
+            </dd>
+          </div>
+        </dl>
+      )}
+    </aside>
   );
 }
 

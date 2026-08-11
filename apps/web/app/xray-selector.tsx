@@ -9,7 +9,11 @@ export type XRayProof =
   | "monorepo"
   | "openlayers"
   | "r3f"
-  | "websocket";
+  | "websocket"
+  | "rest-api"
+  | "redux"
+  | "zod"
+  | "accessibility";
 type XRayMode = "off" | "all" | XRayProof;
 
 const XRayContext = createContext<{ mode: XRayMode; setMode: (mode: XRayMode) => void } | null>(null);
@@ -70,6 +74,10 @@ export function XRaySelector() {
         <option value="openlayers">OpenLayers</option>
         <option value="r3f">R3F / Three.js</option>
         <option value="websocket">WebSocket / Polling</option>
+        <option value="rest-api">REST API</option>
+        <option value="redux">Redux</option>
+        <option value="zod">Zod Validation</option>
+        <option value="accessibility">Accessibility</option>
       </select>
     </label>
   );
@@ -96,7 +104,11 @@ function getXRayMode(value: string | null): XRayMode {
     value === "monorepo" ||
     value === "openlayers" ||
     value === "r3f" ||
-    value === "websocket"
+    value === "websocket" ||
+    value === "rest-api" ||
+    value === "redux" ||
+    value === "zod" ||
+    value === "accessibility"
     ? value
     : "all";
 }
@@ -106,5 +118,7 @@ function getXRayPathname(mode: XRayMode, currentPathname: string) {
   if (mode === "openlayers") return "/map";
   if (mode === "r3f") return "/risk-3d";
   if (mode === "websocket") return "/realtime";
+  if (mode === "rest-api" || mode === "redux") return "/incidents";
+  if (mode === "zod" || mode === "accessibility") return "/incidents/new";
   return currentPathname;
 }
