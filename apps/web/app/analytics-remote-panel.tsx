@@ -22,6 +22,7 @@ type FederationRuntime = {
 const remoteManifestUrl =
   process.env.NEXT_PUBLIC_ANALYTICS_REMOTE_URL ??
   "http://127.0.0.1:3002/mf-manifest.json";
+const remoteModuleId = "citywatch_analytics/analytics-metrics";
 
 let runtimePromise: Promise<FederationRuntime> | undefined;
 let analyticsModulePromise: Promise<AnalyticsModule> | undefined;
@@ -54,10 +55,10 @@ export function AnalyticsRemotePanel({ incidents }: { incidents: Incident[] }) {
   return (
     <XRayBox
       enabled={xray}
-      label="remote/analytics/AnalyticsMetrics"
-      layer="remote"
-      packageName={mode === "monorepo" ? "apps/web" : "apps/analytics-remote"}
-      proofs={["module-federation"]}
+      label="host/analytics/AnalyticsRemotePanel"
+      layer="app"
+      packageName="apps/web"
+      proofs={["module-federation", "monorepo"]}
       stacks={["Module Federation", "Vite Remote", "Runtime Manifest"]}
     >
       <section aria-labelledby="remote-analytics-title" className="panel">
@@ -68,7 +69,7 @@ export function AnalyticsRemotePanel({ incidents }: { incidents: Incident[] }) {
               {state.status === "ready" ? "Federated" : state.status === "error" ? "Remote error" : "Loading remote"}
             </Badge>
           </div>
-          <span className="remote-source">apps/analytics-remote · 3002</span>
+          <span className="remote-source">Remote target · apps/analytics-remote</span>
         </div>
 
         {state.status === "loading" ? (
@@ -94,11 +95,11 @@ export function AnalyticsRemotePanel({ incidents }: { incidents: Incident[] }) {
 
         {AnalyticsMetrics ? (
           <XRayBox
-            enabled={mode === "monorepo"}
+            enabled={mode === "module-federation" || mode === "monorepo"}
             label="remote/analytics/AnalyticsMetricsContent"
             layer="remote"
             packageName="apps/analytics-remote"
-            proofs={["monorepo"]}
+            proofs={["module-federation", "monorepo"]}
           >
             <AnalyticsMetrics incidents={incidents} />
           </XRayBox>
@@ -126,16 +127,71 @@ function ModuleFederationEvidencePanel({ status }: { status: AnalyticsState["sta
       </div>
 
       <p>
-        Next.js host가 Vite remote의 React 지표 컴포넌트를 실행 중에 불러와 렌더링합니다.
+        Next.js Host가 manifest를 통해 Vite Remote 모듈을 실행 중에 불러옵니다. 파란 경계는 Host가 소유한 상태 UI이고, 주황 경계는 로드에 성공했을 때만 생기는 실제 Remote React UI입니다.
       </p>
 
+      <section aria-labelledby="module-federation-setup-title" className="module-federation-setup">
+        <h4 id="module-federation-setup-title">설정부터 연결까지</h4>
+        <ol>
+          <li>
+            <span>1 · Remote 공개</span>
+            <strong>apps/analytics-remote/vite.config.ts</strong>
+            <code>name: &quot;citywatch_analytics&quot;</code>
+            <code>exposes: &quot;./analytics-metrics&quot; → &quot;./src/analytics-metrics.tsx&quot;</code>
+            <code>manifest: true</code>
+          </li>
+          <li>
+            <span>2 · Host 등록</span>
+            <strong>apps/web/app/analytics-remote-panel.tsx</strong>
+            <code>name: &quot;citywatch_analytics&quot;</code>
+            <code>entry: {remoteManifestUrl}</code>
+          </li>
+          <li>
+            <span>3 · 공개 모듈 요청</span>
+            <strong>Remote name + expose key</strong>
+            <code>loadRemote(&quot;{remoteModuleId}&quot;)</code>
+          </li>
+          <li>
+            <span>4 · React 공유</span>
+            <strong>Host React = Remote React</strong>
+            <code>shared.react.singleton: true</code>
+          </li>
+        </ol>
+      </section>
+
+      <div className="module-federation-boundaries" aria-label="Module Federation Host와 Remote 경계">
+        <div className="module-federation-boundary module-federation-boundary--host">
+          <span>Host</span>
+          <strong>apps/web</strong>
+          <code>AnalyticsRemotePanel</code>
+          <em>항상 렌더링</em>
+        </div>
+        <span aria-hidden="true" className="module-federation-arrow">loadRemote →</span>
+        <div className={`module-federation-boundary module-federation-boundary--remote${status === "ready" ? "" : " module-federation-boundary--waiting"}`}>
+          <span>Remote</span>
+          <strong>apps/analytics-remote</strong>
+          <code>AnalyticsMetrics</code>
+          <em>{status === "ready" ? "현재 렌더링 중" : status === "error" ? "로드 실패" : "로드 대기 중"}</em>
+        </div>
+      </div>
+
       <ol className="module-federation-flow">
-        <li><code>mf-manifest.json</code>에서 remote 진입점을 확인합니다.</li>
-        <li><code>citywatch_analytics/analytics-metrics</code> 모듈을 불러옵니다.</li>
-        <li>remote의 <code>AnalyticsMetrics</code>가 계산과 지표 렌더링을 담당합니다.</li>
+        <li>Host가 <code>remoteManifestUrl</code>을 Federation runtime에 등록합니다.</li>
+        <li>runtime이 <code>mf-manifest.json</code>에서 remote entry와 asset 위치를 확인합니다.</li>
+        <li><code>loadRemote(&quot;{remoteModuleId}&quot;)</code>가 공개된 모듈을 가져옵니다.</li>
+        <li><code>isAnalyticsModule</code>이 <code>AnalyticsMetrics</code> export가 함수인지 검사합니다.</li>
+        <li>검증된 Remote 컴포넌트가 사고 데이터를 계산하고 네 개 지표를 렌더링합니다.</li>
       </ol>
 
       <dl className="module-federation-code">
+        <div>
+          <dt>Manifest URL</dt>
+          <dd><code>{remoteManifestUrl}</code></dd>
+        </div>
+        <div>
+          <dt>Remote ID</dt>
+          <dd><code>{remoteModuleId}</code></dd>
+        </div>
         <div>
           <dt>Host 로더</dt>
           <dd><code>apps/web/app/analytics-remote-panel.tsx</code></dd>
@@ -161,7 +217,7 @@ function loadAnalyticsModule() {
   if (!analyticsModulePromise) {
     analyticsModulePromise = getFederationRuntime()
       .then((runtime) =>
-        runtime.loadRemote<unknown>("citywatch_analytics/analytics-metrics"),
+        runtime.loadRemote<unknown>(remoteModuleId),
       )
       .then((remoteModule) => {
         if (!isAnalyticsModule(remoteModule)) {

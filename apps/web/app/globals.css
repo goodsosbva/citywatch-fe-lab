@@ -285,6 +285,128 @@ h2 {
   padding-left: 10px;
 }
 
+.module-federation-setup {
+  display: grid;
+  gap: 10px;
+}
+
+.module-federation-setup h4 {
+  font-size: 14px;
+  margin: 0;
+}
+
+.module-federation-setup ol {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.module-federation-setup li {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  padding: 12px;
+}
+
+.module-federation-setup li > span {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.module-federation-setup li > strong {
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.module-federation-setup li > code {
+  color: #1d4ed8;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.module-federation-boundaries {
+  align-items: stretch;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+}
+
+.module-federation-boundary {
+  border: 1px solid;
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+}
+
+.module-federation-boundary > span,
+.module-federation-boundary > em {
+  font-size: 11px;
+  font-style: normal;
+}
+
+.module-federation-boundary > code {
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.module-federation-boundary--host {
+  background: #eff6ff;
+  border-color: #60a5fa;
+  color: #1d4ed8;
+}
+
+.module-federation-boundary--remote {
+  background: #fff7ed;
+  border-color: #fb923c;
+  color: #c2410c;
+}
+
+.module-federation-boundary--waiting {
+  filter: grayscale(0.7);
+  opacity: 0.65;
+}
+
+.module-federation-arrow {
+  align-self: center;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+body[data-xray-mode="module-federation"] .cw-xray-box {
+  --cw-xray-color: #2563eb;
+  outline: 2px solid var(--cw-xray-color);
+  outline-offset: -2px;
+}
+
+body[data-xray-mode="module-federation"] .cw-xray-box[data-xray-package="apps/analytics-remote"] {
+  --cw-xray-color: #ea580c;
+}
+
+body[data-xray-mode="module-federation"] .cw-xray-label {
+  background: #ffffff;
+  border: 1px solid var(--cw-xray-color);
+  color: var(--cw-xray-color);
+  font-size: 0;
+}
+
+body[data-xray-mode="module-federation"] .cw-xray-label::after {
+  content: "Host · " attr(data-xray-package) " · " attr(data-xray-component);
+  font-size: 10px;
+}
+
+body[data-xray-mode="module-federation"] .cw-xray-box[data-xray-package="apps/analytics-remote"] > .cw-xray-label::after {
+  content: "Remote · " attr(data-xray-package) " · " attr(data-xray-component);
+}
+
 .monorepo-evidence,
 .technology-evidence {
   display: grid;
@@ -1580,6 +1702,19 @@ body[data-xray-mode="monorepo"] .cw-badge[data-workspace="packages/ui"]::before 
 
   .monorepo-workspace-columns {
     grid-template-columns: 1fr;
+  }
+
+  .module-federation-boundaries {
+    grid-template-columns: 1fr;
+  }
+
+  .module-federation-setup ol {
+    grid-template-columns: 1fr;
+  }
+
+  .module-federation-arrow {
+    justify-self: center;
+    transform: rotate(90deg);
   }
 
   .monorepo-relations li,
