@@ -407,6 +407,86 @@ body[data-xray-mode="module-federation"] .cw-xray-box[data-xray-package="apps/an
   content: "Remote · " attr(data-xray-package) " · " attr(data-xray-component);
 }
 
+body[data-xray-mode="openlayers"] .cw-xray-box {
+  --cw-xray-color: #2563eb;
+  outline: 2px solid var(--cw-xray-color);
+  outline-offset: -2px;
+}
+
+body[data-xray-mode="openlayers"] .cw-xray-box[data-xray-package="ol"] {
+  --cw-xray-color: #16a34a;
+}
+
+body[data-xray-mode="openlayers"] .cw-xray-label {
+  background: #ffffff;
+  border: 1px solid var(--cw-xray-color);
+  color: var(--cw-xray-color);
+  font-size: 0;
+}
+
+body[data-xray-mode="openlayers"] .cw-xray-label::after {
+  content: "React · " attr(data-xray-package) " · " attr(data-xray-component);
+  font-size: 10px;
+}
+
+body[data-xray-mode="openlayers"] .cw-xray-box[data-xray-package="ol"] > .cw-xray-label::after {
+  content: "OpenLayers · " attr(data-xray-package) " · " attr(data-xray-component);
+}
+
+.openlayers-boundaries {
+  align-items: stretch;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.35fr) auto minmax(0, 1fr);
+}
+
+.openlayers-boundary {
+  border: 1px solid;
+  border-radius: 8px;
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  padding: 12px;
+}
+
+.openlayers-boundary > span,
+.openlayers-boundary > code {
+  font-size: 11px;
+}
+
+.openlayers-boundary > span {
+  font-weight: 800;
+}
+
+.openlayers-boundary > code {
+  overflow-wrap: anywhere;
+}
+
+.openlayers-boundary--react {
+  background: #eff6ff;
+  border-color: #60a5fa;
+  color: #1d4ed8;
+}
+
+.openlayers-boundary--engine {
+  background: #f0fdf4;
+  border-color: #4ade80;
+  color: #15803d;
+}
+
+.openlayers-boundary--canvas {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: #334155;
+}
+
+.openlayers-arrow {
+  align-self: center;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 800;
+}
+
 .monorepo-evidence,
 .technology-evidence {
   display: grid;
@@ -1710,6 +1790,15 @@ body[data-xray-mode="monorepo"] .cw-badge[data-workspace="packages/ui"]::before 
 
   .module-federation-setup ol {
     grid-template-columns: 1fr;
+  }
+
+  .openlayers-boundaries {
+    grid-template-columns: 1fr;
+  }
+
+  .openlayers-arrow {
+    justify-self: center;
+    transform: rotate(90deg);
   }
 
   .module-federation-arrow {
