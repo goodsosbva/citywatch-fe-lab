@@ -26,8 +26,8 @@ import { OpenLayersIncidentMap } from "./openlayers-incident-map";
 
 export default function MapPage() {
   const dispatch = useAppDispatch();
-  const { enabled: xray } = useXRay();
-  const { enabled: openLayersXray, mode } = useXRay(["openlayers"]);
+  const { enabled: xray, mode } = useXRay();
+  const openLayersXray = mode === "openlayers";
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
@@ -113,7 +113,8 @@ export default function MapPage() {
           <div className="map-layout">
             <XRayBox
               enabled={xray || openLayersXray}
-              label="widget/IncidentMapBoard"
+              label={openLayersXray ? "react/map/IncidentMapBoard" : "widget/IncidentMapBoard"}
+              layer={openLayersXray ? "app" : "widget"}
               packageName="apps/web"
               proofs={["fsd-style", "openlayers"]}
               stacks={["OpenLayers", "OpenStreetMap", "CSS"]}
@@ -170,8 +171,9 @@ export default function MapPage() {
 
                 <XRayBox
                   enabled={xray || openLayersXray}
-                  label="feature/map/RenderIncidentMarkers"
-                  packageName="apps/web"
+                  label={openLayersXray ? "openlayers/map/MapCanvas" : "feature/map/RenderIncidentMarkers"}
+                  layer={openLayersXray ? "shared" : "feature"}
+                  packageName={openLayersXray ? "ol" : "apps/web"}
                   proofs={["fsd-style", "openlayers"]}
                   stacks={["OpenLayers", "OpenStreetMap Tile", "Canvas"]}
                 >
@@ -187,7 +189,7 @@ export default function MapPage() {
             <XRayBox
               enabled={xray}
               label="entity/incident/IncidentMapSelection"
-              packageName="packages/api-types"
+              packageName="apps/web"
               stacks={["TypeScript", "Redux Selected State"]}
             >
               <aside
@@ -231,15 +233,10 @@ export default function MapPage() {
           </div>
 
           {mode === "openlayers" ? (
-            <XRayBox
-              enabled={openLayersXray}
-              label="feature/map/OpenLayersPipeline"
-              packageName="apps/web"
-              proofs={["openlayers"]}
-              stacks={["OpenLayers", "OpenStreetMap", "VectorSource", "VectorLayer"]}
-            >
-              <OpenLayersEvidencePanel />
-            </XRayBox>
+            <OpenLayersEvidencePanel
+              incidentCount={incidents.length}
+              selectedIncidentId={selectedIncidentId}
+            />
           ) : null}
         </section>
       </XRayBox>
@@ -247,7 +244,13 @@ export default function MapPage() {
   );
 }
 
-function OpenLayersEvidencePanel() {
+function OpenLayersEvidencePanel({
+  incidentCount,
+  selectedIncidentId,
+}: {
+  incidentCount: number;
+  selectedIncidentId?: string;
+}) {
   return (
     <aside
       aria-labelledby="openlayers-evidence-title"
@@ -259,30 +262,62 @@ function OpenLayersEvidencePanel() {
       </div>
 
       <p>
-        REST 사고 좌표를 OpenLayers 객체로 변환하고, OpenStreetMap 타일 위에
-        선택 가능한 벡터 마커로 표시합니다.
+        React가 REST 사고 배열과 Redux 선택 상태를 전달하면 OpenLayers가 DOM target 안에 Canvas 지도와 벡터 마커를 직접 생성합니다.
       </p>
+
+      <div className="openlayers-boundaries" aria-label="React에서 OpenLayers Canvas까지 렌더링 경계">
+        <div className="openlayers-boundary openlayers-boundary--react">
+          <span>React 입력</span>
+          <strong>apps/web</strong>
+          <code>incidents: {incidentCount}건</code>
+          <code>selected: {selectedIncidentId ?? "없음"}</code>
+        </div>
+        <span aria-hidden="true" className="openlayers-arrow">props →</span>
+        <div className="openlayers-boundary openlayers-boundary--engine">
+          <span>OpenLayers 객체</span>
+          <strong>ol</strong>
+          <code>Feature → VectorSource → VectorLayer</code>
+          <code>TileLayer + VectorLayer → Map</code>
+        </div>
+        <span aria-hidden="true" className="openlayers-arrow">render →</span>
+        <div className="openlayers-boundary openlayers-boundary--canvas">
+          <span>브라우저 출력</span>
+          <strong>Canvas 지도</strong>
+          <code>OSM tile + vector marker</code>
+          <code>singleclick event</code>
+        </div>
+      </div>
 
       <ul className="technology-flow">
         <li>
+          <code>fetchIncidents(query)</code>
+          <span>returns</span>
+          <code>Incident[] ({incidentCount})</code>
+        </li>
+        <li>
           <code>Incident.location</code>
-          <span>fromLonLat</span>
+          <span>fromLonLat →</span>
           <code>Feature&lt;Point&gt;</code>
         </li>
         <li>
-          <code>VectorSource</code>
-          <span>feeds</span>
-          <code>VectorLayer</code>
+          <code>Feature[]</code>
+          <span>addFeatures →</span>
+          <code>VectorSource → VectorLayer</code>
         </li>
         <li>
-          <code>OSM TileLayer</code>
-          <span>composed in</span>
-          <code>Map</code>
+          <code>OSM TileLayer + VectorLayer</code>
+          <span>Map target →</span>
+          <code>Canvas</code>
         </li>
         <li>
-          <code>singleclick</code>
-          <span>dispatches</span>
+          <code>singleclick → incidentId</code>
+          <span>dispatch →</span>
+          <code>Redux selectedIncidentId</code>
+        </li>
+        <li>
           <code>selectedIncidentId</code>
+          <span>source.changed →</span>
+          <code>선택 marker style 갱신</code>
         </li>
       </ul>
 
@@ -297,6 +332,12 @@ function OpenLayersEvidencePanel() {
           <dt>벡터 데이터 연결</dt>
           <dd>
             <code>source.addFeatures(features)</code>
+          </dd>
+        </div>
+        <div>
+          <dt>타일·벡터 합성</dt>
+          <dd>
+            <code>new Map(&#123; layers: [TileLayer, markerLayer], target &#125;)</code>
           </dd>
         </div>
         <div>

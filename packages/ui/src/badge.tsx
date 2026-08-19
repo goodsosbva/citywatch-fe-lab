@@ -9,7 +9,7 @@ export type BadgeProps = HTMLAttributes<HTMLSpanElement> & {
 
 export function Badge({ children, className, tone = "neutral", ...props }: BadgeProps) {
   return (
-    <span className={["cw-badge", `cw-badge--${tone}`, className].filter(Boolean).join(" ")} {...props}>
+    <span className={["cw-badge", `cw-badge--${tone}`, className].filter(Boolean).join(" ")} {...props} data-workspace="packages/ui">
       {children}
     </span>
   );

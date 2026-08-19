@@ -5,6 +5,7 @@ import {
   incidentSeverities,
   incidentStatuses,
   type Incident,
+  type IncidentListQuery,
 } from "@citywatch/api-types";
 import { Badge, SeverityBadge, XRayBox } from "@citywatch/ui";
 import Link from "next/link";
@@ -39,7 +40,7 @@ const regionFilterOptions = ["seocho", "seongsu", "junggu"] as const;
 
 export default function IncidentsPage() {
   const dispatch = useAppDispatch();
-  const { enabled: xray } = useXRay();
+  const { enabled: xray, mode } = useXRay();
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
@@ -147,13 +148,14 @@ export default function IncidentsPage() {
             onStatusChange={(value) => dispatch(setStatusFilter(value))}
             selectedIncidentId={selectedIncidentId}
             selectedIncidentTitle={selectedIncident?.title}
-            xray={xray}
+            xray={xray || mode === "rest-api" || mode === "redux"}
           />
 
           <XRayBox
-            enabled={xray}
+            enabled={xray || mode === "rest-api"}
             label="widget/IncidentList"
             packageName="apps/web"
+            proofs={["fsd-style", "rest-api"]}
             stacks={["Next Link", "Shared Types"]}
           >
             <section
@@ -168,9 +170,10 @@ export default function IncidentsPage() {
                 </Badge>
               </div>
               <XRayBox
-                enabled={xray}
+                enabled={xray || mode === "rest-api"}
                 label="feature/incident/FetchIncidentList"
                 packageName="apps/web"
+                proofs={["fsd-style", "rest-api"]}
                 stacks={["fetch", "REST API"]}
               >
                 {loading ? (
@@ -193,9 +196,10 @@ export default function IncidentsPage() {
                 ) : null}
                 {!loading && !error && incidents.length > 0 ? (
                   <XRayBox
-                    enabled={xray}
+                    enabled={xray || mode === "rest-api"}
                     label="entity/incident/IncidentListItems"
-                    packageName="packages/api-types"
+                    packageName="apps/web"
+                    proofs={["fsd-style", "rest-api"]}
                     stacks={["TypeScript", "Shared Contract", "@citywatch/ui"]}
                   >
                     <ul className="incident-list">
@@ -213,6 +217,34 @@ export default function IncidentsPage() {
               </XRayBox>
             </section>
           </XRayBox>
+
+          {mode === "rest-api" || mode === "redux" ? (
+            <XRayBox
+              enabled
+              label={
+                mode === "rest-api"
+                  ? "feature/incident/RestIncidentPipeline"
+                  : "feature/incident/ReduxFilterPipeline"
+              }
+              packageName="apps/web"
+              proofs={[mode]}
+              stacks={
+                mode === "rest-api"
+                  ? ["fetch", "Next Route Handler", "Shared Contract"]
+                  : ["Redux Toolkit", "React Redux", "Memoized Selector"]
+              }
+            >
+              <IncidentDataFlowEvidencePanel
+                activeFilterCount={activeFilterCount}
+                filters={filters}
+                incidentCount={incidents.length}
+                loading={loading}
+                mode={mode}
+                query={query}
+                selectedIncidentId={selectedIncidentId}
+              />
+            </XRayBox>
+          ) : null}
         </section>
       </XRayBox>
     </main>
@@ -253,6 +285,7 @@ function IncidentFilterPanel({
       enabled={xray}
       label="feature/incident/ShareIncidentFilters"
       packageName="apps/web"
+      proofs={["fsd-style", "rest-api", "redux"]}
       stacks={["Redux Toolkit", "React Redux", "REST Query"]}
     >
       <section className="panel" aria-labelledby="incident-filter-title">
@@ -339,6 +372,123 @@ function IncidentFilterPanel({
         </p>
       </section>
     </XRayBox>
+  );
+}
+
+function IncidentDataFlowEvidencePanel({
+  activeFilterCount,
+  filters,
+  incidentCount,
+  loading,
+  mode,
+  query,
+  selectedIncidentId,
+}: {
+  activeFilterCount: number;
+  filters: IncidentFilters;
+  incidentCount: number;
+  loading: boolean;
+  mode: "rest-api" | "redux";
+  query: IncidentListQuery;
+  selectedIncidentId?: string;
+}) {
+  const redux = mode === "redux";
+
+  return (
+    <aside
+      aria-labelledby="incident-data-evidence-title"
+      className="panel technology-evidence"
+    >
+      <div className="panel-title-row">
+        <h2 id="incident-data-evidence-title">
+          {redux ? "Redux 증거" : "REST API 증거"}
+        </h2>
+        <Badge tone={loading ? "info" : "success"}>
+          {redux ? `${activeFilterCount}개 필터` : loading ? "요청 중" : `${incidentCount}건 응답`}
+        </Badge>
+      </div>
+
+      <p>
+        {redux
+          ? "입력 변경을 Redux action으로 보내고, reducer가 저장한 필터를 selector가 REST query로 변환합니다."
+          : "Redux에서 만든 조회 조건을 URL query로 변환해 Route Handler에 요청하고, 공유 계약 모양의 응답을 화면 state에 저장합니다."}
+      </p>
+
+      {redux ? (
+        <ul className="technology-flow">
+          <li>
+            <code>input / select</code>
+            <span>dispatches</span>
+            <code>set*Filter(action)</code>
+          </li>
+          <li>
+            <code>incidentControlSlice</code>
+            <span>updates</span>
+            <code>state.filters</code>
+          </li>
+          <li>
+            <code>selectIncidentListQuery</code>
+            <span>derives</span>
+            <code>IncidentListQuery</code>
+          </li>
+          <li>
+            <code>query dependency</code>
+            <span>runs</span>
+            <code>fetchIncidents(query)</code>
+          </li>
+        </ul>
+      ) : (
+        <ul className="technology-flow">
+          <li>
+            <code>IncidentListQuery</code>
+            <span>becomes</span>
+            <code>URLSearchParams</code>
+          </li>
+          <li>
+            <code>GET /api/incidents</code>
+            <span>handled by</span>
+            <code>route.ts GET</code>
+          </li>
+          <li>
+            <code>listIncidents(query)</code>
+            <span>returns</span>
+            <code>IncidentListResponse</code>
+          </li>
+          <li>
+            <code>data.incidents</code>
+            <span>updates</span>
+            <code>setIncidents</code>
+          </li>
+        </ul>
+      )}
+
+      <dl className="technology-code">
+        <div>
+          <dt>현재 Redux 필터</dt>
+          <dd>
+            <code>{JSON.stringify(filters)}</code>
+          </dd>
+        </div>
+        <div>
+          <dt>현재 REST query</dt>
+          <dd>
+            <code>{JSON.stringify(query)}</code>
+          </dd>
+        </div>
+        <div>
+          <dt>공유 계약</dt>
+          <dd>
+            <code>IncidentListQuery → IncidentListResponse</code>
+          </dd>
+        </div>
+        <div>
+          <dt>공유 선택 상태</dt>
+          <dd>
+            <code>{selectedIncidentId ?? "선택 없음"}</code>
+          </dd>
+        </div>
+      </dl>
+    </aside>
   );
 }
 

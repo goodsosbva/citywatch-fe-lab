@@ -5,6 +5,7 @@ import {
   type Incident,
   type IncidentRisk,
 } from "@citywatch/api-types";
+import { XRayBox } from "@citywatch/ui";
 import { Canvas, useLoader, useThree } from "@react-three/fiber";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -21,6 +22,7 @@ import {
 
 type RiskZoneSceneProps = {
   incident: Incident;
+  xray?: boolean;
 };
 
 type RiskZone = {
@@ -44,7 +46,7 @@ const mapTileWorldSize = 4.5;
 const maxMercatorLatitude = 85.05112878;
 const detailCameraPosition: [number, number, number] = [0, 12, 8.5];
 
-export function RiskZoneScene({ incident }: RiskZoneSceneProps) {
+export function RiskZoneScene({ incident, xray = false }: RiskZoneSceneProps) {
   const [resetViewKey, setResetViewKey] = useState(0);
   const scene = createRiskScene(incident);
 
@@ -59,28 +61,38 @@ export function RiskZoneScene({ incident }: RiskZoneSceneProps) {
           ? `${scene.zone.incident.id} 위험 점수 ${scene.zone.risk.score}, ${scene.zone.risk.level}`
           : "표시할 유효한 사고 좌표가 없습니다."}
       </span>
-      <Canvas
-        camera={{ fov: 38, position: detailCameraPosition }}
-        dpr={[1, 1.5]}
-        fallback={
-          <p className="state-message state-message--error" role="alert">
-            이 브라우저에서는 WebGL 3D 장면을 표시할 수 없습니다.
-          </p>
-        }
-        gl={{ antialias: true, powerPreference: "high-performance" }}
+      <XRayBox
+        className="r3f-canvas-xray"
+        enabled={xray}
+        label="r3f/Canvas"
+        layer="shared"
+        packageName="@react-three/fiber"
+        proofs={["r3f"]}
+        stacks={["React Three Fiber", "Three.js", "WebGL"]}
       >
-        <color args={["#e8edf3"]} attach="background" />
-        <ambientLight intensity={0.75} />
-        <hemisphereLight args={["#ffffff", "#64748b", 1.8]} />
-        <directionalLight intensity={2.2} position={[8, 12, 6]} />
+        <Canvas
+          camera={{ fov: 38, position: detailCameraPosition }}
+          dpr={[1, 1.5]}
+          fallback={
+            <p className="state-message state-message--error" role="alert">
+              이 브라우저에서는 WebGL 3D 장면을 표시할 수 없습니다.
+            </p>
+          }
+          gl={{ antialias: true, powerPreference: "high-performance" }}
+        >
+          <color args={["#e8edf3"]} attach="background" />
+          <ambientLight intensity={0.75} />
+          <hemisphereLight args={["#ffffff", "#64748b", 1.8]} />
+          <directionalLight intensity={2.2} position={[8, 12, 6]} />
 
-        <Suspense fallback={<GroundPlaceholder />}>
-          <MapGround center={scene.center} />
-        </Suspense>
-        <MapControls resetViewKey={resetViewKey} />
+          <Suspense fallback={<GroundPlaceholder />}>
+            <MapGround center={scene.center} />
+          </Suspense>
+          <MapControls resetViewKey={resetViewKey} />
 
-        {scene.zone ? <RiskTower zone={scene.zone} /> : null}
-      </Canvas>
+          {scene.zone ? <RiskTower zone={scene.zone} /> : null}
+        </Canvas>
+      </XRayBox>
       {scene.zone ? (
         <div aria-live="polite" className="risk-3d-tooltip">
           <strong>{scene.zone.incident.id} · {scene.zone.incident.title}</strong>

@@ -9,7 +9,11 @@ export type XRayProof =
   | "monorepo"
   | "openlayers"
   | "r3f"
-  | "websocket";
+  | "websocket"
+  | "rest-api"
+  | "redux"
+  | "zod"
+  | "performance";
 type XRayMode = "off" | "all" | XRayProof;
 
 const XRayContext = createContext<{ mode: XRayMode; setMode: (mode: XRayMode) => void } | null>(null);
@@ -37,6 +41,13 @@ export function XRayProvider({ children }: { children: ReactNode }) {
       scroll: false,
     });
   }, [pathname, router]);
+
+  useEffect(() => {
+    document.body.dataset.xrayMode = mode;
+    return () => {
+      delete document.body.dataset.xrayMode;
+    };
+  }, [mode]);
 
   function selectMode(nextMode: XRayMode) {
     const url = new URL(window.location.href);
@@ -70,12 +81,16 @@ export function XRaySelector() {
         <option value="openlayers">OpenLayers</option>
         <option value="r3f">R3F / Three.js</option>
         <option value="websocket">WebSocket / Polling</option>
+        <option value="rest-api">REST API</option>
+        <option value="redux">Redux</option>
+        <option value="zod">Zod Validation</option>
+        <option value="performance">Large Data Performance</option>
       </select>
     </label>
   );
 }
 
-export function useXRay(proofs: readonly XRayProof[] = ["fsd-style"]) {
+export function useXRay(proofs: readonly XRayProof[] = ["fsd-style", "monorepo"]) {
   const { mode } = useXRayContext();
   return {
     enabled: mode === "all" || (mode !== "off" && proofs.includes(mode)),
@@ -96,15 +111,22 @@ function getXRayMode(value: string | null): XRayMode {
     value === "monorepo" ||
     value === "openlayers" ||
     value === "r3f" ||
-    value === "websocket"
+    value === "websocket" ||
+    value === "rest-api" ||
+    value === "redux" ||
+    value === "zod" ||
+    value === "performance"
     ? value
     : "all";
 }
 
 function getXRayPathname(mode: XRayMode, currentPathname: string) {
-  if (mode === "module-federation" || mode === "monorepo") return "/";
+  if (mode === "module-federation") return "/";
   if (mode === "openlayers") return "/map";
   if (mode === "r3f") return "/risk-3d";
   if (mode === "websocket") return "/realtime";
+  if (mode === "rest-api" || mode === "redux") return "/incidents";
+  if (mode === "zod") return "/incidents/new";
+  if (mode === "performance") return "/performance";
   return currentPathname;
 }

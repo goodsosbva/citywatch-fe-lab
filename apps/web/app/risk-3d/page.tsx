@@ -35,6 +35,7 @@ export default function Risk3DPage() {
   const dispatch = useAppDispatch();
   const { enabled: xray, mode } = useXRay();
   const [viewMode, setViewMode] = useState<RiskViewMode>("2d");
+  const r3fXray = mode === "r3f" && viewMode === "3d";
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
@@ -177,8 +178,15 @@ export default function Risk3DPage() {
               <>
                 <XRayBox
                   className="risk-3d-xray-scene"
-                  enabled={xray || (mode === "r3f" && viewMode === "3d")}
-                  label={viewMode === "2d" ? "widget/OpenLayersIncidentMap" : "widget/RiskZoneScene"}
+                  enabled={xray || r3fXray}
+                  label={
+                    r3fXray
+                      ? "react/risk-3d/RiskZoneScene"
+                      : viewMode === "2d"
+                        ? "widget/OpenLayersIncidentMap"
+                        : "widget/RiskZoneScene"
+                  }
+                  layer={r3fXray ? "app" : "widget"}
                   packageName="apps/web"
                   proofs={viewMode === "2d" ? ["fsd-style"] : ["fsd-style", "r3f"]}
                   stacks={viewMode === "2d" ? ["OpenLayers", "OpenStreetMap"] : ["React Three Fiber", "Three.js", "OpenStreetMap"]}
@@ -190,7 +198,7 @@ export default function Risk3DPage() {
                       selectedIncidentId={selectedIncidentId}
                     />
                   ) : selectedIncident ? (
-                    <RiskZoneScene incident={selectedIncident} />
+                    <RiskZoneScene incident={selectedIncident} xray={r3fXray} />
                   ) : null}
                 </XRayBox>
 
@@ -221,16 +229,8 @@ export default function Risk3DPage() {
             ) : null}
           </section>
 
-          {mode === "r3f" ? (
-            <XRayBox
-              enabled={mode === "r3f"}
-              label="feature/risk-3d/R3FThreePipeline"
-              packageName="apps/web"
-              proofs={["r3f"]}
-              stacks={["React Three Fiber", "Three.js", "WebGL", "OpenStreetMap"]}
-            >
-              <R3FEvidencePanel />
-            </XRayBox>
+          {r3fXray && selectedIncident ? (
+            <R3FEvidencePanel incident={selectedIncident} />
           ) : null}
 
           <div className="risk-3d-detail-layout">
@@ -261,7 +261,7 @@ export default function Risk3DPage() {
             <XRayBox
               enabled={xray}
               label="entity/incident/SelectedRiskZone"
-              packageName="packages/api-types"
+              packageName="apps/web"
               stacks={["Incident", "IncidentRisk"]}
             >
               <aside aria-labelledby="selected-risk-zone-title" className="panel risk-zone-detail-panel">
@@ -282,7 +282,10 @@ export default function Risk3DPage() {
   );
 }
 
-function R3FEvidencePanel() {
+function R3FEvidencePanel({ incident }: { incident: Incident }) {
+  const risk = calculateIncidentRisk(incident);
+  const towerHeight = (0.35 + risk.score / 45).toFixed(2);
+
   return (
     <aside
       aria-labelledby="r3f-evidence-title"
@@ -294,30 +297,71 @@ function R3FEvidencePanel() {
       </div>
 
       <p>
-        선택한 사고 한 건을 위험 점수와 지도 타일 데이터로 변환한 뒤,
-        R3F Canvas 안에서 Three.js geometry와 material로 렌더링합니다.
+        React가 선택 사고와 위험 값을 JSX로 전달하면 R3F가 JSX를 Three.js 객체로 만들고,
+        Three.js가 WebGL을 통해 GPU에 그리기를 요청합니다.
       </p>
+
+      <div className="r3f-boundaries" aria-label="React에서 GPU와 Canvas까지 3D 렌더링 경계">
+        <div className="r3f-boundary r3f-boundary--react">
+          <span>React 입력</span>
+          <strong>apps/web</strong>
+          <code>{incident.id}</code>
+          <code>risk: {risk.score} · affected: {incident.affectedPeople}</code>
+        </div>
+        <span aria-hidden="true" className="r3f-arrow">JSX →</span>
+        <div className="r3f-boundary r3f-boundary--r3f">
+          <span>R3F 조정</span>
+          <strong>@react-three/fiber</strong>
+          <code>Canvas → RiskTower</code>
+          <code>props를 Three.js 객체에 반영</code>
+        </div>
+        <span aria-hidden="true" className="r3f-arrow">create →</span>
+        <div className="r3f-boundary r3f-boundary--three">
+          <span>Three.js 객체</span>
+          <strong>three</strong>
+          <code>Mesh + Geometry + Material</code>
+          <code>Scene + Camera + WebGLRenderer</code>
+        </div>
+        <span aria-hidden="true" className="r3f-arrow">draw →</span>
+        <div className="r3f-boundary r3f-boundary--gpu">
+          <span>브라우저·GPU 출력</span>
+          <strong>WebGL Canvas</strong>
+          <code>buffer → shader → pixels</code>
+          <code>framebuffer → canvas</code>
+        </div>
+      </div>
+
+      <div className="r3f-object-tree" aria-label="실제 Three.js 장면 객체 관계">
+        <strong>실제 장면 객체 관계</strong>
+        <code>Scene</code>
+        <span>├─ PerspectiveCamera (fov: 38)</span>
+        <span>├─ MapGround → 9 × Mesh(PlaneGeometry + MeshBasicMaterial + Texture)</span>
+        <span>└─ RiskTower</span>
+        <span>　├─ Mesh(RingGeometry + MeshBasicMaterial)</span>
+        <span>　├─ Mesh(RingGeometry + MeshBasicMaterial)</span>
+        <span>　└─ Mesh(CylinderGeometry + MeshStandardMaterial)</span>
+      </div>
 
       <ul className="technology-flow">
         <li>
           <code>Incident</code>
           <span>calculateIncidentRisk</span>
-          <code>RiskZone</code>
+          <code>RiskZone(height {towerHeight})</code>
         </li>
         <li>
-          <code>Incident.location</code>
-          <span>createMapTiles</span>
-          <code>OSM Texture[]</code>
+          <code>RiskTower JSX</code>
+          <span>R3F renderer</span>
+          <code>THREE.Mesh</code>
         </li>
         <li>
-          <code>RiskZone</code>
-          <span>renders in</span>
-          <code>R3F Canvas</code>
+          <code>Geometry attributes</code>
+          <span>Three.js uploads</span>
+          <code>GPU buffer</code>
         </li>
         <li>
-          <code>cylinderGeometry</code>
-          <span>styled by</span>
-          <code>meshStandardMaterial</code>
+          <code>Material + Light + Camera</code>
+          <span>WebGL draw call</span>
+          <code>Canvas pixels</code>
         </li>
       </ul>
 
@@ -329,15 +373,21 @@ function R3FEvidencePanel() {
           </dd>
         </div>
         <div>
-          <dt>지도 텍스처 로딩</dt>
+          <dt>R3F JSX</dt>
           <dd>
-            <code>useLoader(TextureLoader, tileUrls)</code>
+            <code>&lt;mesh&gt;&lt;cylinderGeometry /&gt;&lt;meshStandardMaterial /&gt;&lt;/mesh&gt;</code>
           </dd>
         </div>
         <div>
           <dt>위험 기둥 생성</dt>
           <dd>
             <code>&lt;cylinderGeometry args=&#123;[...]&#125; /&gt;</code>
+          </dd>
+        </div>
+        <div>
+          <dt>카메라·WebGL renderer</dt>
+          <dd>
+            <code>useThree() → &#123; camera, gl &#125;</code>
           </dd>
         </div>
         <div>

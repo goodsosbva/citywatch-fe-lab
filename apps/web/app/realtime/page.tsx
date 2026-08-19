@@ -27,6 +27,7 @@ const maxVisibleEvents = 12;
 
 export default function RealtimePage() {
   const { enabled: xray, mode } = useXRay();
+  const websocketXray = mode === "websocket";
   const [connection, setConnection] = useState<ConnectionState>({
     detail: "실시간 서버 연결을 준비합니다.",
     mode: "connecting",
@@ -170,15 +171,15 @@ export default function RealtimePage() {
       </header>
 
       <XRayBox
-        enabled={xray}
-        label="app/realtime/RealtimePage"
+        enabled={xray || websocketXray}
+        label={websocketXray ? "browser/realtime/RealtimeClient" : "app/realtime/RealtimePage"}
         layer="app"
         packageName="apps/web"
         stacks={["Next App Router", "React", "TypeScript"]}
       >
         <section aria-label="실시간 사고 피드" className="dashboard">
           <XRayBox
-            enabled={xray || mode === "websocket"}
+            enabled={xray}
             label="widget/RealtimeConnectionSummary"
             packageName="apps/web"
             proofs={["fsd-style", "websocket"]}
@@ -202,7 +203,7 @@ export default function RealtimePage() {
 
           <div className="realtime-layout">
             <XRayBox
-              enabled={xray || mode === "websocket"}
+              enabled={xray}
               label="widget/RealtimeFeed"
               packageName="apps/web"
               proofs={["fsd-style", "websocket"]}
@@ -234,9 +235,9 @@ export default function RealtimePage() {
                 ) : null}
 
                 <XRayBox
-                  enabled={xray || mode === "websocket"}
+                  enabled={xray}
                   label="feature/realtime/ValidateRealtimeEvents"
-                  packageName="packages/api-types"
+                  packageName="apps/web"
                   proofs={["fsd-style", "websocket"]}
                   stacks={["Runtime validation", "TypeScript"]}
                 >
@@ -256,9 +257,9 @@ export default function RealtimePage() {
             </XRayBox>
 
             <XRayBox
-              enabled={xray || mode === "websocket"}
+              enabled={xray}
               label="entity/realtime/RealtimeProof"
-              packageName="packages/api-types"
+              packageName="apps/web"
               proofs={["fsd-style", "websocket"]}
               stacks={["RealtimeEvent", "RealtimeMessage"]}
             >
@@ -274,20 +275,13 @@ export default function RealtimePage() {
             </XRayBox>
           </div>
 
-          {mode === "websocket" ? (
-            <XRayBox
-              enabled={mode === "websocket"}
-              label="feature/realtime/WebSocketPollingPipeline"
-              packageName="apps/web"
-              proofs={["websocket"]}
-              stacks={["WebSocket", "Polling", "Runtime validation", "cleanup"]}
-            >
-              <WebSocketPollingEvidencePanel
-                connection={connection}
-                lastEventId={lastEventIdRef.current}
-                urls={urls}
-              />
-            </XRayBox>
+          {websocketXray ? (
+            <WebSocketPollingEvidencePanel
+              connection={connection}
+              eventCount={events.length}
+              lastEventId={lastEventIdRef.current}
+              urls={urls}
+            />
           ) : null}
         </section>
       </XRayBox>
@@ -297,10 +291,12 @@ export default function RealtimePage() {
 
 function WebSocketPollingEvidencePanel({
   connection,
+  eventCount,
   lastEventId,
   urls,
 }: {
   connection: ConnectionState;
+  eventCount: number;
   lastEventId: number;
   urls?: RealtimeUrls;
 }) {
@@ -322,28 +318,62 @@ function WebSocketPollingEvidencePanel({
         런타임 타입 가드로 검증합니다.
       </p>
 
-      <ul className="technology-flow">
-        <li>
-          <code>new WebSocket(url)</code>
-          <span>receives</span>
-          <code>socket.onmessage</code>
-        </li>
-        <li>
-          <code>event.data</code>
-          <span>JSON.parse + validates</span>
-          <code>isRealtimeEvent</code>
-        </li>
-        <li>
-          <code>socket.onclose</code>
-          <span>falls back to</span>
-          <code>pollEvents()</code>
-        </li>
-        <li>
-          <code>/events?after=id</code>
-          <span>validates</span>
-          <code>isRealtimeEventListResponse</code>
-        </li>
-      </ul>
+      <div className="websocket-boundaries" aria-label="브라우저와 실시간 서버 사이의 통신 경계">
+        <div className="websocket-boundary websocket-boundary--client">
+          <span>브라우저 클라이언트</span>
+          <strong>apps/web</strong>
+          <code>RealtimePage useEffect</code>
+          <code>events: {eventCount} · cursor: {lastEventId || "-"}</code>
+        </div>
+        <span aria-hidden="true" className="websocket-arrow">request ↔</span>
+        <div
+          className={`websocket-boundary websocket-boundary--transport${connection.mode === "websocket" || connection.mode === "polling" ? " websocket-boundary--active" : ""}`}
+        >
+          <span>현재 전송 경로</span>
+          <strong>{getConnectionLabel(connection.mode)}</strong>
+          <code>
+            {connection.mode === "polling"
+              ? "HTTP GET /events?after=id"
+              : connection.mode === "offline"
+                ? "WebSocket + HTTP unavailable"
+                : "WebSocket /ws"}
+          </code>
+          <code>{connection.detail}</code>
+        </div>
+        <span aria-hidden="true" className="websocket-arrow">network ↔</span>
+        <div className="websocket-boundary websocket-boundary--server">
+          <span>독립 실시간 서버</span>
+          <strong>apps/realtime-server</strong>
+          <code>upgrade /ws</code>
+          <code>GET /events</code>
+        </div>
+        <span aria-hidden="true" className="websocket-arrow">JSON →</span>
+        <div className="websocket-boundary websocket-boundary--contract">
+          <span>검증 후 React 상태</span>
+          <strong>packages/api-types → apps/web</strong>
+          <code>type guard → recordEvents</code>
+          <code>최신 {maxVisibleEvents}개만 화면 저장</code>
+        </div>
+      </div>
+
+      <div className="websocket-paths">
+        <div className={connection.mode === "websocket" ? "websocket-path websocket-path--active" : "websocket-path"}>
+          <strong>WebSocket 정상 경로</strong>
+          <code>server broadcast → socket.onmessage → parseRealtimeEvent → isRealtimeEvent → recordEvents</code>
+        </div>
+        <div
+          className={
+            connection.mode === "polling"
+              ? "websocket-path websocket-path--active"
+              : connection.mode === "offline"
+                ? "websocket-path websocket-path--error"
+                : "websocket-path"
+          }
+        >
+          <strong>Polling fallback 경로</strong>
+          <code>socket.onclose → pollEvents → fetch(after=cursor) → isRealtimeEventListResponse → recordEvents</code>
+        </div>
+      </div>
 
       <dl className="technology-code">
         <div>

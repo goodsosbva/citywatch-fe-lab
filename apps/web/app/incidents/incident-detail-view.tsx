@@ -153,7 +153,7 @@ export function IncidentDetailView({ incidentId }: { incidentId: string }) {
                 </section>
               </XRayBox>
 
-              <XRayBox enabled={xray} label="entity/incident/IncidentDetail" packageName="packages/api-types" stacks={["TypeScript", "Shared Contract"]}>
+              <XRayBox enabled={xray} label="entity/incident/IncidentDetail" packageName="apps/web" stacks={["TypeScript", "Shared Contract"]}>
                 <section className="panel" aria-labelledby="incident-detail-data-title">
                   <div className="panel-title-row">
                     <h2 id="incident-detail-data-title">상세 정보</h2>
