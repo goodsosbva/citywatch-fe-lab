@@ -459,6 +459,24 @@ body[data-xray-mode="r3f"] .cw-xray-box[data-xray-package="@react-three/fiber"] 
   content: "R3F Canvas · " attr(data-xray-package);
 }
 
+body[data-xray-mode="websocket"] .cw-xray-box {
+  --cw-xray-color: #2563eb;
+  outline: 2px solid var(--cw-xray-color);
+  outline-offset: -2px;
+}
+
+body[data-xray-mode="websocket"] .cw-xray-label {
+  background: #ffffff;
+  border: 1px solid var(--cw-xray-color);
+  color: var(--cw-xray-color);
+  font-size: 0;
+}
+
+body[data-xray-mode="websocket"] .cw-xray-label::after {
+  content: "Browser client · " attr(data-xray-package) " · " attr(data-xray-component);
+  font-size: 10px;
+}
+
 .openlayers-boundaries {
   align-items: stretch;
   display: grid;
@@ -593,6 +611,105 @@ body[data-xray-mode="r3f"] .cw-xray-box[data-xray-package="@react-three/fiber"] 
 
 .r3f-object-tree span,
 .r3f-object-tree code {
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.websocket-boundaries {
+  align-items: stretch;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.15fr) auto minmax(0, 1fr) auto minmax(0, 1.15fr);
+}
+
+.websocket-boundary {
+  border: 1px solid;
+  border-radius: 8px;
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  padding: 12px;
+}
+
+.websocket-boundary > span,
+.websocket-boundary > code {
+  font-size: 11px;
+}
+
+.websocket-boundary > span {
+  font-weight: 800;
+}
+
+.websocket-boundary > code {
+  overflow-wrap: anywhere;
+}
+
+.websocket-boundary--client {
+  background: #eff6ff;
+  border-color: #60a5fa;
+  color: #1d4ed8;
+}
+
+.websocket-boundary--transport {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: #334155;
+}
+
+.websocket-boundary--transport.websocket-boundary--active {
+  background: #f0fdf4;
+  border-color: #22c55e;
+  box-shadow: 0 0 0 2px #bbf7d0;
+  color: #15803d;
+}
+
+.websocket-boundary--server {
+  background: #fff7ed;
+  border-color: #fb923c;
+  color: #c2410c;
+}
+
+.websocket-boundary--contract {
+  background: #faf5ff;
+  border-color: #c084fc;
+  color: #7e22ce;
+}
+
+.websocket-arrow {
+  align-self: center;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.websocket-paths {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.websocket-path {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-left: 4px solid #94a3b8;
+  border-radius: 8px;
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+}
+
+.websocket-path--active {
+  background: #f0fdf4;
+  border-color: #22c55e;
+}
+
+.websocket-path--error {
+  background: #fef2f2;
+  border-color: #ef4444;
+}
+
+.websocket-path code {
+  color: #0e7490;
   font-size: 12px;
   overflow-wrap: anywhere;
 }
@@ -1927,6 +2044,16 @@ body[data-xray-mode="monorepo"] .cw-badge[data-workspace="packages/ui"]::before 
   }
 
   .r3f-arrow {
+    justify-self: center;
+    transform: rotate(90deg);
+  }
+
+  .websocket-boundaries,
+  .websocket-paths {
+    grid-template-columns: 1fr;
+  }
+
+  .websocket-arrow {
     justify-self: center;
     transform: rotate(90deg);
   }
