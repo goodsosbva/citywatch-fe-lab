@@ -142,6 +142,10 @@ export type IncidentDetailResponse = {
   incident: Incident;
 };
 
+export function isIncidentListResponse(value: unknown): value is IncidentListResponse {
+  return isRecord(value) && Array.isArray(value.incidents) && value.incidents.every(isIncident);
+}
+
 export type RealtimeMessage =
   | {
       type: "incident.created";
