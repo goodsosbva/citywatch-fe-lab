@@ -1,4 +1,4 @@
-import type { ApiError, CreateIncidentInput, IncidentDetailResponse, IncidentListQuery, IncidentListResponse, UpdateIncidentStatusInput } from "@citywatch/api-types";
+import { isIncidentListResponse, type ApiError, type CreateIncidentInput, type IncidentDetailResponse, type IncidentListQuery, type IncidentListResponse, type UpdateIncidentStatusInput } from "@citywatch/api-types";
 
 export class IncidentApiError extends Error {
   constructor(
@@ -12,6 +12,17 @@ export class IncidentApiError extends Error {
 }
 
 export async function fetchIncidents(query: IncidentListQuery = {}) {
+  const url = getIncidentListUrl(query);
+  const data = await requestJson<unknown>(url);
+
+  if (!isIncidentListResponse(data)) {
+    throw new IncidentApiError(502, "INVALID_RESPONSE", "사고 목록 응답 형식이 올바르지 않습니다.");
+  }
+
+  return data.incidents;
+}
+
+export function getIncidentListUrl(query: IncidentListQuery = {}) {
   const params = new URLSearchParams();
   if (query.search) params.set("search", query.search);
   if (query.severity) params.set("severity", query.severity);
@@ -19,8 +30,7 @@ export async function fetchIncidents(query: IncidentListQuery = {}) {
   if (query.regionId) params.set("regionId", query.regionId);
 
   const suffix = params.size ? `?${params.toString()}` : "";
-  const data = await requestJson<IncidentListResponse>(`/api/incidents${suffix}`);
-  return data.incidents;
+  return `/api/incidents${suffix}`;
 }
 
 export async function fetchPerformanceIncidents(size: number) {
