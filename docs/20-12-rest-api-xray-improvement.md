@@ -25,7 +25,7 @@
 REST API 관점의 DOM X-Ray 경계는 하나다.
 
 ```text
-Browser client · apps/web · IncidentsClient
+rest/IncidentsClient
 ```
 
 브라우저가 실제로 소유하는 React 화면과 상태만 테두리로 표시한다. Next Route Handler와 서버 메모리 저장소는 브라우저 DOM을 렌더링하지 않으므로 서버 주변에 가짜 X-RayBox를 만들지 않는다. 서버 실행 경계는 REST 실행 증거 패널의 코드 흐름으로 표시한다.
@@ -338,7 +338,7 @@ docs/20-12-rest-api-xray-improvement.md
 ## 확인 순서
 
 1. `/incidents?xray=rest-api`에 접속한다.
-2. X-Ray 경계가 `Browser client · apps/web · IncidentsClient` 하나인지 확인한다.
+2. X-Ray 경계가 `rest/IncidentsClient` 하나인지 확인한다.
 3. `app`, `widget`, `feature`, `entity` FSD 라벨이 없는지 확인한다.
 4. 증거 패널의 실제 요청이 `GET /api/incidents`인지 확인한다.
 5. 심각도에서 `긴급`을 선택한다.

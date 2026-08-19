@@ -459,23 +459,20 @@ body[data-xray-mode="r3f"] .cw-xray-box[data-xray-package="@react-three/fiber"] 
   content: "R3F Canvas · " attr(data-xray-package);
 }
 
-body[data-xray-mode="websocket"] .cw-xray-box,
-body[data-xray-mode="rest-api"] .cw-xray-box {
+body[data-xray-mode="websocket"] .cw-xray-box {
   --cw-xray-color: #2563eb;
   outline: 2px solid var(--cw-xray-color);
   outline-offset: -2px;
 }
 
-body[data-xray-mode="websocket"] .cw-xray-label,
-body[data-xray-mode="rest-api"] .cw-xray-label {
+body[data-xray-mode="websocket"] .cw-xray-label {
   background: #ffffff;
   border: 1px solid var(--cw-xray-color);
   color: var(--cw-xray-color);
   font-size: 0;
 }
 
-body[data-xray-mode="websocket"] .cw-xray-label::after,
-body[data-xray-mode="rest-api"] .cw-xray-label::after {
+body[data-xray-mode="websocket"] .cw-xray-label::after {
   content: "Browser client · " attr(data-xray-package) " · " attr(data-xray-component);
   font-size: 10px;
 }

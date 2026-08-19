@@ -102,7 +102,7 @@ export default function IncidentsPage() {
 
       <XRayBox
         enabled={xray || restApiXray}
-        label={restApiXray ? "browser/incidents/IncidentsClient" : "app/incidents/IncidentsPage"}
+        label={restApiXray ? "rest/IncidentsClient" : "app/incidents/IncidentsPage"}
         layer="app"
         packageName="apps/web"
         stacks={["Next App Router", "React", "TypeScript"]}
