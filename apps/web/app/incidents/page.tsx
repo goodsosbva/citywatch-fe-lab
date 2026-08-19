@@ -41,6 +41,7 @@ const regionFilterOptions = ["seocho", "seongsu", "junggu"] as const;
 export default function IncidentsPage() {
   const dispatch = useAppDispatch();
   const { enabled: xray, mode } = useXRay();
+  const reduxXray = mode === "redux";
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
@@ -146,9 +147,10 @@ export default function IncidentsPage() {
             onSearchChange={(value) => dispatch(setSearchFilter(value))}
             onSeverityChange={(value) => dispatch(setSeverityFilter(value))}
             onStatusChange={(value) => dispatch(setStatusFilter(value))}
+            reduxXray={reduxXray}
             selectedIncidentId={selectedIncidentId}
             selectedIncidentTitle={selectedIncident?.title}
-            xray={xray || mode === "rest-api" || mode === "redux"}
+            xray={xray || mode === "rest-api"}
           />
 
           <XRayBox
@@ -220,22 +222,15 @@ export default function IncidentsPage() {
 
           {mode === "rest-api" || mode === "redux" ? (
             <XRayBox
-              enabled
-              label={
-                mode === "rest-api"
-                  ? "feature/incident/RestIncidentPipeline"
-                  : "feature/incident/ReduxFilterPipeline"
-              }
+              enabled={mode === "rest-api"}
+              label="feature/incident/RestIncidentPipeline"
               packageName="apps/web"
-              proofs={[mode]}
-              stacks={
-                mode === "rest-api"
-                  ? ["fetch", "Next Route Handler", "Shared Contract"]
-                  : ["Redux Toolkit", "React Redux", "Memoized Selector"]
-              }
+              proofs={["rest-api"]}
+              stacks={["fetch", "Next Route Handler", "Shared Contract"]}
             >
               <IncidentDataFlowEvidencePanel
                 activeFilterCount={activeFilterCount}
+                error={error}
                 filters={filters}
                 incidentCount={incidents.length}
                 loading={loading}
@@ -259,6 +254,7 @@ function IncidentFilterPanel({
   onSearchChange,
   onSeverityChange,
   onStatusChange,
+  reduxXray,
   selectedIncidentId,
   selectedIncidentTitle,
   xray,
@@ -270,6 +266,7 @@ function IncidentFilterPanel({
   onSearchChange: (value: string) => void;
   onSeverityChange: (value: IncidentFilters["severity"]) => void;
   onStatusChange: (value: IncidentFilters["status"]) => void;
+  reduxXray: boolean;
   selectedIncidentId?: string;
   selectedIncidentTitle?: string;
   xray: boolean;
@@ -282,11 +279,19 @@ function IncidentFilterPanel({
 
   return (
     <XRayBox
-      enabled={xray}
-      label="feature/incident/ShareIncidentFilters"
+      enabled={xray || reduxXray}
+      label={
+        reduxXray
+          ? "redux/IncidentControlConsumer"
+          : "feature/incident/ShareIncidentFilters"
+      }
       packageName="apps/web"
-      proofs={["fsd-style", "rest-api", "redux"]}
-      stacks={["Redux Toolkit", "React Redux", "REST Query"]}
+      proofs={reduxXray ? ["redux"] : ["fsd-style", "rest-api"]}
+      stacks={
+        reduxXray
+          ? ["Redux Toolkit", "React Redux", "useAppSelector"]
+          : ["Redux Toolkit", "React Redux", "REST Query"]
+      }
     >
       <section className="panel" aria-labelledby="incident-filter-title">
         <div className="panel-title-row">
@@ -377,6 +382,7 @@ function IncidentFilterPanel({
 
 function IncidentDataFlowEvidencePanel({
   activeFilterCount,
+  error,
   filters,
   incidentCount,
   loading,
@@ -385,6 +391,7 @@ function IncidentDataFlowEvidencePanel({
   selectedIncidentId,
 }: {
   activeFilterCount: number;
+  error?: string;
   filters: IncidentFilters;
   incidentCount: number;
   loading: boolean;
@@ -403,38 +410,43 @@ function IncidentDataFlowEvidencePanel({
         <h2 id="incident-data-evidence-title">
           {redux ? "Redux 증거" : "REST API 증거"}
         </h2>
-        <Badge tone={loading ? "info" : "success"}>
+        <Badge tone={redux ? "success" : loading ? "info" : "success"}>
           {redux ? `${activeFilterCount}개 필터` : loading ? "요청 중" : `${incidentCount}건 응답`}
         </Badge>
       </div>
 
       <p>
         {redux
-          ? "입력 변경을 Redux action으로 보내고, reducer가 저장한 필터를 selector가 REST query로 변환합니다."
+          ? "입력 변경이 action, reducer, store, selector 구독을 지나 같은 화면과 다른 관제 화면을 다시 렌더링합니다."
           : "Redux에서 만든 조회 조건을 URL query로 변환해 Route Handler에 요청하고, 공유 계약 모양의 응답을 화면 state에 저장합니다."}
       </p>
 
       {redux ? (
         <ul className="technology-flow">
           <li>
-            <code>input / select</code>
-            <span>dispatches</span>
-            <code>set*Filter(action)</code>
+            <code>input / select onChange(value)</code>
+            <span>calls</span>
+            <code>dispatch(set*Filter(value))</code>
           </li>
           <li>
-            <code>incidentControlSlice</code>
+            <code>incidentControlSlice.actions</code>
+            <span>creates</span>
+            <code>{`{ type, payload }`}</code>
+          </li>
+          <li>
+            <code>incidentControlReducer</code>
             <span>updates</span>
-            <code>state.filters</code>
+            <code>store.incidentControl</code>
           </li>
           <li>
-            <code>selectIncidentListQuery</code>
-            <span>derives</span>
-            <code>IncidentListQuery</code>
+            <code>useAppSelector(selector)</code>
+            <span>subscribes</span>
+            <code>filters / count / selected ID</code>
           </li>
           <li>
-            <code>query dependency</code>
-            <span>runs</span>
-            <code>fetchIncidents(query)</code>
+            <code>selector result changed</code>
+            <span>re-renders</span>
+            <code>IncidentsPage → IncidentFilterPanel</code>
           </li>
         </ul>
       ) : (
@@ -462,32 +474,87 @@ function IncidentDataFlowEvidencePanel({
         </ul>
       )}
 
-      <dl className="technology-code">
-        <div>
-          <dt>현재 Redux 필터</dt>
-          <dd>
-            <code>{JSON.stringify(filters)}</code>
-          </dd>
-        </div>
-        <div>
-          <dt>현재 REST query</dt>
-          <dd>
-            <code>{JSON.stringify(query)}</code>
-          </dd>
-        </div>
-        <div>
-          <dt>공유 계약</dt>
-          <dd>
-            <code>IncidentListQuery → IncidentListResponse</code>
-          </dd>
-        </div>
-        <div>
-          <dt>공유 선택 상태</dt>
-          <dd>
-            <code>{selectedIncidentId ?? "선택 없음"}</code>
-          </dd>
-        </div>
-      </dl>
+      {redux ? (
+        <dl className="technology-code">
+          <div>
+            <dt>Redux 전역 공유 상태 · store.incidentControl</dt>
+            <dd>
+              <code>
+                {JSON.stringify({
+                  filters,
+                  selectedIncidentId: selectedIncidentId ?? null,
+                })}
+              </code>
+            </dd>
+          </div>
+          <div>
+            <dt>현재 selector 반환값</dt>
+            <dd>
+              <code>
+                {JSON.stringify({
+                  activeFilterCount,
+                  selectedIncidentId: selectedIncidentId ?? null,
+                })}
+              </code>
+            </dd>
+          </div>
+          <div>
+            <dt>createSlice가 생성한 실제 action type</dt>
+            <dd>
+              <code>
+                incidentControl/setSearchFilter · setSeverityFilter ·
+                setStatusFilter · setRegionFilter · resetIncidentFilters ·
+                setSelectedIncidentId
+              </code>
+            </dd>
+          </div>
+          <div>
+            <dt>React 지역 상태 · Redux에 저장하지 않음</dt>
+            <dd>
+              <code>
+                {JSON.stringify({
+                  error: error ?? null,
+                  incidentCount,
+                  loading,
+                })}
+              </code>
+            </dd>
+          </div>
+          <div>
+            <dt>같은 store를 구독하는 화면</dt>
+            <dd>
+              <code>/incidents · /map · /risk-3d · /incidents/[id]</code>
+            </dd>
+          </div>
+        </dl>
+      ) : (
+        <dl className="technology-code">
+          <div>
+            <dt>현재 Redux 필터</dt>
+            <dd>
+              <code>{JSON.stringify(filters)}</code>
+            </dd>
+          </div>
+          <div>
+            <dt>현재 REST query</dt>
+            <dd>
+              <code>{JSON.stringify(query)}</code>
+            </dd>
+          </div>
+          <div>
+            <dt>공유 계약</dt>
+            <dd>
+              <code>IncidentListQuery → IncidentListResponse</code>
+            </dd>
+          </div>
+          <div>
+            <dt>공유 선택 상태</dt>
+            <dd>
+              <code>{selectedIncidentId ?? "선택 없음"}</code>
+            </dd>
+          </div>
+        </dl>
+      )}
     </aside>
   );
 }
