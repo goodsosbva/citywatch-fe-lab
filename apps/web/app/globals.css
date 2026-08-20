@@ -1239,6 +1239,100 @@ body[data-xray-mode="monorepo"] .cw-badge[data-workspace="packages/ui"]::before 
   margin-top: 12px;
 }
 
+.create-form {
+  display: grid;
+  gap: 22px;
+}
+
+.form-grid {
+  display: grid;
+  gap: 18px 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.form-field--wide {
+  grid-column: 1 / -1;
+}
+
+.create-form .form-field {
+  gap: 8px;
+  min-width: 0;
+}
+
+.create-form .form-field label {
+  color: #1e293b;
+  font-size: 14px;
+}
+
+.create-form .text-input,
+.create-form .textarea-input,
+.create-form .select-input {
+  border-color: #cbd5e1;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  min-height: 46px;
+  padding-inline: 14px;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+  width: 100%;
+}
+
+.create-form .textarea-input {
+  line-height: 1.5;
+  min-height: 128px;
+  padding-block: 12px;
+  resize: vertical;
+}
+
+.create-form .text-input:hover,
+.create-form .textarea-input:hover,
+.create-form .select-input:hover {
+  border-color: #94a3b8;
+}
+
+.create-form .text-input:focus-visible,
+.create-form .textarea-input:focus-visible,
+.create-form .select-input:focus-visible {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+  outline: none;
+}
+
+.create-form .text-input[aria-invalid="true"],
+.create-form .textarea-input[aria-invalid="true"],
+.create-form .select-input[aria-invalid="true"] {
+  background: #ffffff;
+  border-color: #dc2626;
+}
+
+.create-form .text-input[aria-invalid="true"]:focus-visible,
+.create-form .textarea-input[aria-invalid="true"]:focus-visible,
+.create-form .select-input[aria-invalid="true"]:focus-visible {
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+}
+
+.create-form .field-error {
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.form-actions {
+  align-items: center;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding-top: 18px;
+}
+
+.create-form .form-actions .primary-button {
+  min-height: 42px;
+  min-width: 120px;
+}
+
+.create-form .form-actions .nav-link {
+  min-height: 42px;
+}
+
 .status-form {
   align-items: end;
   display: grid;
@@ -2080,6 +2174,15 @@ body[data-xray-mode="monorepo"] .cw-badge[data-workspace="packages/ui"]::before 
 
   .form-field--wide {
     grid-column: auto;
+  }
+
+  .form-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .create-form .form-actions > * {
+    width: 100%;
   }
 }
 .xray-selector {

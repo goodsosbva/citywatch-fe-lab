@@ -50,6 +50,7 @@ const initialForm: FormState = {
 export default function NewIncidentPage() {
   const router = useRouter();
   const { enabled: xray, mode } = useXRay();
+  const zodXray = mode === "zod";
   const [form, setForm] = useState<FormState>(initialForm);
   const [fieldErrors, setFieldErrors] =
     useState<CreateIncidentValidationErrors>({});
@@ -95,22 +96,23 @@ export default function NewIncidentPage() {
       </header>
 
       <XRayBox
-        enabled={xray}
-        label="app/incidents/CreateIncidentPage"
-        layer="app"
-        packageName="apps/web"
-        stacks={["Next App Router", "React", "TypeScript"]}
+        enabled={xray || zodXray}
+        label={
+          zodXray
+            ? "runtime/validation/validateCreateIncidentInput"
+            : "app/incidents/CreateIncidentPage"
+        }
+        layer={zodXray ? "shared" : "app"}
+        packageName={zodXray ? "packages/api-types" : "apps/web"}
+        proofs={zodXray ? ["zod"] : undefined}
+        stacks={zodXray ? ["Zod", "safeParse"] : ["Next App Router", "React", "TypeScript"]}
       >
         <section className="dashboard" aria-label="사고 등록 관제">
           <XRayBox
-            enabled={
-              xray ||
-              mode === "rest-api" ||
-              mode === "zod"
-            }
+            enabled={xray || mode === "rest-api"}
             label="widget/IncidentCreateForm"
             packageName="apps/web"
-            proofs={["fsd-style", "rest-api", "zod"]}
+            proofs={["fsd-style", "rest-api"]}
             stacks={["React Form"]}
           >
             <section className="panel" aria-labelledby="incident-create-title">
@@ -120,14 +122,10 @@ export default function NewIncidentPage() {
               </div>
 
               <XRayBox
-                enabled={
-                  xray ||
-                  mode === "rest-api" ||
-                  mode === "zod"
-                }
+                enabled={xray || mode === "rest-api"}
                 label="feature/incident/CreateIncident"
                 packageName="apps/web"
-                proofs={["fsd-style", "rest-api", "zod"]}
+                proofs={["fsd-style", "rest-api"]}
                 stacks={["REST API", "Schema Validation"]}
               >
                 <form
@@ -140,14 +138,10 @@ export default function NewIncidentPage() {
                   }
                 >
                   <XRayBox
-                    enabled={
-                      xray ||
-                      mode === "rest-api" ||
-                      mode === "zod"
-                    }
+                    enabled={xray || mode === "rest-api"}
                     label="entity/incident/CreateIncidentInput"
                     packageName="apps/web"
-                    proofs={["fsd-style", "rest-api", "zod"]}
+                    proofs={["fsd-style", "rest-api"]}
                     stacks={["TypeScript", "Shared Validation"]}
                   >
                     <div className="form-grid">
@@ -438,19 +432,13 @@ export default function NewIncidentPage() {
             </section>
           </XRayBox>
 
-          {mode === "zod" ? (
-            <XRayBox
-              enabled
-              label="feature/incident/ZodValidationPipeline"
-              packageName="apps/web"
-              proofs={["zod"]}
-              stacks={["Zod", "safeParse", "Shared Validation"]}
-            >
-              <CreateIncidentEvidencePanel
-                errorCount={Object.values(fieldErrors).filter(Boolean).length}
-                saving={saving}
-              />
-            </XRayBox>
+          {zodXray ? (
+            <CreateIncidentEvidencePanel
+              fieldErrors={fieldErrors}
+              formError={error}
+              result={buildIncidentInput(form)}
+              saving={saving}
+            />
           ) : null}
         </section>
       </XRayBox>
@@ -459,12 +447,19 @@ export default function NewIncidentPage() {
 }
 
 function CreateIncidentEvidencePanel({
-  errorCount,
+  fieldErrors,
+  formError,
+  result,
   saving,
 }: {
-  errorCount: number;
+  fieldErrors: CreateIncidentValidationErrors;
+  formError?: string;
+  result: ReturnType<typeof buildIncidentInput>;
   saving: boolean;
 }) {
+  const currentErrors = result.success ? [] : Object.entries(result.errors).filter(([, message]) => message);
+  const displayedErrorCount = Object.values(fieldErrors).filter(Boolean).length;
+
   return (
     <aside
       aria-labelledby="incident-create-evidence-title"
@@ -474,8 +469,8 @@ function CreateIncidentEvidencePanel({
         <h2 id="incident-create-evidence-title">
           Zod Validation 증거
         </h2>
-        <Badge tone={errorCount ? "danger" : saving ? "info" : "success"}>
-          {errorCount ? `오류 ${errorCount}개` : saving ? "등록 중" : "입력 대기"}
+        <Badge tone={saving ? "info" : result.success ? "success" : "danger"}>
+          {saving ? "POST 진행 중" : result.success ? "요청 허용" : "요청 차단"}
         </Badge>
       </div>
 
@@ -526,9 +521,43 @@ function CreateIncidentEvidencePanel({
           </dd>
         </div>
         <div>
-          <dt>현재 필드 오류</dt>
+          <dt>현재 safeParse 결과</dt>
           <dd>
-            <code>{errorCount}개</code>
+            <code>
+              {result.success
+                ? `success: true · ${JSON.stringify(result.input)}`
+                : `success: false · ${currentErrors.length}개 issue`}
+            </code>
+          </dd>
+        </div>
+        <div>
+          <dt>현재 오류 매핑</dt>
+          <dd>
+            <code>
+              {result.success
+                ? "오류 없음"
+                : currentErrors.map(([field, message]) => `${field}: ${message}`).join(" / ")}
+            </code>
+          </dd>
+        </div>
+        <div>
+          <dt>요청 게이트</dt>
+          <dd>
+            <code>
+              {saving
+                ? "createIncident(result.input) 실행 중"
+                : result.success
+                  ? "제출 시 POST 허용"
+                  : "handleSubmit return → POST 차단"}
+            </code>
+          </dd>
+        </div>
+        <div>
+          <dt>화면에 출력된 오류</dt>
+          <dd>
+            <code>
+              필드 {displayedErrorCount}개 · 폼 {formError ?? "없음"}
+            </code>
           </dd>
         </div>
       </dl>
