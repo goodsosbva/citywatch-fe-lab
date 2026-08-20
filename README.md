@@ -41,10 +41,12 @@ flowchart LR
 
 ### 기술 스택 맵
 
-![CityWatch FE Lab technology stack and deployment map](docs/assets/readme/citywatch-tech-stack-deployment.png)
+![CityWatch FE Lab monorepo technology stack and deployment map](docs/assets/readme/citywatch-monorepo-icon-tech-stack-deployment.png)
 
 그림에는 실제 기술과 배포 대상만 표시합니다.
 
+- `Monorepo / npm Workspaces` 아이콘 타일: 여러 앱과 패키지를 한 저장소에서 관리하는 프로젝트 구성을 나타냅니다.
+- 회색 외곽선 `CITYWATCH MONOREPO · npm Workspaces`: 세 실행·개발 영역이 그 하나의 저장소와 의존성 그래프 안에 있음을 표시합니다.
 - 실선 `deploy`: 어떤 기술 묶음이 어느 배포 서비스로 올라가는지 표시합니다.
 - 점선 `visit`: 사용자가 Vercel의 Next.js Web에 접속하는 운영 진입점입니다.
 - 점선 `load remote`: 배포된 Web이 별도 Vercel Remote를 런타임에 불러옵니다.
