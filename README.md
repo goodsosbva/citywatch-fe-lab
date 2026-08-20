@@ -10,6 +10,19 @@ CityWatch FE Lab은 도시 안전 관제 서비스를 만드는 것이 목적이
 
 ![X-Ray home with Module Federation](docs/assets/readme/xray-home-module-federation.png)
 
+### X-Ray는 기술 스택이 아니라 CityWatch 자체 구현 기능입니다
+
+X-Ray는 npm에서 설치한 외부 라이브러리나 프레임워크가 아닙니다. CityWatch가 학습 결과를 화면에서 설명하기 위해 직접 만든 **구현 증명 기능**입니다.
+
+```txt
+화면에서 기술 관점 선택
+→ 해당 기술이 실제로 동작하는 UI 경계만 강조
+→ 짧은 X-Ray 라벨 확인
+→ 실제 코드와 상세 문서로 이동
+```
+
+`XRayBox`는 화면 영역에 기술명만 장식하는 컴포넌트가 아닙니다. 현재 UI가 어떤 패키지와 실행 경계를 사용하고 있는지 실제 렌더링 결과 위에서 확인하게 합니다. 따라서 아래 기술 스택 이미지에는 X-Ray를 외부 기술처럼 넣지 않고, 이 섹션에서 별도로 설명합니다.
+
 ## 이 프로젝트를 보는 흐름
 
 ```mermaid
@@ -21,6 +34,60 @@ flowchart LR
 ```
 
 루트 README는 프로젝트의 의의와 실행 방법만 안내합니다. 구현을 어떻게 했고 왜 그렇게 했는지는 `docs/` 문서에서 확인합니다.
+
+## 프로젝트 구성 한눈에 보기
+
+이 저장소는 루트 자체가 하나의 앱이 아니라, 실행 앱과 공유 패키지를 묶는 **npm Workspaces 모노레포**입니다.
+
+### 기술 스택 맵
+
+![CityWatch FE Lab technology stack and deployment map](docs/assets/readme/citywatch-tech-stack-deployment.png)
+
+그림에는 실제 기술과 배포 대상만 표시합니다.
+
+- 실선 `deploy`: 어떤 기술 묶음이 어느 배포 서비스로 올라가는지 표시합니다.
+- 점선 `visit`: 사용자가 Vercel의 Next.js Web에 접속하는 운영 진입점입니다.
+- 점선 `load remote`: 배포된 Web이 별도 Vercel Remote를 런타임에 불러옵니다.
+- 점선 `WebSocket`: 배포된 Web이 Render의 실시간 서버에 연결됩니다.
+
+### 모노레포 폴더 구조
+
+```txt
+CityWatchFELab
+├─ apps
+│  ├─ web                 # Next.js host, 화면, REST Route Handler
+│  ├─ analytics-remote    # Vite Module Federation remote
+│  └─ realtime-server     # WebSocket/Polling Node 서버
+├─ packages
+│  ├─ api-types           # 공유 타입, Zod 검증, 런타임 타입 가드
+│  ├─ ui                  # 공용 UI와 X-Ray 컴포넌트
+│  └─ config              # 공유 설정 준비 영역
+├─ docs                   # 단계별 구현 근거와 코드 흐름
+├─ scripts/dev.mjs        # 세 개발 프로세스 통합 실행
+├─ package.json           # npm Workspaces와 루트 명령
+└─ package-lock.json      # 전체 workspace 의존성 잠금
+```
+
+### 설정이 연결되는 방식
+
+| 설정 | 실제 역할 |
+| --- | --- |
+| 루트 `workspaces` | `apps/*`, `packages/*`를 하나의 의존성 그래프로 설치하고 실행합니다. |
+| `scripts/dev.mjs` | `web`, `analytics-remote`, `realtime-server`를 각각 독립 프로세스로 실행합니다. |
+| `apps/web/next.config.ts` | `@citywatch/api-types`, `@citywatch/ui` workspace 소스를 Next.js가 변환하도록 연결합니다. |
+| `apps/analytics-remote/vite.config.ts` | 분석 모듈을 Module Federation manifest와 remote entry로 공개합니다. |
+| `packages/api-types` | Web, Route Handler, remote가 같은 타입·Zod 검증 계약을 사용하게 합니다. |
+| `packages/ui` | 앱과 Storybook이 동일한 Badge·X-Ray UI를 사용하게 합니다. |
+
+개발 명령 하나의 실행 흐름은 다음과 같습니다.
+
+```mermaid
+flowchart LR
+  DEV["npm run dev"] --> SCRIPT["scripts/dev.mjs"]
+  SCRIPT --> WEBDEV["Next.js :3000"]
+  SCRIPT --> WSDEV["Realtime :3001"]
+  SCRIPT --> MFDEV["Analytics remote :3002"]
+```
 
 ## 실행 방법
 
