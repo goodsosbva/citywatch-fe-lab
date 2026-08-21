@@ -12,6 +12,7 @@ const navigationItems = [
   ["/risk-3d", "3D 위험 구역"],
   ["/realtime", "실시간 피드"],
   ["/performance", "대량 관제"],
+  ["/status", "구현 상태"],
 ] as const;
 
 export function AppNavigation() {

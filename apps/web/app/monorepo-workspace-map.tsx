@@ -132,5 +132,6 @@ function getPageName(pathname: string) {
   if (pathname === "/risk-3d") return "3D 위험 구역";
   if (pathname === "/realtime") return "실시간 피드";
   if (pathname === "/performance") return "대량 관제";
+  if (pathname === "/status") return "구현 상태";
   return pathname;
 }

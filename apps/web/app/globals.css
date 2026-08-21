@@ -573,6 +573,126 @@ body[data-xray-mode="all"] .cw-xray-label {
   }
 }
 
+.implementation-status {
+  gap: 24px;
+}
+
+.implementation-status__intro {
+  align-items: center;
+  display: grid;
+  gap: 20px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.implementation-status__intro p {
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.65;
+  margin-top: 8px;
+  max-width: 760px;
+}
+
+.implementation-status__counts {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(76px, 1fr));
+  margin: 0;
+}
+
+.implementation-status__counts div {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+  min-width: 76px;
+  padding: 10px;
+  text-align: center;
+}
+
+.implementation-status__counts div[data-status="complete"] { border-color: #86efac; }
+.implementation-status__counts div[data-status="partial"] { border-color: #fbbf24; }
+.implementation-status__counts div[data-status="planned"] { border-color: #cbd5e1; }
+
+.implementation-status__counts dt {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.implementation-status__counts dd {
+  font-size: 22px;
+  font-weight: 900;
+  margin: 0;
+}
+
+.implementation-status__section {
+  display: grid;
+  gap: 12px;
+}
+
+.implementation-status__grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.implementation-status__card {
+  align-content: start;
+  border-left: 4px solid #cbd5e1;
+  display: grid;
+  gap: 14px;
+}
+
+.implementation-status__card[data-status="complete"] { border-left-color: #16a34a; }
+.implementation-status__card[data-status="partial"] { border-left-color: #d97706; }
+.implementation-status__card[data-status="planned"] { border-left-color: #64748b; }
+
+.implementation-status__card h3 {
+  line-height: 1.35;
+}
+
+.implementation-status__card dl,
+.implementation-status__card dl div {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+}
+
+.implementation-status__card dl {
+  gap: 12px;
+}
+
+.implementation-status__card dt {
+  color: #334155;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.implementation-status__card dd {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.implementation-status__card .nav-link {
+  justify-self: start;
+}
+
+@media (max-width: 760px) {
+  .implementation-status__intro,
+  .implementation-status__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .implementation-status__counts {
+    width: 100%;
+  }
+}
+
 .openlayers-boundaries {
   align-items: stretch;
   display: grid;

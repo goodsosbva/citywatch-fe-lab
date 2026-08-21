@@ -129,6 +129,7 @@ http://127.0.0.1:3000/
 | realtime server를 왜 분리했는지 | [docs/14-realtime-server-separation.md](docs/14-realtime-server-separation.md) |
 | Storybook을 어떻게 구현하고 보는지 | [docs/13-storybook-ui-proof.md](docs/13-storybook-ui-proof.md) |
 | 전체 아키텍처 요약 | [docs/00-current-architecture-summary.md](docs/00-current-architecture-summary.md) |
+| 구현 완료·부분 구현·예정과 현재 한계 | [docs/21-implementation-status-and-limitations.md](docs/21-implementation-status-and-limitations.md) |
 
 ## 실제 코드 입구
 
