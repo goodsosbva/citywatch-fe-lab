@@ -2,7 +2,7 @@ import type {
   IncidentListQuery,
   IncidentSeverity,
   IncidentStatus,
-} from "@citywatch/api-types";
+} from "@/entities/incident";
 import {
   createSelector,
   createSlice,

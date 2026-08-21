@@ -9,7 +9,7 @@ import {
 import { Badge, XRayBox, type BadgeTone } from "@citywatch/ui";
 import { useEffect, useRef, useState } from "react";
 import { useXRay } from "../xray-selector";
-import { incidentStatusLabels } from "../incidents/incident-format";
+import { incidentStatusLabels } from "@/entities/incident";
 
 type ConnectionMode = "connecting" | "websocket" | "polling" | "offline";
 

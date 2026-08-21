@@ -4,14 +4,14 @@ import type { Incident, IncidentStatus } from "@citywatch/api-types";
 import { calculateIncidentRisk, incidentStatuses } from "@citywatch/api-types";
 import { Badge, SeverityBadge, XRayBox } from "@citywatch/ui";
 import { FormEvent, useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../store-hooks";
-import { useXRay } from "../xray-selector";
+import { useDispatch, useSelector } from "react-redux";
 import {
   selectSelectedIncidentId,
   setSelectedIncidentId,
-} from "./incident-control-slice";
-import { changeIncidentStatus, fetchIncident } from "./incident-api";
+} from "@/features/incident-control";
 import {
+  changeIncidentStatus,
+  fetchIncident,
   formatIncidentDate,
   getRegionName,
   getRiskTone,
@@ -19,12 +19,11 @@ import {
   incidentCategoryLabels,
   incidentRiskLevelLabels,
   incidentStatusLabels,
-} from "./incident-format";
+} from "@/entities/incident";
 
-export function IncidentDetailView({ incidentId }: { incidentId: string }) {
-  const dispatch = useAppDispatch();
-  const selectedIncidentId = useAppSelector(selectSelectedIncidentId);
-  const { enabled: xray } = useXRay();
+export function IncidentDetailView({ incidentId, xray }: { incidentId: string; xray: boolean }) {
+  const dispatch = useDispatch();
+  const selectedIncidentId = useSelector(selectSelectedIncidentId);
   const [incident, setIncident] = useState<Incident>();
   const [selectedStatus, setSelectedStatus] = useState<IncidentStatus>("reported");
   const [loading, setLoading] = useState(true);
@@ -94,16 +93,16 @@ export function IncidentDetailView({ incidentId }: { incidentId: string }) {
         </div>
       </header>
 
-      <XRayBox enabled={xray} label="app/incidents/IncidentDetailPage" layer="app" packageName="apps/web" stacks={["Next Dynamic Route", "React", "TypeScript"]}>
+      <XRayBox enabled={xray} label="widget/incident-detail/IncidentDetailView" layer="widget" packageName="apps/web" stacks={["React", "TypeScript"]}>
         <section className="dashboard" aria-label="사고 상세 관제" aria-busy={loading || saving}>
-          <XRayBox enabled={xray} label="feature/incident/FetchIncidentDetail" packageName="apps/web" stacks={["fetch", "REST API"]}>
+          <XRayBox enabled={xray} label="widget/incident-detail/LoadIncidentDetail" packageName="apps/web" stacks={["fetch", "REST API"]}>
             {loading ? <p className="state-message" role="status">REST API에서 사고 상세를 불러오는 중입니다.</p> : null}
             {loadError ? <p className="state-message state-message--error" role="alert">{loadError}</p> : null}
           </XRayBox>
 
           {incident ? (
             <>
-              <XRayBox enabled={xray} label="widget/IncidentDetailHeader" packageName="apps/web" stacks={["React", "Shared UI", "Redux Selected State", "Shared Risk Score"]}>
+              <XRayBox enabled={xray} label="widget/incident-detail/IncidentDetailHeader" packageName="apps/web" stacks={["React", "Shared UI", "Redux Selected State", "Shared Risk Score"]}>
                 <section className="panel detail-hero" aria-labelledby="incident-detail-title">
                   <div>
                     <p className="eyebrow">{incident.id}</p>
@@ -121,7 +120,7 @@ export function IncidentDetailView({ incidentId }: { incidentId: string }) {
                 </section>
               </XRayBox>
 
-              <XRayBox enabled={xray} label="feature/incident/ChangeIncidentStatus" packageName="apps/web" stacks={["PATCH", "REST API", "Input Validation", "Accessibility"]}>
+              <XRayBox enabled={xray} label="widget/incident-detail/ChangeIncidentStatus" packageName="apps/web" stacks={["PATCH", "REST API", "Input Validation", "Accessibility"]}>
                 <section className="panel" aria-labelledby="incident-status-title">
                   <div className="panel-title-row">
                     <h2 id="incident-status-title">상태 변경</h2>

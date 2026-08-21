@@ -4,7 +4,7 @@ import { calculateIncidentRisk, type Incident } from "@citywatch/api-types";
 import { Badge, SeverityBadge, XRayBox } from "@citywatch/ui";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { fetchIncidents } from "../incidents/incident-api";
+import { fetchIncidents } from "@/entities/incident";
 import {
   formatIncidentDate,
   getRegionName,
@@ -12,14 +12,14 @@ import {
   getStatusTone,
   incidentRiskLevelLabels,
   incidentStatusLabels,
-} from "../incidents/incident-format";
+} from "@/entities/incident";
 import {
   selectActiveIncidentFilterCount,
   selectIncidentFilters,
   selectIncidentListQuery,
   selectSelectedIncidentId,
   setSelectedIncidentId,
-} from "../incidents/incident-control-slice";
+} from "@/features/incident-control";
 import { useAppDispatch, useAppSelector } from "../store-hooks";
 import { useXRay } from "../xray-selector";
 import { OpenLayersIncidentMap } from "./openlayers-incident-map";

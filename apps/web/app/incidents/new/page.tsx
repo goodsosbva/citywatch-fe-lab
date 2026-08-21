@@ -11,11 +11,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { useXRay } from "../../xray-selector";
-import { createIncident } from "../incident-api";
+import { createIncident } from "@/entities/incident";
 import {
   incidentCategoryLabels,
   incidentSeverityLabels,
-} from "../incident-format";
+} from "@/entities/incident";
 
 type FormState = {
   title: string;

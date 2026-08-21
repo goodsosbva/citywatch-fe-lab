@@ -24,8 +24,8 @@ import {
   setSeverityFilter,
   setStatusFilter,
   type IncidentFilters,
-} from "./incident-control-slice";
-import { fetchIncidents, getIncidentListUrl } from "./incident-api";
+} from "@/features/incident-control";
+import { fetchIncidents, getIncidentListUrl } from "@/entities/incident";
 import {
   formatIncidentDate,
   getRegionName,
@@ -34,7 +34,7 @@ import {
   incidentRiskLevelLabels,
   incidentSeverityLabels,
   incidentStatusLabels,
-} from "./incident-format";
+} from "@/entities/incident";
 
 const regionFilterOptions = ["seocho", "seongsu", "junggu"] as const;
 
@@ -301,7 +301,7 @@ function IncidentFilterPanel({
       label={
         reduxXray
           ? "redux/IncidentControlConsumer"
-          : "feature/incident/ShareIncidentFilters"
+          : "feature/incident-control/IncidentFilters"
       }
       packageName="apps/web"
       proofs={reduxXray ? ["redux"] : ["fsd-style", "rest-api"]}

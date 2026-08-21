@@ -58,21 +58,20 @@ Unit Test
 ### 부분 구현
 
 ```text
-FSD-style responsibility boundaries
+FSD migration coverage
 ```
 
-현재 X-Ray는 `app`, `widget`, `feature`, `entity`, `shared` 이름으로 UI 책임을 설명한다. 그러나 실제 폴더 구조와 slice public API, 의존 방향을 정식 FSD 규칙으로 재구성한 것은 아니다.
+22단계에서 incident 핵심 흐름은 실제 FSD slice와 Public API로 이동했다. 다만 일부 페이지 전용 UI는 아직 Next route 폴더에 함께 있으므로 전 화면의 이동 범위는 부분 구현으로 남긴다.
 
-따라서 현재 상태는 `FSD 완료`가 아니라 `FSD-style 책임 경계 부분 구현`이다.
+따라서 `incident vertical slice의 정식 FSD`와 `전체 화면의 FSD 전환 범위`를 구분한다.
 
 ### 예정 · 미증명
 
 ```text
-정식 FSD
 의미 있는 SSR 데이터 렌더링
 ```
 
-정식 FSD는 22단계에서 실제 구조와 의존 규칙을 구현한 뒤 상태를 바꿔야 한다.
+정식 FSD는 22단계에서 `page → widget → feature → entity` incident vertical slice의 실제 구조, Public API, 하향 의존 검사까지 구현해 완료로 변경했다.
 
 SSR은 Next.js를 사용한다는 사실만으로 완료되지 않는다. 현재 주요 데이터 화면은 `use client`와 브라우저 `fetch`를 사용한다. 23단계에서 서버 데이터 요청, 서버 HTML 결과, client hydration 경계를 실제 코드와 화면으로 증명해야 한다.
 
@@ -133,8 +132,8 @@ fixture에서 marker·DOM 범위 확인
 1. `/status?xray=all`에 접속한다.
 2. 완료·부분·예정 개수가 각각 표시되는지 확인한다.
 3. 각 완료 카드에 `현재 근거`와 `현재 한계`가 함께 있는지 확인한다.
-4. FSD-style이 부분 구현인지 확인한다.
-5. 정식 FSD와 SSR이 예정·미증명인지 확인한다.
+4. FSD migration coverage가 부분 구현인지 확인한다.
+5. 정식 FSD는 완료이고 SSR만 예정·미증명인지 확인한다.
 6. `실행 화면에서 확인`을 눌러 해당 X-Ray 대표 화면으로 이동하는지 확인한다.
 7. 모바일 폭에서 카드가 한 열로 바뀌는지 확인한다.
 
@@ -150,7 +149,7 @@ fixture에서 marker·DOM 범위 확인
 → X-Ray가 실제 구조를 가리키는지 확인
 ```
 
-이 조건이 구현된 뒤 `정식 FSD`를 완료로 바꾼다.
+22단계에서 위 조건을 incident vertical slice에 구현했으며 `정식 FSD`를 완료로 바꿨다. 전체 화면의 이동 범위는 별도 부분 구현 항목으로 남긴다.
 
 ### 23. SSR
 

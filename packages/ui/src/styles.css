@@ -69,6 +69,10 @@
   --cw-xray-color: #7c3aed;
 }
 
+.cw-xray-box[data-xray-layer="page"] {
+  --cw-xray-color: #4f46e5;
+}
+
 .cw-xray-box[data-xray-layer="widget"] {
   --cw-xray-color: #ec4899;
 }
