@@ -477,6 +477,25 @@ body[data-xray-mode="websocket"] .cw-xray-label::after {
   font-size: 10px;
 }
 
+body[data-xray-mode="performance"] .cw-xray-box {
+  --cw-xray-color: #2563eb;
+}
+
+body[data-xray-mode="performance"] .cw-xray-box[data-xray-package="ol"] {
+  --cw-xray-color: #15803d;
+}
+
+body[data-xray-mode="performance"] .cw-xray-box[data-xray-package="@react-three/fiber"] {
+  --cw-xray-color: #7c3aed;
+}
+
+body[data-xray-mode="performance"] .cw-xray-label {
+  background: #ffffff;
+  border: 1px solid var(--cw-xray-color);
+  color: var(--cw-xray-color);
+  max-width: min(360px, calc(100% - 8px));
+}
+
 .openlayers-boundaries {
   align-items: stretch;
   display: grid;

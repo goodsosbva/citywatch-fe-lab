@@ -6,23 +6,26 @@ import { useEffect, useMemo, useState } from "react";
 import { useXRay } from "../xray-selector";
 import { fetchPerformanceIncidents } from "../incidents/incident-api";
 import { RiskZoneScene } from "../risk-3d/risk-zone-scene";
-import { ClusteredPerformanceMap } from "./clustered-performance-map";
+import { ClusteredPerformanceMap, type ClusterStats } from "./clustered-performance-map";
 import {
   performanceScenarioSizes,
   type PerformanceScenarioSize,
 } from "./performance-fixture";
-import { VirtualIncidentList } from "./virtual-incident-list";
+import { VirtualIncidentList, type VirtualRange } from "./virtual-incident-list";
 
 type PerformanceViewMode = "2d" | "3d";
 
 export default function PerformancePage() {
   const { enabled: xray, mode } = useXRay();
+  const performanceXray = mode === "performance";
   const [incidents, setIncidents] = useState<Incident[]>([]);
+  const [clusterStats, setClusterStats] = useState<ClusterStats>();
   const [scenarioSize, setScenarioSize] = useState<PerformanceScenarioSize>(10000);
   const [selectedIncidentId, setSelectedIncidentId] = useState<string>();
   const [viewMode, setViewMode] = useState<PerformanceViewMode>("2d");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
+  const [virtualRange, setVirtualRange] = useState<VirtualRange>();
   const selectedIncident = useMemo(
     () => incidents.find((incident) => incident.id === selectedIncidentId),
     [incidents, selectedIncidentId],
@@ -33,6 +36,8 @@ export default function PerformancePage() {
 
     async function loadPerformanceIncidents() {
       setLoading(true);
+      setClusterStats(undefined);
+      setVirtualRange(undefined);
 
       try {
         const nextIncidents = await fetchPerformanceIncidents(scenarioSize);
@@ -80,7 +85,7 @@ export default function PerformancePage() {
       >
         <section aria-busy={loading} aria-label="대량 사고 성능 관제" className="dashboard">
           <XRayBox
-            enabled={xray || mode === "performance"}
+            enabled={xray}
             label="widget/PerformanceScenarioSummary"
             packageName="apps/web"
             proofs={["fsd-style", "performance"]}
@@ -127,10 +132,16 @@ export default function PerformancePage() {
           {!loading && !error && incidents.length > 0 ? (
             <>
               <XRayBox
-                enabled={xray || (mode === "performance" && viewMode === "2d")}
-                label={viewMode === "2d" ? "widget/ClusteredPerformanceMap" : "widget/RiskZoneScene"}
-                packageName="apps/web"
-                proofs={viewMode === "2d" ? ["fsd-style", "performance"] : ["fsd-style"]}
+                enabled={xray || performanceXray}
+                label={performanceXray
+                  ? viewMode === "2d"
+                    ? "performance/2d/OpenLayersCluster"
+                    : "performance/3d/SingleIncidentScene"
+                  : viewMode === "2d"
+                    ? "widget/ClusteredPerformanceMap"
+                    : "widget/RiskZoneScene"}
+                packageName={performanceXray ? (viewMode === "2d" ? "ol" : "@react-three/fiber") : "apps/web"}
+                proofs={performanceXray ? ["performance"] : ["fsd-style"]}
                 stacks={viewMode === "2d" ? ["OpenLayers", "VectorSource", "Cluster"] : ["React Three Fiber", "Three.js", "OpenStreetMap"]}
               >
                 <section className="panel performance-map-panel" aria-labelledby="performance-map-title">
@@ -173,6 +184,7 @@ export default function PerformancePage() {
                   {viewMode === "2d" ? (
                     <ClusteredPerformanceMap
                       incidents={incidents}
+                      onClusterStatsChange={setClusterStats}
                       onSelectIncident={setSelectedIncidentId}
                     />
                   ) : selectedIncident ? (
@@ -188,15 +200,16 @@ export default function PerformancePage() {
 
               <div className="performance-lower-layout">
                 <XRayBox
-                  enabled={xray || mode === "performance"}
-                  label="feature/performance/VirtualIncidentList"
+                  enabled={xray || performanceXray}
+                  label={performanceXray ? "performance/virtual-list/RenderedRows" : "feature/performance/VirtualIncidentList"}
                   packageName="apps/web"
-                  proofs={["fsd-style", "performance"]}
+                  proofs={performanceXray ? ["performance"] : ["fsd-style"]}
                   stacks={["React", "Windowed rendering", "Accessibility"]}
                 >
                   <section className="panel">
                     <VirtualIncidentList
                       incidents={incidents}
+                      onVisibleRangeChange={setVirtualRange}
                       onSelectIncident={setSelectedIncidentId}
                       selectedIncidentId={selectedIncidentId}
                     />
@@ -230,22 +243,16 @@ export default function PerformancePage() {
             </>
           ) : null}
 
-          {mode === "performance" ? (
-            <XRayBox
-              enabled
-              label="feature/performance/LargeDataPipeline"
-              packageName="apps/web"
-              proofs={["performance"]}
-              stacks={["OpenLayers Cluster", "Virtual Rendering", "REST API"]}
-            >
-              <PerformanceEvidencePanel
-                error={error}
-                incidentCount={incidents.length}
-                loading={loading}
-                scenarioSize={scenarioSize}
-                viewMode={viewMode}
-              />
-            </XRayBox>
+          {performanceXray ? (
+            <PerformanceEvidencePanel
+              clusterStats={clusterStats}
+              error={error}
+              incidentCount={incidents.length}
+              loading={loading}
+              scenarioSize={scenarioSize}
+              viewMode={viewMode}
+              virtualRange={virtualRange}
+            />
           ) : null}
         </section>
       </XRayBox>
@@ -254,17 +261,21 @@ export default function PerformancePage() {
 }
 
 function PerformanceEvidencePanel({
+  clusterStats,
   error,
   incidentCount,
   loading,
   scenarioSize,
   viewMode,
+  virtualRange,
 }: {
+  clusterStats?: ClusterStats;
   error?: string;
   incidentCount: number;
   loading: boolean;
   scenarioSize: PerformanceScenarioSize;
   viewMode: PerformanceViewMode;
+  virtualRange?: VirtualRange;
 }) {
   return (
     <aside aria-labelledby="performance-evidence-title" className="panel technology-evidence">
@@ -280,22 +291,24 @@ function PerformanceEvidencePanel({
       </div>
 
       <p>
-        데이터 전체는 메모리에 유지하되, 지도는 가까운 점을 묶고 목록은 화면 주변 행만 DOM으로 만듭니다.
+        설정값이나 추정 시간이 아니라 현재 컴포넌트가 계산한 개수만 표시합니다.
         현재 보기는 <strong>{viewMode === "2d" ? "2D 클러스터" : "3D 단일 사고"}</strong>입니다.
       </p>
 
       <ol className="technology-flow">
         <li><code>GET /api/incidents/many-data?size={scenarioSize}</code><span>검증된 크기의 사고 배열을 받습니다.</span></li>
-        <li><code>Incident[] → VectorSource → Cluster(38)</code><span>가까운 지도 점을 하나의 숫자 마커로 묶습니다.</span></li>
-        <li><code>scrollTop → getVisibleRange() → slice()</code><span>보이는 범위와 여유분만 React 요소로 만듭니다.</span></li>
-        <li><code>row 76px · viewport 456px · overscan 6</code><span>1만 건이어도 목록 DOM은 현재 화면 주변만 유지합니다.</span></li>
+        <li><code>Incident[] → VectorSource → Cluster(38)</code><span>원본 점을 유지한 채 현재 해상도에서 가까운 점만 묶습니다.</span></li>
+        <li><code>scrollTop → getVisibleRange() → slice()</code><span>계산된 시작·끝 범위의 행만 DOM으로 만듭니다.</span></li>
+        <li><code>2D 전체 → 3D 선택 1건</code><span>전체 분포와 단일 사고 상세의 렌더링 경계를 분리합니다.</span></li>
       </ol>
 
       <dl className="technology-code">
-        <div><dt>전체 데이터</dt><dd><code>{incidentCount.toLocaleString("ko-KR")} Incident objects</code></dd></div>
-        <div><dt>지도 비용 절감</dt><dd><code>new Cluster(&#123; distance: 38, source &#125;)</code></dd></div>
-        <div><dt>목록 비용 절감</dt><dd><code>incidents.slice(start, end)</code></dd></div>
-        <div><dt>3D 비용 제한</dt><dd><code>RiskZoneScene incident=&#123;selectedIncident&#125;</code></dd></div>
+        <div><dt>원본 데이터</dt><dd><code>{incidentCount.toLocaleString("ko-KR")} Incident objects</code></dd></div>
+        <div><dt>2D 원본 marker</dt><dd><code>{clusterStats?.sourceMarkerCount.toLocaleString("ko-KR") ?? "계산 중"} source features</code></dd></div>
+        <div><dt>2D 현재 marker</dt><dd><code>{clusterStats ? `${clusterStats.renderedMarkerCount.toLocaleString("ko-KR")} total = ${clusterStats.clusterMarkerCount.toLocaleString("ko-KR")} clusters + ${clusterStats.singleMarkerCount.toLocaleString("ko-KR")} singles` : "계산 중"}</code></dd></div>
+        <div><dt>가상화 계산 범위</dt><dd><code>{virtualRange ? `${virtualRange.start + 1}-${virtualRange.end} / ${virtualRange.total.toLocaleString("ko-KR")}` : "계산 중"}</code></dd></div>
+        <div><dt>실제 목록 DOM</dt><dd><code>{virtualRange ? `${virtualRange.renderedCount} rows` : "계산 중"}</code></dd></div>
+        <div><dt>3D 입력 범위</dt><dd><code>{viewMode === "3d" ? "1 selected Incident" : "not mounted"}</code></dd></div>
       </dl>
     </aside>
   );
