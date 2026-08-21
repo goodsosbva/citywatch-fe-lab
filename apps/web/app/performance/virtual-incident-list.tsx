@@ -12,7 +12,15 @@ import {
 type VirtualIncidentListProps = {
   incidents: Incident[];
   onSelectIncident: (incidentId: string) => void;
+  onVisibleRangeChange?: (range: VirtualRange) => void;
   selectedIncidentId?: string;
+};
+
+export type VirtualRange = {
+  end: number;
+  renderedCount: number;
+  start: number;
+  total: number;
 };
 
 const rowHeight = 76;
@@ -22,6 +30,7 @@ const overscan = 6;
 export function VirtualIncidentList({
   incidents,
   onSelectIncident,
+  onVisibleRangeChange,
   selectedIncidentId,
 }: VirtualIncidentListProps) {
   const viewportRef = useRef<HTMLDivElement | null>(null);
@@ -33,6 +42,14 @@ export function VirtualIncidentList({
     viewportRef.current?.scrollTo({ top: 0 });
     setScrollTop(0);
   }, [incidents]);
+
+  useEffect(() => {
+    onVisibleRangeChange?.({
+      ...range,
+      renderedCount: visibleIncidents.length,
+      total: incidents.length,
+    });
+  }, [incidents.length, onVisibleRangeChange, range, visibleIncidents.length]);
 
   return (
     <section aria-labelledby="performance-list-title" className="performance-list">

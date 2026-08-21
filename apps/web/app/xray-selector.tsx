@@ -15,6 +15,7 @@ export type XRayProof =
   | "zod"
   | "performance";
 type XRayMode = "off" | "all" | XRayProof;
+type XRaySummary = { packages: string[]; stacks: string[] };
 
 const XRayContext = createContext<{ mode: XRayMode; setMode: (mode: XRayMode) => void } | null>(null);
 
@@ -90,6 +91,104 @@ export function XRaySelector() {
   );
 }
 
+export function AllXRaySummary() {
+  const pathname = usePathname();
+  const { mode } = useXRayContext();
+  const [summary, setSummary] = useState<XRaySummary>({ packages: [], stacks: [] });
+
+  useEffect(() => {
+    if (mode !== "all") return;
+
+    let animationFrame = 0;
+
+    function collectSummary() {
+      const boxes = document.querySelectorAll<HTMLElement>(".cw-xray-box");
+      const packages = new Set<string>();
+      const stacks = new Set<string>();
+
+      boxes.forEach((box) => {
+        if (box.dataset.xrayPackage) packages.add(box.dataset.xrayPackage);
+        box.dataset.xrayStacks
+          ?.split(",")
+          .filter(Boolean)
+          .forEach((stack) => stacks.add(stack));
+      });
+
+      const nextSummary = {
+        packages: [...packages].sort(),
+        stacks: [...stacks].sort(),
+      };
+
+      setSummary((current) =>
+        current.packages.join("\n") === nextSummary.packages.join("\n") &&
+        current.stacks.join("\n") === nextSummary.stacks.join("\n")
+          ? current
+          : nextSummary,
+      );
+    }
+
+    function scheduleCollection() {
+      cancelAnimationFrame(animationFrame);
+      animationFrame = requestAnimationFrame(collectSummary);
+    }
+
+    collectSummary();
+    const observer = new MutationObserver(scheduleCollection);
+    observer.observe(document.body, {
+      attributeFilter: ["data-xray-package", "data-xray-stacks"],
+      attributes: true,
+      childList: true,
+      subtree: true,
+    });
+
+    return () => {
+      cancelAnimationFrame(animationFrame);
+      observer.disconnect();
+    };
+  }, [mode, pathname]);
+
+  if (mode !== "all") return null;
+
+  return (
+    <section aria-labelledby="all-xray-title" className="all-xray-summary shell">
+      <div className="panel">
+        <div className="panel-title-row">
+          <div>
+            <p className="eyebrow">All X-Ray</p>
+            <h2 id="all-xray-title">현재 화면 기술 요약</h2>
+          </div>
+          <span className="all-xray-summary__count">
+            {summary.stacks.length} technologies
+          </span>
+        </div>
+        <p className="all-xray-summary__description">
+          전체 모드는 경계를 겹치지 않고 현재 렌더링된 화면의 기술만 요약합니다.
+          실제 코드 경계와 값의 흐름은 위 X-Ray에서 기술 하나를 선택해 확인합니다.
+        </p>
+        <div className="all-xray-summary__groups" aria-live="polite">
+          <SummaryGroup label="기술" values={summary.stacks} />
+          <SummaryGroup label="실행 패키지" values={summary.packages} />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SummaryGroup({ label, values }: { label: string; values: string[] }) {
+  return (
+    <section aria-label={label}>
+      <h3>{label}</h3>
+      {values.length > 0 ? (
+        <ul className="all-xray-summary__chips">
+          {values.map((value) => <li key={value}>{value}</li>)}
+        </ul>
+      ) : (
+        <p className="state-message" role="status">현재 화면의 증거를 확인하는 중입니다.</p>
+      )}
+    </section>
+  );
+}
+
 export function useXRay(proofs: readonly XRayProof[] = ["fsd-style", "monorepo"]) {
   const { mode } = useXRayContext();
   return {
@@ -106,6 +205,7 @@ function useXRayContext() {
 
 function getXRayMode(value: string | null): XRayMode {
   return value === "off" ||
+    value === "all" ||
     value === "fsd-style" ||
     value === "module-federation" ||
     value === "monorepo" ||

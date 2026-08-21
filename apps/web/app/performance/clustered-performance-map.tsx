@@ -18,7 +18,15 @@ import { useEffect, useRef } from "react";
 
 type ClusteredPerformanceMapProps = {
   incidents: Incident[];
+  onClusterStatsChange?: (stats: ClusterStats) => void;
   onSelectIncident: (incidentId: string) => void;
+};
+
+export type ClusterStats = {
+  clusterMarkerCount: number;
+  renderedMarkerCount: number;
+  singleMarkerCount: number;
+  sourceMarkerCount: number;
 };
 
 const seoulCenter = fromLonLat([126.978, 37.5665]);
@@ -26,16 +34,23 @@ const styleCache = new Map<number, Style>();
 
 export function ClusteredPerformanceMap({
   incidents,
+  onClusterStatsChange,
   onSelectIncident,
 }: ClusteredPerformanceMapProps) {
   const targetRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<OlMap | null>(null);
   const sourceRef = useRef<VectorSource | null>(null);
+  const onClusterStatsChangeRef = useRef(onClusterStatsChange);
   const onSelectIncidentRef = useRef(onSelectIncident);
+  const previousStatsRef = useRef<ClusterStats | undefined>(undefined);
 
   useEffect(() => {
     onSelectIncidentRef.current = onSelectIncident;
   }, [onSelectIncident]);
+
+  useEffect(() => {
+    onClusterStatsChangeRef.current = onClusterStatsChange;
+  }, [onClusterStatsChange]);
 
   useEffect(() => {
     if (!targetRef.current || mapRef.current) return;
@@ -84,12 +99,35 @@ export function ClusteredPerformanceMap({
         });
       }
     });
+    const renderKey = map.on("rendercomplete", () => {
+      const markerSizes = clusterSource.getFeatures().map((feature) => {
+        const features = feature.get("features") as Feature<Point>[] | undefined;
+        return features?.length ?? 0;
+      });
+      const nextStats = {
+        clusterMarkerCount: markerSizes.filter((size) => size > 1).length,
+        renderedMarkerCount: markerSizes.length,
+        singleMarkerCount: markerSizes.filter((size) => size === 1).length,
+        sourceMarkerCount: source.getFeatures().length,
+      };
+      const previousStats = previousStatsRef.current;
+
+      if (
+        previousStats?.clusterMarkerCount === nextStats.clusterMarkerCount &&
+        previousStats.renderedMarkerCount === nextStats.renderedMarkerCount &&
+        previousStats.singleMarkerCount === nextStats.singleMarkerCount &&
+        previousStats.sourceMarkerCount === nextStats.sourceMarkerCount
+      ) return;
+
+      previousStatsRef.current = nextStats;
+      onClusterStatsChangeRef.current?.(nextStats);
+    });
 
     sourceRef.current = source;
     mapRef.current = map;
 
     return () => {
-      unByKey(clickKey);
+      unByKey([clickKey, renderKey]);
       map.setTarget(undefined);
       mapRef.current = null;
       sourceRef.current = null;
