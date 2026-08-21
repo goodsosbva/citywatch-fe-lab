@@ -5,7 +5,7 @@ import "./globals.css";
 import { AppNavigation } from "./app-navigation";
 import { MonorepoWorkspaceMap } from "./monorepo-workspace-map";
 import { StoreProvider } from "./store-provider";
-import { XRayProvider } from "./xray-selector";
+import { AllXRaySummary, XRayProvider } from "./xray-selector";
 
 export const metadata: Metadata = {
   title: "CityWatch FE Lab",
@@ -23,6 +23,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <XRayProvider>
             <AppNavigation />
             {children}
+            <AllXRaySummary />
             <MonorepoWorkspaceMap />
           </XRayProvider>
         </StoreProvider>

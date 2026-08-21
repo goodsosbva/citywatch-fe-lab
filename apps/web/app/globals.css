@@ -496,6 +496,83 @@ body[data-xray-mode="performance"] .cw-xray-label {
   max-width: min(360px, calc(100% - 8px));
 }
 
+body[data-xray-mode="all"] .cw-xray-box {
+  outline: 0;
+}
+
+body[data-xray-mode="all"] .cw-xray-label {
+  display: none;
+}
+
+.all-xray-summary {
+  padding-top: 0;
+}
+
+.all-xray-summary__count {
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  border-radius: 999px;
+  color: #3730a3;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 6px 10px;
+}
+
+.all-xray-summary__description {
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.6;
+  margin-top: 10px;
+}
+
+.all-xray-summary__groups {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 18px;
+}
+
+.all-xray-summary__groups section {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+}
+
+.all-xray-summary__groups h3 {
+  font-size: 14px;
+}
+
+.all-xray-summary__chips {
+  align-items: flex-start;
+  align-content: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.all-xray-summary__chips li {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 6px 9px;
+}
+
+@media (max-width: 760px) {
+  .all-xray-summary__groups {
+    grid-template-columns: 1fr;
+  }
+}
+
 .openlayers-boundaries {
   align-items: stretch;
   display: grid;
