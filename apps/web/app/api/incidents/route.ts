@@ -1,7 +1,7 @@
 import type { ApiError, IncidentDetailResponse, IncidentListQuery, IncidentListResponse } from "@citywatch/api-types";
 import { isIncidentSeverity, isIncidentStatus, validateCreateIncidentInput } from "@citywatch/api-types";
+import { createIncident, listIncidents } from "@/entities/incident/server";
 import { NextResponse } from "next/server";
-import { createIncident, listIncidents } from "./incident-store";
 
 const MAX_SEARCH_LENGTH = 80;
 

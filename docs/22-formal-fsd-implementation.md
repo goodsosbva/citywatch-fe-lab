@@ -28,11 +28,8 @@ apps/web/
    ├─ features/incident-control/
    │  ├─ model/incident-control-slice.ts
    │  └─ index.ts
-   ├─ widgets/incident-detail/
-   │  ├─ ui/incident-detail-view.tsx
-   │  └─ index.ts
-   └─ pages/incident-detail/
-      ├─ ui/incident-detail-page.tsx
+   └─ widgets/incident-detail/
+      ├─ ui/incident-detail-view.tsx
       └─ index.ts
 ```
 
@@ -52,17 +49,16 @@ slice가 자기 책임을 소유한다
 
 ## 계층별 책임
 
-### page: incident-detail
+### Next App Router가 화면 조립을 담당
 
-`pages/incident-detail`은 하나의 URL 화면에 필요한 widget을 조립한다. Next.js의 `app/incidents/[id]/page.tsx`는 프레임워크 route entry이고, 실제 FSD page는 `src/fsd/pages/incident-detail`이다.
+FSD의 모든 계층을 반드시 만들 필요는 없다. 이 프로젝트에서는 Next.js `app/**/page.tsx`가 이미 URL 진입과 화면 조립을 담당하므로 별도 FSD `pages` 계층을 두지 않는다.
 
 ```text
 Next app route
-→ FSD page/incident-detail
 → widget/incident-detail
 ```
 
-Next.js의 `app` 디렉터리와 FSD `app` 계층은 이름이 같아도 같은 개념이 아니다. 또한 `src/pages`는 Next Pages Router 예약 경로이므로 FSD 계층은 `src/fsd/pages`에 둔다. 이 프로젝트에서는 Next route 파일을 얇은 framework adapter로 두고 FSD Page Public API를 호출한다.
+별도 `pages` slice를 두면 현재는 Widget에 props를 그대로 전달하는 파일만 하나 더 생긴다. 화면 조립을 Next route와 독립적으로 재사용해야 할 요구가 생기기 전까지는 App Router를 최상위 조립 계층으로 사용한다.
 
 ### entity: incident
 
@@ -132,7 +128,6 @@ import { IncidentDetailView } from "@/widgets/incident-detail";
 GET /incidents/INC-001
 → app/incidents/[id]/page.tsx
 → app/incidents/[id]/incident-detail-route.tsx
-→ pages/incident-detail Public API
 → widgets/incident-detail Public API
 → IncidentDetailView
 → features/incident-control Public API
@@ -173,8 +168,6 @@ import { fetchIncidents } from "@/entities/incident";
 ```text
 app
 ↓
-page
-↓
 widget
 ↓
 feature
@@ -189,14 +182,13 @@ entity
 ```text
 entity → feature   금지
 feature → widget   금지
-widget → page      금지
-page → app         금지
+widget → app       금지
 ```
 
 같은 관계를 의존받는 방향으로 그리면 화살표가 반대가 된다.
 
 ```text
-shared ← entity ← feature ← widget ← page ← app
+shared ← entity ← feature ← widget ← app
 ```
 
 ## 자동 경계 검사
@@ -207,7 +199,7 @@ shared ← entity ← feature ← widget ← page ← app
 
 ```text
 1. @/entities/incident/api/... 같은 private 경로 import 금지
-2. entity→feature, feature→widget, widget→page 같은 상향 의존 금지
+2. entity→feature, feature→widget, widget→app 같은 상향 의존 금지
 ```
 
 별도 ESLint plugin은 추가하지 않았다. 현재 세 계층과 두 규칙은 짧은 Node test로 충분하며 `npm test`에 포함된다.
@@ -218,7 +210,6 @@ shared ← entity ← feature ← widget ← page ← app
 
 ```text
 app/incidents/[id]/IncidentDetailRoute
-→ page/incident-detail/IncidentDetailPage
 → widget/incident-detail/IncidentDetailView
 → entity/incident/IncidentDetail
 ```

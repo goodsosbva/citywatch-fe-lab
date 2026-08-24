@@ -51,6 +51,8 @@ Zod Validation
 Performance
 Storybook
 Unit Test
+정식 FSD
+의미 있는 SSR 데이터 렌더링
 ```
 
 각 항목은 실행 화면, 실제 코드 또는 실행 가능한 검사 중 적절한 근거가 있다. 단, 메모리 저장소·인증 부재·fixture 데이터·E2E 부재 같은 한계까지 카드에 함께 표시한다.
@@ -68,12 +70,12 @@ FSD migration coverage
 ### 예정 · 미증명
 
 ```text
-의미 있는 SSR 데이터 렌더링
+현재 로드맵 기준 없음
 ```
 
-정식 FSD는 22단계에서 `page → widget → feature → entity` incident vertical slice의 실제 구조, Public API, 하향 의존 검사까지 구현해 완료로 변경했다.
+정식 FSD는 22단계에서 Next App Router를 최상위 조립 계층으로 사용하고 `widget → feature → entity` incident vertical slice의 실제 구조, Public API, 하향 의존 검사까지 구현해 완료로 변경했다.
 
-SSR은 Next.js를 사용한다는 사실만으로 완료되지 않는다. 현재 주요 데이터 화면은 `use client`와 브라우저 `fetch`를 사용한다. 23단계에서 서버 데이터 요청, 서버 HTML 결과, client hydration 경계를 실제 코드와 화면으로 증명해야 한다.
+SSR은 23단계에서 사고 상세 Server Component의 request-time repository 조회, 서버 HTML, 직렬화된 초기 props, client hydration 경계를 구현해 완료로 변경했다. 단, 사고 상세 한 경로의 학습 범위이며 영속 DB·캐시·인증까지 증명한 것은 아니다.
 
 ## 구현 구조
 
@@ -114,7 +116,7 @@ WebSocket 동작 → 운영 실시간 시스템 완료
 대신 실제 구현 범위를 제한해서 표현한다.
 
 ```text
-주요 데이터 화면은 client fetch
+사고 상세는 request-time SSR, 다른 주요 목록은 client fetch
 FSD-style 책임 경계
 fixture에서 marker·DOM 범위 확인
 핵심 순수 로직과 계약 Unit Test
@@ -133,7 +135,7 @@ fixture에서 marker·DOM 범위 확인
 2. 완료·부분·예정 개수가 각각 표시되는지 확인한다.
 3. 각 완료 카드에 `현재 근거`와 `현재 한계`가 함께 있는지 확인한다.
 4. FSD migration coverage가 부분 구현인지 확인한다.
-5. 정식 FSD는 완료이고 SSR만 예정·미증명인지 확인한다.
+5. 정식 FSD와 SSR은 완료이고 현재 예정 항목은 0개인지 확인한다.
 6. `실행 화면에서 확인`을 눌러 해당 X-Ray 대표 화면으로 이동하는지 확인한다.
 7. 모바일 폭에서 카드가 한 열로 바뀌는지 확인한다.
 
@@ -160,4 +162,4 @@ fixture에서 marker·DOM 범위 확인
 → 브라우저 JavaScript 전후 결과 확인
 ```
 
-이 조건을 실제로 증명한 뒤 `의미 있는 SSR 데이터 렌더링`을 완료로 바꾼다.
+23단계에서 위 조건을 사고 상세 경로에 구현했으며 `의미 있는 SSR 데이터 렌더링`을 완료로 바꿨다.

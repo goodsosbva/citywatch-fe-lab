@@ -11,7 +11,6 @@ import {
 } from "@/features/incident-control";
 import {
   changeIncidentStatus,
-  fetchIncident,
   formatIncidentDate,
   getRegionName,
   getRiskTone,
@@ -21,52 +20,33 @@ import {
   incidentStatusLabels,
 } from "@/entities/incident";
 
-export function IncidentDetailView({ incidentId, xray }: { incidentId: string; xray: boolean }) {
+export function IncidentDetailView({
+  initialIncident,
+  serverRenderedAt,
+  ssrXray,
+  xray,
+}: {
+  initialIncident: Incident;
+  serverRenderedAt: string;
+  ssrXray: boolean;
+  xray: boolean;
+}) {
   const dispatch = useDispatch();
   const selectedIncidentId = useSelector(selectSelectedIncidentId);
-  const [incident, setIncident] = useState<Incident>();
-  const [selectedStatus, setSelectedStatus] = useState<IncidentStatus>("reported");
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string>();
+  const [incident, setIncident] = useState(initialIncident);
+  const [selectedStatus, setSelectedStatus] = useState<IncidentStatus>(initialIncident.status);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string>();
   const [saveMessage, setSaveMessage] = useState<string>();
 
   useEffect(() => {
-    dispatch(setSelectedIncidentId(incidentId));
-  }, [dispatch, incidentId]);
+    dispatch(setSelectedIncidentId(initialIncident.id));
+  }, [dispatch, initialIncident.id]);
 
-  useEffect(() => {
-    let active = true;
-
-    async function loadIncident() {
-      try {
-        const nextIncident = await fetchIncident(incidentId);
-        if (!active) return;
-        setIncident(nextIncident);
-        setSelectedStatus(nextIncident.status);
-        setLoadError(undefined);
-      } catch (reason) {
-        if (!active) return;
-        setLoadError(getErrorMessage(reason));
-      } finally {
-        if (active) setLoading(false);
-      }
-    }
-
-    void loadIncident();
-
-    return () => {
-      active = false;
-    };
-  }, [incidentId]);
-
-  const risk = incident ? calculateIncidentRisk(incident) : undefined;
+  const risk = calculateIncidentRisk(incident);
 
   async function handleStatusSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
-    if (!incident) return;
 
     setSaving(true);
     setSaveError(undefined);
@@ -85,7 +65,11 @@ export function IncidentDetailView({ incidentId, xray }: { incidentId: string; x
   }
 
   return (
-    <main className="shell">
+    <main
+      className="shell"
+      data-ssr-incident-id={initialIncident.id}
+      data-ssr-rendered-at={serverRenderedAt}
+    >
       <header className="topbar">
         <div>
           <p className="eyebrow">Incident Detail</p>
@@ -93,12 +77,21 @@ export function IncidentDetailView({ incidentId, xray }: { incidentId: string; x
         </div>
       </header>
 
-      <XRayBox enabled={xray} label="widget/incident-detail/IncidentDetailView" layer="widget" packageName="apps/web" stacks={["React", "TypeScript"]}>
-        <section className="dashboard" aria-label="사고 상세 관제" aria-busy={loading || saving}>
-          <XRayBox enabled={xray} label="widget/incident-detail/LoadIncidentDetail" packageName="apps/web" stacks={["fetch", "REST API"]}>
-            {loading ? <p className="state-message" role="status">REST API에서 사고 상세를 불러오는 중입니다.</p> : null}
-            {loadError ? <p className="state-message state-message--error" role="alert">{loadError}</p> : null}
-          </XRayBox>
+      <XRayBox
+        enabled={xray || ssrXray}
+        label={ssrXray ? "browser/HydratedIncidentDetailView" : "widget/incident-detail/IncidentDetailView"}
+        layer="widget"
+        packageName="apps/web"
+        proofs={ssrXray ? ["ssr"] : ["fsd-style"]}
+        stacks={ssrXray ? ["React Hydration", "initial props"] : ["React", "TypeScript"]}
+      >
+        <section className="dashboard" aria-label="사고 상세 관제" aria-busy={saving}>
+          {ssrXray ? (
+            <SSREvidencePanel
+              incident={initialIncident}
+              serverRenderedAt={serverRenderedAt}
+            />
+          ) : null}
 
           {incident ? (
             <>
@@ -113,9 +106,7 @@ export function IncidentDetailView({ incidentId, xray }: { incidentId: string; x
                     <SeverityBadge severity={incident.severity} />
                     <Badge tone={getStatusTone(incident.status)}>{incidentStatusLabels[incident.status]}</Badge>
                     <Badge tone={selectedIncidentId === incident.id ? "info" : "warning"}>Redux 선택 {selectedIncidentId ?? "없음"}</Badge>
-                    {risk ? (
-                      <Badge tone={getRiskTone(risk.level)}>위험도 {risk.score}</Badge>
-                    ) : null}
+                    <Badge tone={getRiskTone(risk.level)}>위험도 {risk.score}</Badge>
                   </div>
                 </section>
               </XRayBox>
@@ -160,7 +151,7 @@ export function IncidentDetailView({ incidentId, xray }: { incidentId: string; x
                   </div>
                   <dl className="detail-grid">
                     <DetailItem label="상태" value={incidentStatusLabels[incident.status]} />
-                    {risk ? <DetailItem label="위험도" value={`${incidentRiskLevelLabels[risk.level]} ${risk.score}`} /> : null}
+                    <DetailItem label="위험도" value={`${incidentRiskLevelLabels[risk.level]} ${risk.score}`} />
                     <DetailItem label="분류" value={incidentCategoryLabels[incident.category]} />
                     <DetailItem label="지역" value={getRegionName(incident.regionId)} />
                     <DetailItem label="영향 인원" value={`${incident.affectedPeople}명`} />
@@ -176,6 +167,39 @@ export function IncidentDetailView({ incidentId, xray }: { incidentId: string; x
         </section>
       </XRayBox>
     </main>
+  );
+}
+
+function SSREvidencePanel({
+  incident,
+  serverRenderedAt,
+}: {
+  incident: Incident;
+  serverRenderedAt: string;
+}) {
+  return (
+    <aside aria-labelledby="ssr-evidence-title" className="panel technology-evidence">
+      <div className="panel-title-row">
+        <h2 id="ssr-evidence-title">SSR / Hydration 실행 증거</h2>
+        <Badge tone="success">서버 HTML 생성 완료</Badge>
+      </div>
+      <p>
+        Server Component가 사고를 먼저 조회해 제목과 상세 정보가 포함된 HTML을 만들고,
+        브라우저는 같은 초기 데이터를 이어받아 상태 변경 폼만 활성화합니다.
+      </p>
+      <ul className="technology-flow">
+        <li><code>page.tsx</code><span>server query</span><code>getIncidentById({incident.id})</code></li>
+        <li><code>Incident</code><span>serialize props</span><code>server HTML + RSC payload</code></li>
+        <li><code>initialIncident</code><span>useState</span><code>hydrated React state</code></li>
+        <li><code>status form</code><span>user submit</span><code>PATCH /api/incidents/{incident.id}/status</code></li>
+      </ul>
+      <dl className="technology-code">
+        <div><dt>서버 렌더링 사고</dt><dd><code>{incident.id} · {incident.title}</code></dd></div>
+        <div><dt>서버 렌더링 시각</dt><dd><code>{serverRenderedAt}</code></dd></div>
+        <div><dt>최초 상세 API 요청</dt><dd><code>없음 · initialIncident 사용</code></dd></div>
+        <div><dt>Hydration 이후 상호작용</dt><dd><code>Redux 선택 동기화 + PATCH 상태 변경</code></dd></div>
+      </dl>
+    </aside>
   );
 }
 

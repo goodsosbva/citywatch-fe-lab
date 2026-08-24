@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 
 const projectRoot = dirname(fileURLToPath(import.meta.url));
 const sourceRoot = resolve(projectRoot, "src", "fsd");
-const layerRank = { entities: 0, features: 1, widgets: 2, pages: 3 };
+const layerRank = { entities: 0, features: 1, widgets: 2 };
 
 function sourceFiles(directory) {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -24,11 +24,12 @@ test("FSD slices use public APIs and only depend downward", () => {
 
   for (const file of [resolve(projectRoot, "app"), sourceRoot].flatMap(sourceFiles)) {
     const sourceLayer = relative(sourceRoot, file).split(/[\\/]/)[0];
-    const imports = readFileSync(file, "utf8").matchAll(/(?:from\s+|import\s*\()["'](@\/(entities|features|widgets|pages)\/[^"']+)["']/g);
+    const imports = readFileSync(file, "utf8").matchAll(/(?:from\s+|import\s*\()["'](@\/(entities|features|widgets)\/[^"']+)["']/g);
 
     for (const [, path, targetLayer] of imports) {
       const segments = path.split("/");
-      if (segments.length > 3) violations.push(`${relative(sourceRoot, file)} imports private path ${path}`);
+      const isPublicEntry = segments.length === 3 || (segments.length === 4 && segments[3] === "server");
+      if (!isPublicEntry) violations.push(`${relative(sourceRoot, file)} imports private path ${path}`);
       if (layerRank[targetLayer] > layerRank[sourceLayer]) violations.push(`${sourceLayer} imports upward from ${targetLayer}: ${path}`);
     }
   }

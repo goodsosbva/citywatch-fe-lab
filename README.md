@@ -131,6 +131,7 @@ http://127.0.0.1:3000/
 | 전체 아키텍처 요약 | [docs/00-current-architecture-summary.md](docs/00-current-architecture-summary.md) |
 | 구현 완료·부분 구현·예정과 현재 한계 | [docs/21-implementation-status-and-limitations.md](docs/21-implementation-status-and-limitations.md) |
 | incident 흐름에 정식 FSD를 적용한 방법 | [docs/22-formal-fsd-implementation.md](docs/22-formal-fsd-implementation.md) |
+| 사고 상세 SSR과 hydration 구현 | [docs/23-ssr-hydration.md](docs/23-ssr-hydration.md) |
 
 ## 실제 코드 입구
 
@@ -141,7 +142,8 @@ http://127.0.0.1:3000/
 | FSD entity Public API | [apps/web/src/fsd/entities/incident/index.ts](apps/web/src/fsd/entities/incident/index.ts) |
 | FSD feature Public API | [apps/web/src/fsd/features/incident-control/index.ts](apps/web/src/fsd/features/incident-control/index.ts) |
 | FSD widget Public API | [apps/web/src/fsd/widgets/incident-detail/index.ts](apps/web/src/fsd/widgets/incident-detail/index.ts) |
-| FSD page Public API | [apps/web/src/fsd/pages/incident-detail/index.ts](apps/web/src/fsd/pages/incident-detail/index.ts) |
+| SSR Server Component | [apps/web/app/incidents/[id]/page.tsx](apps/web/app/incidents/[id]/page.tsx) |
+| 서버 전용 Incident repository | [apps/web/src/fsd/entities/incident/server.ts](apps/web/src/fsd/entities/incident/server.ts) |
 | Module Federation 사용부 | [apps/web/app/analytics-remote-panel.tsx](apps/web/app/analytics-remote-panel.tsx) |
 | Module Federation remote | [apps/analytics-remote/src/incident-analytics.ts](apps/analytics-remote/src/incident-analytics.ts) |
 | 통합 개발 서버 실행 | [scripts/dev.mjs](scripts/dev.mjs) |

@@ -2,9 +2,9 @@
 
 import type { CSSProperties, HTMLAttributes, ReactNode } from "react";
 
-export type XRayLayer = "app" | "page" | "widget" | "feature" | "entity" | "shared" | "remote" | "package";
+export type XRayLayer = "app" | "widget" | "feature" | "entity" | "shared" | "remote" | "package";
 
-const xrayLayers: XRayLayer[] = ["app", "page", "widget", "feature", "entity", "shared", "remote", "package"];
+const xrayLayers: XRayLayer[] = ["app", "widget", "feature", "entity", "shared", "remote", "package"];
 
 export type XRayBoxProps = HTMLAttributes<HTMLDivElement> & {
   children: ReactNode;

@@ -1,7 +1,6 @@
 export {
   changeIncidentStatus,
   createIncident,
-  fetchIncident,
   fetchIncidents,
   fetchPerformanceIncidents,
   getIncidentListUrl,

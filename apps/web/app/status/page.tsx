@@ -97,17 +97,18 @@ const implementationItems: ImplementationItem[] = [
     state: "partial",
   },
   {
-    evidence: "src/fsd의 pages/incident-detail→widgets/incident-detail→features/incident-control→entities/incident에 실제 slice와 Public API를 구성했습니다.",
+    evidence: "Next App Router→widgets/incident-detail→features/incident-control→entities/incident에 실제 slice와 Public API를 구성했습니다.",
     href: "/incidents/INC-001?xray=fsd-style",
     limit: "incident vertical slice를 기준으로 증명한 범위이며 모든 화면을 일괄 이동한 것은 아닙니다.",
     name: "정식 FSD",
     state: "complete",
   },
   {
-    evidence: "23단계에서 서버 데이터 요청과 HTML 렌더링 경계를 실제 코드로 구현해야 합니다.",
-    limit: "현재 주요 데이터 화면은 use client와 브라우저 fetch를 사용하므로 의미 있는 SSR 데이터 렌더링은 미증명입니다.",
+    evidence: "동적 사고 상세 Server Component가 repository를 조회하고 initialIncident를 HTML과 hydration 입력으로 전달합니다.",
+    href: "/incidents/INC-001?xray=ssr",
+    limit: "사고 상세 한 경로의 요청 시점 SSR이며 데이터는 메모리 저장소라 영속 DB·캐시·인증은 포함하지 않습니다.",
     name: "의미 있는 SSR 데이터 렌더링",
-    state: "planned",
+    state: "complete",
   },
 ];
 
