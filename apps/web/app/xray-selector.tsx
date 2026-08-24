@@ -13,7 +13,8 @@ export type XRayProof =
   | "rest-api"
   | "redux"
   | "zod"
-  | "performance";
+  | "performance"
+  | "ssr";
 type XRayMode = "off" | "all" | XRayProof;
 type XRaySummary = { packages: string[]; stacks: string[] };
 
@@ -86,6 +87,7 @@ export function XRaySelector() {
         <option value="redux">Redux</option>
         <option value="zod">Zod Validation</option>
         <option value="performance">Large Data Performance</option>
+        <option value="ssr">SSR / Hydration</option>
       </select>
     </label>
   );
@@ -215,7 +217,8 @@ function getXRayMode(value: string | null): XRayMode {
     value === "rest-api" ||
     value === "redux" ||
     value === "zod" ||
-    value === "performance"
+    value === "performance" ||
+    value === "ssr"
     ? value
     : "all";
 }
@@ -228,5 +231,6 @@ function getXRayPathname(mode: XRayMode, currentPathname: string) {
   if (mode === "rest-api" || mode === "redux") return "/incidents";
   if (mode === "zod") return "/incidents/new";
   if (mode === "performance") return "/performance";
+  if (mode === "ssr") return "/incidents/INC-001";
   return currentPathname;
 }

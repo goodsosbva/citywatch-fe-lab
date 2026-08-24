@@ -7,7 +7,7 @@ import {
   getRiskTone,
   incidentRiskLevelLabels,
   incidentStatusLabels,
-} from "../incidents/incident-format";
+} from "@/entities/incident";
 
 type VirtualIncidentListProps = {
   incidents: Incident[];

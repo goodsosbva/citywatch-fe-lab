@@ -1,6 +1,19 @@
-import { IncidentDetailView } from "../incident-detail-view";
+import { getIncidentById } from "@/entities/incident/server";
+import { notFound } from "next/navigation";
+import { IncidentDetailRoute } from "./incident-detail-route";
 
-export default async function IncidentDetailRoute({ params }: { params: Promise<{ id: string }> }) {
+export const dynamic = "force-dynamic";
+
+export default async function IncidentDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  return <IncidentDetailView incidentId={id} />;
+  const incident = getIncidentById(id);
+
+  if (!incident) notFound();
+
+  return (
+    <IncidentDetailRoute
+      initialIncident={incident}
+      serverRenderedAt={new Date().toISOString()}
+    />
+  );
 }

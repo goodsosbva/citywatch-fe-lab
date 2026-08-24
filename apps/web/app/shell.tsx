@@ -5,7 +5,7 @@ import { Badge, SeverityBadge, XRayBox } from "@citywatch/ui";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { AnalyticsRemotePanel } from "./analytics-remote-panel";
-import { fetchIncidents } from "./incidents/incident-api";
+import { fetchIncidents } from "@/entities/incident";
 import { useXRay } from "./xray-selector";
 
 export function CityWatchShell() {

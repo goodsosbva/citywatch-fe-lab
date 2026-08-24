@@ -4,7 +4,7 @@ import type { Incident } from "@citywatch/api-types";
 import { Badge, XRayBox } from "@citywatch/ui";
 import { useEffect, useMemo, useState } from "react";
 import { useXRay } from "../xray-selector";
-import { fetchPerformanceIncidents } from "../incidents/incident-api";
+import { fetchPerformanceIncidents } from "@/entities/incident";
 import { RiskZoneScene } from "../risk-3d/risk-zone-scene";
 import { ClusteredPerformanceMap, type ClusterStats } from "./clustered-performance-map";
 import {

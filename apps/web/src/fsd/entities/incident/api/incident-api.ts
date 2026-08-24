@@ -40,11 +40,6 @@ export async function fetchPerformanceIncidents(size: number) {
   return data.incidents;
 }
 
-export async function fetchIncident(id: string) {
-  const data = await requestJson<IncidentDetailResponse>(`/api/incidents/${encodeURIComponent(id)}`);
-  return data.incident;
-}
-
 export async function createIncident(input: CreateIncidentInput) {
   const data = await requestJson<IncidentDetailResponse>("/api/incidents", {
     body: JSON.stringify(input),

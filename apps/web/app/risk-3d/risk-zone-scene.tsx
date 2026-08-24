@@ -18,7 +18,7 @@ import {
   getRegionName,
   incidentRiskLevelColors,
   incidentStatusLabels,
-} from "../incidents/incident-format";
+} from "@/entities/incident";
 
 type RiskZoneSceneProps = {
   incident: Incident;

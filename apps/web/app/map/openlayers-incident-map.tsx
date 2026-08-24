@@ -17,7 +17,7 @@ import OSM from "ol/source/OSM";
 import VectorSource from "ol/source/Vector";
 import { Circle as CircleStyle, Fill, Stroke, Style } from "ol/style";
 import { useEffect, useRef } from "react";
-import { incidentRiskLevelColors } from "../incidents/incident-format";
+import { incidentRiskLevelColors } from "@/entities/incident";
 
 type OpenLayersIncidentMapProps = {
   incidents: Incident[];

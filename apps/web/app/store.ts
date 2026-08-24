@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import incidentControlReducer from "./incidents/incident-control-slice";
+import { incidentControlReducer } from "@/features/incident-control";
 
 export function makeStore() {
   return configureStore({

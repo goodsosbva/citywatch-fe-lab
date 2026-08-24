@@ -1,7 +1,7 @@
 import type { ApiError, IncidentDetailResponse } from "@citywatch/api-types";
 import { isIncidentStatus } from "@citywatch/api-types";
+import { getIncidentById, updateIncidentStatus } from "@/entities/incident/server";
 import { NextResponse } from "next/server";
-import { getIncidentById, updateIncidentStatus } from "../../incident-store";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

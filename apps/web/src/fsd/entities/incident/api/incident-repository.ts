@@ -1,3 +1,5 @@
+import "server-only";
+
 import type { CreateIncidentInput, Incident, IncidentListQuery, IncidentStatus } from "@citywatch/api-types";
 
 const initialIncidents: Incident[] = [

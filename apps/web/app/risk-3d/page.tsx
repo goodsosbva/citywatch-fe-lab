@@ -8,7 +8,7 @@ import {
 import { Badge, SeverityBadge, XRayBox } from "@citywatch/ui";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { fetchIncidents } from "../incidents/incident-api";
+import { fetchIncidents } from "@/entities/incident";
 import {
   getRegionName,
   getRiskTone,
@@ -16,13 +16,13 @@ import {
   incidentRiskLevelColors,
   incidentRiskLevelLabels,
   incidentStatusLabels,
-} from "../incidents/incident-format";
+} from "@/entities/incident";
 import {
   selectActiveIncidentFilterCount,
   selectIncidentListQuery,
   selectSelectedIncidentId,
   setSelectedIncidentId,
-} from "../incidents/incident-control-slice";
+} from "@/features/incident-control";
 import { useAppDispatch, useAppSelector } from "../store-hooks";
 import { useXRay } from "../xray-selector";
 import { OpenLayersIncidentMap } from "../map/openlayers-incident-map";

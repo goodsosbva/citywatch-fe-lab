@@ -1,6 +1,6 @@
 import type { ApiError, IncidentDetailResponse } from "@citywatch/api-types";
+import { getIncidentById } from "@/entities/incident/server";
 import { NextResponse } from "next/server";
-import { getIncidentById } from "../incident-store";
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

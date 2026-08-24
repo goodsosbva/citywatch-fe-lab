@@ -1,10 +1,10 @@
 import type { ApiError, IncidentListResponse } from "@citywatch/api-types";
+import { listIncidents } from "@/entities/incident/server";
 import { NextResponse } from "next/server";
 import {
   createPerformanceIncidents,
   isPerformanceScenarioSize,
 } from "../../../performance/performance-fixture";
-import { listIncidents } from "../incident-store";
 
 export const dynamic = "force-dynamic";
 
