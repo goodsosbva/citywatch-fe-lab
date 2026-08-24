@@ -99,7 +99,7 @@ export default function NewIncidentPage() {
         enabled={xray || zodXray}
         label={
           zodXray
-            ? "runtime/validation/validateCreateIncidentInput"
+            ? "zod/validateCreateIncidentInput"
             : "app/incidents/CreateIncidentPage"
         }
         layer={zodXray ? "shared" : "app"}
