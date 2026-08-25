@@ -23,7 +23,7 @@
 현재 사고 데이터는 다음 파일에서 생성된다.
 
 ```txt
-apps/web/app/api/incidents/incident-store.ts
+apps/web/src/fsd/entities/incident/api/incident-repository.ts
 ```
 
 이 파일의 `initialIncidents`는 이미 좌표를 가지고 있다.
@@ -37,10 +37,10 @@ location: { latitude: 37.4979, longitude: 127.0276 }
 이미 있는 데이터 흐름은 다음과 같다.
 
 ```txt
-apps/web/app/api/incidents/incident-store.ts
+apps/web/src/fsd/entities/incident/api/incident-repository.ts
 → listIncidents(query)
 → GET /api/incidents
-→ apps/web/app/incidents/incident-api.ts
+→ apps/web/src/fsd/entities/incident/api/incident-api.ts
 → fetchIncidents(query)
 → 화면 local state
 ```

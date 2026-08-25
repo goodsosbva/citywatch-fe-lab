@@ -46,7 +46,7 @@ packages/api-types/test/risk-score.test.ts
 packages/api-types/package.json
 apps/web/app/incidents/page.tsx
 apps/web/app/incidents/incident-detail-view.tsx
-apps/web/app/incidents/incident-format.ts
+apps/web/src/fsd/entities/incident/model/incident-format.ts
 ```
 
 추가한 도메인 타입/함수:
@@ -138,7 +138,7 @@ apps/web/app/incidents/page.tsx
 apps/web/app/incidents/incident-detail-view.tsx
 → 상세 화면은 상태 변경 후 위험도가 다시 계산되어야 하므로 같은 함수를 호출한다.
 
-apps/web/app/incidents/incident-format.ts
+apps/web/src/fsd/entities/incident/model/incident-format.ts
 → 위험도 level의 한글 라벨과 Badge 색상은 UI 표현이므로 web 앱의 format 파일에 둔다.
 
 package-lock.json
@@ -429,7 +429,7 @@ docs/07-risk-score-code-walkthrough.md
 → apps/web/app/incidents/incident-detail-view.tsx
 
 위험도 한글 라벨/배지 톤 코드
-→ apps/web/app/incidents/incident-format.ts
+→ apps/web/src/fsd/entities/incident/model/incident-format.ts
 ```
 
 읽는 순서는 이것이다.

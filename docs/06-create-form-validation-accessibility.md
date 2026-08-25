@@ -10,7 +10,7 @@
 홈 / 목록 / 상세 화면
 → fetch
 → Next Route Handler
-→ incident-store
+→ incident-repository
 → JSON 응답
 → 화면 갱신
 ```
@@ -57,10 +57,10 @@ POST /api/incidents
 
 ```txt
 apps/web/app/incidents/new/page.tsx
-apps/web/app/incidents/incident-api.ts
+apps/web/src/fsd/entities/incident/api/incident-api.ts
 apps/web/app/api/incidents/route.ts
-apps/web/app/api/incidents/incident-store.ts
-apps/web/app/incidents/incident-format.ts
+apps/web/src/fsd/entities/incident/api/incident-repository.ts
+apps/web/src/fsd/entities/incident/model/incident-format.ts
 apps/web/app/globals.css
 ```
 
@@ -174,12 +174,12 @@ assignedTeam: 선택값, 40자 이하
 }
 ```
 
-### 4-2. incident-store에 createIncident 추가
+### 4-2. incident-repository에 createIncident 추가
 
 파일:
 
 ```txt
-apps/web/app/api/incidents/incident-store.ts
+apps/web/src/fsd/entities/incident/api/incident-repository.ts
 ```
 
 추가된 함수:
@@ -211,7 +211,7 @@ createIncident(input)
 파일:
 
 ```txt
-apps/web/app/incidents/incident-api.ts
+apps/web/src/fsd/entities/incident/api/incident-api.ts
 ```
 
 추가된 함수:
@@ -427,7 +427,7 @@ isIncidentSeverity
 화면 표시용 라벨은 다음 파일에 둔다.
 
 ```txt
-apps/web/app/incidents/incident-format.ts
+apps/web/src/fsd/entities/incident/model/incident-format.ts
 ```
 
 추가한 라벨:
@@ -570,7 +570,7 @@ NewIncidentPage
 → createIncident(input)
 → POST /api/incidents
 → route.ts에서 body 검증
-→ incident-store createIncident
+→ incident-repository createIncident
 → 201 Created
 → router.push("/incidents/INC-004")
 → 상세 화면에서 GET /api/incidents/INC-004

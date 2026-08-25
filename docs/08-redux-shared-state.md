@@ -1402,7 +1402,7 @@ fetchIncidents({ search: "침수" });
 파일:
 
 ```txt
-apps/web/app/incidents/incident-api.ts
+apps/web/src/fsd/entities/incident/api/incident-api.ts
 ```
 
 코드:
@@ -1488,7 +1488,7 @@ query = {
 파일:
 
 ```txt
-apps/web/app/api/incidents/incident-store.ts
+apps/web/src/fsd/entities/incident/api/incident-repository.ts
 ```
 
 코드:

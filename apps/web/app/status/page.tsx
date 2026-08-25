@@ -24,7 +24,7 @@ const implementationItems: ImplementationItem[] = [
   {
     evidence: "npm Workspaces가 apps/*와 packages/*의 import·remote·network 관계를 연결합니다.",
     href: "/?xray=monorepo",
-    limit: "packages/config는 실제 공유 설정 없이 자리만 준비된 상태입니다.",
+    limit: "npm Workspaces 중심의 학습 범위이며 Turborepo·Nx 원격 캐시는 포함하지 않습니다.",
     name: "Monorepo",
     state: "complete",
   },
