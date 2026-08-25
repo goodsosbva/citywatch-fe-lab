@@ -13,7 +13,7 @@
 → GET /api/incidents?... 
 → Next Route Handler GET
 → query 입력 검증
-→ incident-store listIncidents(query)
+→ incident-repository listIncidents(query)
 → JSON 응답
 → isIncidentListResponse(data)
 → React incidents 상태 변경
@@ -89,7 +89,7 @@ setRequestUrl(getIncidentListUrl(query))
 파일:
 
 ```text
-apps/web/app/incidents/incident-api.ts
+apps/web/src/fsd/entities/incident/api/incident-api.ts
 ```
 
 `getIncidentListUrl(query)`는 브라우저 표준 `URLSearchParams`를 사용한다.
@@ -184,7 +184,7 @@ TypeScript 타입은 브라우저 요청을 막을 수 없으므로 `isIncidentS
 파일:
 
 ```text
-apps/web/app/api/incidents/incident-store.ts
+apps/web/src/fsd/entities/incident/api/incident-repository.ts
 ```
 
 검증을 통과한 query만 `listIncidents(query)`로 전달된다.
@@ -213,7 +213,7 @@ NextResponse.json<IncidentListResponse>({
 
 ```text
 packages/api-types/src/index.ts
-apps/web/app/incidents/incident-api.ts
+apps/web/src/fsd/entities/incident/api/incident-api.ts
 ```
 
 `requestJson<IncidentListResponse>` 같은 generic은 컴파일 때만 존재하며 서버가 보낸 JSON을 검사하지 않는다. 따라서 응답을 먼저 `unknown`으로 받고 공유 계약의 `isIncidentListResponse`로 확인한다.
@@ -317,7 +317,7 @@ filter onChange
 
 ```text
 apps/web/app/incidents/page.tsx
-apps/web/app/incidents/incident-api.ts
+apps/web/src/fsd/entities/incident/api/incident-api.ts
 apps/web/app/globals.css
 packages/api-types/src/index.ts
 packages/api-types/test/incident-response.test.ts

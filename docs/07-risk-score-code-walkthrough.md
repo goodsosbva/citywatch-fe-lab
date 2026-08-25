@@ -55,7 +55,7 @@ apps/web/app/incidents/page.tsx
 apps/web/app/incidents/incident-detail-view.tsx
 → 상세 화면에서 같은 위험도 계산을 재사용하는 소비 지점
 
-apps/web/app/incidents/incident-format.ts
+apps/web/src/fsd/entities/incident/model/incident-format.ts
 → 위험도 level을 한글 라벨과 Badge tone으로 바꾸는 표시 지점
 
 docs/*.md
@@ -372,7 +372,7 @@ packages/api-types/src/index.ts
 파일:
 
 ```txt
-apps/web/app/incidents/incident-format.ts
+apps/web/src/fsd/entities/incident/model/incident-format.ts
 ```
 
 코드 역할:
@@ -410,7 +410,7 @@ severe → 심각 → danger
 packages/api-types
 → 위험도 계산 결과를 만든다.
 
-apps/web/app/incidents/incident-format.ts
+apps/web/src/fsd/entities/incident/model/incident-format.ts
 → 그 결과를 화면용 한글 라벨과 Badge tone으로 바꾼다.
 ```
 

@@ -1,6 +1,6 @@
 # 5단계: REST API
 
-> 현재 API 확장: 12단계에서 `GET /api/incidents/many-data?size=5000|10000`을 추가했다. 이 route는 `incident-store`의 현재 사고를 기준으로 성능 시나리오 배열을 서버에서 생성해 반환하며, 저장소를 변경하지 않는다. 아래 본문은 5단계의 기본 CRUD 구현 설명이다.
+> 현재 API 확장: 12단계에서 `GET /api/incidents/many-data?size=5000|10000`을 추가했다. 이 route는 `incident-repository`의 현재 사고를 기준으로 성능 시나리오 배열을 서버에서 생성해 반환하며, 저장소를 변경하지 않는다. 아래 본문은 5단계의 기본 CRUD 구현 설명이다.
 
 ## 1. 지금까지 한 것
 
@@ -33,7 +33,7 @@
 화면 컴포넌트
 → fetch("/api/incidents")
 → Next Route Handler
-→ incident-store
+→ incident-repository
 → JSON 응답
 → 화면 렌더링
 ```
@@ -153,7 +153,7 @@ isIncidentCategory(value)
 파일:
 
 ```txt
-apps/web/app/api/incidents/incident-store.ts
+apps/web/src/fsd/entities/incident/api/incident-repository.ts
 ```
 
 여기에는 서버 Route Handler가 사용할 in-memory store가 있다.
@@ -325,7 +325,7 @@ status가 허용 값 아님 → 400 INVALID_STATUS
 파일:
 
 ```txt
-apps/web/app/incidents/incident-api.ts
+apps/web/src/fsd/entities/incident/api/incident-api.ts
 ```
 
 브라우저/client component에서 API를 호출하는 함수만 둔다.
@@ -352,7 +352,7 @@ SWR 안 씀
 파일:
 
 ```txt
-apps/web/app/incidents/incident-format.ts
+apps/web/src/fsd/entities/incident/model/incident-format.ts
 ```
 
 여기에는 화면 표시용 값만 둔다.
@@ -505,7 +505,7 @@ HomePage
 → useEffect 실행
 → fetchIncidents()
 → GET /api/incidents
-→ incident-store listIncidents()
+→ incident-repository listIncidents()
 → { incidents } 응답
 → metric / 최근 사고 렌더링
 ```

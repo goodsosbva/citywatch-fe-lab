@@ -62,8 +62,7 @@ CityWatchFELab
 │  └─ realtime-server     # WebSocket/Polling Node 서버
 ├─ packages
 │  ├─ api-types           # 공유 타입, Zod 검증, 런타임 타입 가드
-│  ├─ ui                  # 공용 UI와 X-Ray 컴포넌트
-│  └─ config              # 공유 설정 준비 영역
+│  └─ ui                  # 공용 UI와 X-Ray 컴포넌트
 ├─ docs                   # 단계별 구현 근거와 코드 흐름
 ├─ scripts/dev.mjs        # 세 개발 프로세스 통합 실행
 ├─ package.json           # npm Workspaces와 루트 명령

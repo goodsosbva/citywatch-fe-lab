@@ -61,8 +61,7 @@ CityWatchFELab
 │  └─ realtime-server
 ├─ packages
 │  ├─ api-types
-│  ├─ ui
-│  └─ config
+│  └─ ui
 ├─ docs
 ├─ package.json
 └─ package-lock.json
@@ -85,12 +84,9 @@ packages/api-types
 
 packages/ui
 Badge, SeverityBadge, XRayBox, XRayToggle 같은 공유 UI를 둔다.
-
-packages/config
-공유 설정이 필요해질 때 쓰기 위한 자리다. 현재는 package.json만 있는 준비 상태다.
 ```
 
-중요한 점은 "폴더가 있다"와 "기능이 구현됐다"를 구분하는 것이다. 현재 `realtime-server`와 `analytics-remote`에는 실제 기능이 들어갔고, `config`만 구조상 자리만 잡힌 상태다.
+중요한 점은 "폴더가 있다"와 "기능이 구현됐다"를 구분하는 것이다. 현재 workspace에는 실제 실행 앱과 실제로 공유되는 패키지만 둔다.
 
 ## 3. 루트 package.json 세팅
 
@@ -475,7 +471,7 @@ remote/analytics/AnalyticsMetrics
 17. Module Federation 시범 필터 - 완료
 ```
 
-`apps/realtime-server`는 독립 workspace와 프로세스로 구현되어 있다. `apps/analytics-remote`는 독립 Vite remote로 구현되어 있고, `packages/config`만 이후 단계를 위한 준비 상태다.
+`apps/realtime-server`는 독립 workspace와 프로세스로 구현되어 있다. `apps/analytics-remote`는 독립 Vite remote로 구현되어 있다.
 
 ## 10. 앞으로 단계 정리할 때 쓸 형식
 
