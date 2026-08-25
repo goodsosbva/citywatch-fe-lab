@@ -62,12 +62,6 @@ export default function Risk3DPage() {
         const nextIncidents = await fetchIncidents(query);
         if (!active) return;
         setIncidents(nextIncidents);
-        if (
-          nextIncidents.length > 0 &&
-          !nextIncidents.some((incident) => incident.id === selectedIncidentId)
-        ) {
-          dispatch(setSelectedIncidentId(getHighestRiskIncidentId(nextIncidents)));
-        }
         setError(undefined);
       } catch (reason) {
         if (!active) return;
@@ -83,6 +77,15 @@ export default function Risk3DPage() {
       active = false;
     };
   }, [query]);
+
+  useEffect(() => {
+    if (
+      incidents.length > 0 &&
+      !incidents.some((incident) => incident.id === selectedIncidentId)
+    ) {
+      dispatch(setSelectedIncidentId(getHighestRiskIncidentId(incidents)));
+    }
+  }, [dispatch, incidents, selectedIncidentId]);
 
   function selectIncident(incidentId: string) {
     dispatch(setSelectedIncidentId(incidentId));
