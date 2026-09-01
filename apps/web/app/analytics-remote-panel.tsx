@@ -2,7 +2,7 @@
 
 import type { Incident } from "@citywatch/api-types";
 import { Badge, XRayBox } from "@citywatch/ui";
-import { useEffect, useState, type ComponentType } from "react";
+import { useCallback, useEffect, useState, type ComponentType } from "react";
 import * as React from "react";
 import { useXRay } from "./xray-selector";
 
@@ -28,9 +28,13 @@ let runtimePromise: Promise<FederationRuntime> | undefined;
 let analyticsModulePromise: Promise<AnalyticsModule> | undefined;
 
 export function AnalyticsRemotePanel({ incidents }: { incidents: Incident[] }) {
-  const { enabled: xray, mode } = useXRay(["module-federation", "monorepo"]);
+  const { enabled: xray, mode, practiceOpen, practicePreviewUrl, setPracticeFrameWindow } = useXRay(["module-federation", "monorepo"]);
   const [loadRun, setLoadRun] = useState(0);
   const [state, setState] = useState<AnalyticsState>({ status: "loading" });
+  const setPracticeFrame = useCallback(
+    (frame: HTMLIFrameElement | null) => setPracticeFrameWindow(frame?.contentWindow ?? undefined),
+    [setPracticeFrameWindow],
+  );
 
   useEffect(() => {
     let active = true;
@@ -93,7 +97,24 @@ export function AnalyticsRemotePanel({ incidents }: { incidents: Incident[] }) {
           </div>
         ) : null}
 
-        {AnalyticsMetrics ? (
+        {practiceOpen ? (
+          <section aria-label="Module Federation 실습 미리보기" className="mf-practice-preview">
+            {practicePreviewUrl ? (
+              <iframe
+                allow="cross-origin-isolated"
+                ref={setPracticeFrame}
+                referrerPolicy="no-referrer"
+                sandbox="allow-scripts allow-same-origin"
+                src={practicePreviewUrl}
+                title="격리된 CityWatch Practice Host"
+              />
+            ) : (
+              <div className="mf-practice-preview__empty" role="status">
+                우측에서 Remote 파일을 확인하고 실행하면 실제 빌드 결과가 여기에 표시됩니다.
+              </div>
+            )}
+          </section>
+        ) : AnalyticsMetrics ? (
           <XRayBox
             enabled={mode === "module-federation" || mode === "monorepo"}
             label="remote/analytics/AnalyticsMetricsContent"
