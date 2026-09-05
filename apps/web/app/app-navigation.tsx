@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ModuleFederationPractice } from "./module-federation-practice";
+import { MonorepoPractice } from "./monorepo-practice";
 import { useXRay, XRaySelector } from "./xray-selector";
 
 const navigationItems = [
@@ -42,6 +43,7 @@ export function AppNavigation() {
         <div className="app-navigation__xray">
           <XRaySelector />
           {mode === "module-federation" ? <ModuleFederationPractice /> : null}
+          {mode === "monorepo" ? <MonorepoPractice /> : null}
         </div>
       </div>
     </header>

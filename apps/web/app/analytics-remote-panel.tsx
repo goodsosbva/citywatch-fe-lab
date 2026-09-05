@@ -98,7 +98,7 @@ export function AnalyticsRemotePanel({ incidents }: { incidents: Incident[] }) {
         ) : null}
 
         {practiceOpen ? (
-          <section aria-label="Module Federation 실습 미리보기" className="mf-practice-preview">
+          <section aria-label={`${mode === "monorepo" ? "Monorepo" : "Module Federation"} 실습 미리보기`} className="mf-practice-preview">
             {practicePreviewUrl ? (
               <iframe
                 allow="cross-origin-isolated"
@@ -110,7 +110,7 @@ export function AnalyticsRemotePanel({ incidents }: { incidents: Incident[] }) {
               />
             ) : (
               <div className="mf-practice-preview__empty" role="status">
-                우측에서 Remote 파일을 확인하고 실행하면 실제 빌드 결과가 여기에 표시됩니다.
+                우측에서 실습 파일을 작성하고 실행하면 실제 빌드 결과가 여기에 표시됩니다.
               </div>
             )}
           </section>

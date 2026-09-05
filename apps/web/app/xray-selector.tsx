@@ -65,7 +65,7 @@ export function XRayProvider({ children }: { children: ReactNode }) {
 
   function selectMode(nextMode: XRayMode) {
     const url = new URL(window.location.href);
-    if (nextMode !== "module-federation") {
+    if (nextMode !== mode || (nextMode !== "module-federation" && nextMode !== "monorepo")) {
       setPracticeOpen(false);
       setPracticeFrameWindow(undefined);
       setPracticePreviewUrl(undefined);
