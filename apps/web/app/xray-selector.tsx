@@ -18,13 +18,25 @@ export type XRayProof =
 type XRayMode = "off" | "all" | XRayProof;
 type XRaySummary = { packages: string[]; stacks: string[] };
 
-const XRayContext = createContext<{ mode: XRayMode; setMode: (mode: XRayMode) => void } | null>(null);
+const XRayContext = createContext<{
+  mode: XRayMode;
+  practiceOpen: boolean;
+  practiceFrameWindow?: Window;
+  practicePreviewUrl?: string;
+  setMode: (mode: XRayMode) => void;
+  setPracticeFrameWindow: (frame?: Window) => void;
+  setPracticeOpen: (open: boolean) => void;
+  setPracticePreviewUrl: (url?: string) => void;
+} | null>(null);
 
 export function XRayProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const initialized = useRef(false);
   const [mode, setMode] = useState<XRayMode>("all");
+  const [practiceOpen, setPracticeOpen] = useState(false);
+  const [practiceFrameWindow, setPracticeFrameWindow] = useState<Window>();
+  const [practicePreviewUrl, setPracticePreviewUrl] = useState<string>();
   const modeRef = useRef<XRayMode>("all");
 
   useEffect(() => {
@@ -53,6 +65,11 @@ export function XRayProvider({ children }: { children: ReactNode }) {
 
   function selectMode(nextMode: XRayMode) {
     const url = new URL(window.location.href);
+    if (nextMode !== mode || (nextMode !== "module-federation" && nextMode !== "monorepo")) {
+      setPracticeOpen(false);
+      setPracticeFrameWindow(undefined);
+      setPracticePreviewUrl(undefined);
+    }
     modeRef.current = nextMode;
     setMode(nextMode);
     url.searchParams.set("xray", nextMode);
@@ -61,7 +78,20 @@ export function XRayProvider({ children }: { children: ReactNode }) {
     });
   }
 
-  return <XRayContext value={{ mode, setMode: selectMode }}>{children}</XRayContext>;
+  return (
+    <XRayContext value={{
+      mode,
+      practiceOpen,
+      practiceFrameWindow,
+      practicePreviewUrl,
+      setMode: selectMode,
+      setPracticeFrameWindow,
+      setPracticeOpen,
+      setPracticePreviewUrl,
+    }}>
+      {children}
+    </XRayContext>
+  );
 }
 
 export function XRaySelector() {
@@ -192,10 +222,24 @@ function SummaryGroup({ label, values }: { label: string; values: string[] }) {
 }
 
 export function useXRay(proofs: readonly XRayProof[] = ["fsd-style", "monorepo"]) {
-  const { mode } = useXRayContext();
+  const {
+    mode,
+    practiceFrameWindow,
+    practiceOpen,
+    practicePreviewUrl,
+    setPracticeFrameWindow,
+    setPracticeOpen,
+    setPracticePreviewUrl,
+  } = useXRayContext();
   return {
     enabled: mode === "all" || (mode !== "off" && proofs.includes(mode)),
     mode,
+    practiceFrameWindow,
+    practiceOpen,
+    practicePreviewUrl,
+    setPracticeFrameWindow,
+    setPracticeOpen,
+    setPracticePreviewUrl,
   };
 }
 
